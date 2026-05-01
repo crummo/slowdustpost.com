@@ -1,34 +1,54 @@
 [
   {
-    "id": "farm-city-fence",
+    "id": 1001,
     "category": "motion",
     "title": "Data Centered: Farm City Fence",
     "client": "Amazon Web Services",
+    "thumbnail": "",
     "url": "https://www.youtube.com/watch?v=7wDqCjuf7aw",
-    "published": true
+    "award": "",
+    "description": "",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
   },
   {
-    "id": "dallin-tasha-fidel",
+    "id": 1002,
     "category": "motion",
     "title": "Data Centered: Dallin, Tasha, Fidel",
     "client": "Amazon Web Services",
+    "thumbnail": "",
     "url": "https://www.youtube.com/watch?v=_Q8FyqI4a9M",
-    "published": true
+    "award": "",
+    "description": "",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
   },
   {
-    "id": "heroes-in-the-field",
+    "id": 1003,
     "category": "motion",
     "title": "Heroes in the Field: Dr. Mara Lawniczak",
     "client": "Bill Gates",
+    "thumbnail": "",
     "url": "https://www.youtube.com/watch?v=d7YYKAJvNek",
-    "published": true
+    "award": "",
+    "description": "",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
   },
   {
-    "id": "finding-a-path",
+    "id": 1004,
     "category": "motion",
     "title": "Finding a path to college during the pandemic",
     "client": "Gates Ventures",
+    "thumbnail": "",
     "url": "https://www.youtube.com/watch?v=6D_kPgqUa-0",
-    "published": true
+    "award": "",
+    "description": "",
+    "published": true,
+    "overlay": "none",
+    "vignette": 0
   }
 ]

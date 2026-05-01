@@ -2,20 +2,24 @@
   "ownerName": "Slow Dust Post",
   "ownerTitle": "Post-Production",
   "metaDescription": "A Los Angeles area post-production house.",
+  "favicon": "08_hanger.svg",
+  "ogImage": "",
   "allowIndexing": true,
   "about": {
     "show": true,
-    "bio": "A Los Angeles area post-production house. Editing, color grading, audio mixing, and all things post.",
-    "bio2": "",
-    "contactEmail": "cameron@slowdustpost.com",
-    "showEmail": true,
     "photo": "",
-    "photoShape": "circle",
+    "photoAlt": "Slow Dust Post",
+    "photoShape": "natural",
     "photoPlacement": "above",
     "photoX": 50,
     "photoY": 50,
     "photoZoom": 1,
     "photoScale": 1,
+    "bio": "<p><strong>Slow Dust Post</strong> is a Los Angeles area post-production house offering editing, color grading, audio mixing, and all things post.</p>",
+    "bio2": "",
+    "contactEmail": "cameron@slowdustpost.com",
+    "showEmail": true,
+    "resume": "",
     "social": {
       "imdb": "",
       "vimeo": "",
@@ -28,7 +32,11 @@
   },
   "contact": {
     "enabled": false,
+    "mode": "card-mobile-only",
+    "showCard": false,
+    "endpoint": "",
     "email": "cameron@slowdustpost.com",
+    "photo": "",
     "showEmailInDrawer": true
   },
   "categories": [
@@ -43,7 +51,7 @@
   "notFound": {
     "heading": "",
     "sub": "",
-    "back": ""
+    "back": "Back to home"
   },
   "splash": {
     "enabled": false,
@@ -51,7 +59,17 @@
     "duration": 6,
     "skipReturning": true
   },
+  "accentColor": "#c9a96e",
+  "analytics": {
+    "provider": "",
+    "id": ""
+  },
   "navStyle": "top",
   "themeMode": "auto",
-  "allowThemeToggle": false
+  "allowThemeToggle": false,
+  "filmGrain": 0,
+  "thumbnailFilter": 0,
+  "viewerBg": "auto",
+  "zoomLock": false,
+  "mobileThumbsNative": false
 }
