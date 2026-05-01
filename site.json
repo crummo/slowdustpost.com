@@ -1,0 +1,57 @@
+{
+  "ownerName": "Slow Dust Post",
+  "ownerTitle": "Post-Production",
+  "metaDescription": "A Los Angeles area post-production house.",
+  "allowIndexing": true,
+  "about": {
+    "show": true,
+    "bio": "A Los Angeles area post-production house. Editing, color grading, audio mixing, and all things post.",
+    "bio2": "",
+    "contactEmail": "cameron@slowdustpost.com",
+    "showEmail": true,
+    "photo": "",
+    "photoShape": "circle",
+    "photoPlacement": "above",
+    "photoX": 50,
+    "photoY": 50,
+    "photoZoom": 1,
+    "photoScale": 1,
+    "social": {
+      "imdb": "",
+      "vimeo": "",
+      "instagram": "",
+      "linkedin": "",
+      "youtube": "",
+      "twitter": ""
+    },
+    "clients": []
+  },
+  "contact": {
+    "enabled": false,
+    "email": "cameron@slowdustpost.com",
+    "showEmailInDrawer": true
+  },
+  "categories": [
+    {
+      "id": "motion",
+      "label": "Motion",
+      "published": true,
+      "layout": "grid",
+      "type": "motion"
+    }
+  ],
+  "notFound": {
+    "heading": "",
+    "sub": "",
+    "back": ""
+  },
+  "splash": {
+    "enabled": false,
+    "video": "",
+    "duration": 6,
+    "skipReturning": true
+  },
+  "navStyle": "top",
+  "themeMode": "auto",
+  "allowThemeToggle": false
+}

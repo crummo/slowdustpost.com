@@ -1,6 +1,4 @@
 # ── Site data — unique per site, never overwritten by template syncs ──
-projects.json
-site.json
 site.json.bak
 
 # Credentials
