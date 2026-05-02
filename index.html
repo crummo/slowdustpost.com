@@ -159,8 +159,8 @@
     .theme-toggle:hover { color: var(--fg); }
     .theme-toggle.hidden { display: none; }
 
-    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
-    .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--fg-mid); transition: all 0.25s var(--ease); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--fg-mid); transition: all 0.25s var(--ease); border-radius: 1px; }
 
     .nav-drawer {
       position: fixed; top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); left: 0; right: 0;
@@ -531,9 +531,10 @@
     #page-home { padding: 0; }
     body[data-page="home"] nav { border-bottom-color: transparent; }
     body[data-page="home"] main { padding-top: 0 !important; }
-    body[data-page="home"] .home-wrap { min-height: 100vh; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); box-sizing: border-box; }
+    body[data-page="home"] .home-wrap { min-height: 100vh; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 24px); box-sizing: border-box; align-items: flex-start; justify-content: flex-start; }
     body[data-page="home"] .nav-brand-name { color: rgba(237,232,224,0.9); }
-    body[data-page="home"] .nav-hamburger span { background: rgba(237,232,224,0.85); }
+    body[data-page="home"] nav .nav-hamburger span,
+    body[data-page="home"] .nav-hamburger span { background: rgba(237,232,224,0.9) !important; }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
@@ -1029,7 +1030,7 @@
         <button class="gv-nav-back" onclick="closeGallery()">← Back</button>
       </div>
       <button class="theme-toggle hidden" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">◐</button>
-      <button class="nav-hamburger" onclick="toggleDrawer()"><span></span><span></span></button>
+      <button class="nav-hamburger" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
     </div>
   </nav>
 
