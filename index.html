@@ -96,7 +96,7 @@
     }
 
     html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
-    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; transition: background 0.35s; }
+    body { min-height: 100vh; background-color: rgba(13,11,10,0.78); overscroll-behavior-y: none; transition: background-color 0.35s; }
 
     /* film grain */
     body::before {
@@ -529,9 +529,11 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    /* Single unified bg on body — nav + main share the same full-bleed image */
+    /* Background lives on <html> only. Body just controls overlay opacity.
+       This prevents the pop that happens when body switches between two
+       different renderings of the same bg image on page load. */
     body[data-page="home"] {
-      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('images/bg.jpg') center/cover no-repeat;
+      background-color: rgba(0,0,0,0.4);
     }
     body[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
     body[data-page="home"] .home-bg,
