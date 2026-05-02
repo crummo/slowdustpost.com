@@ -1773,6 +1773,17 @@
     let   _uiDrag    = null;      // active drag session
     let   _uiRaf     = null;      // shared physics RAF
 
+    // Transparent overlay injected during drag — absorbs pointer events so
+    // nothing else (nav, text nodes) can intercept the mouse or start selection
+    const _uiOverlay = (() => {
+      const d = document.createElement('div');
+      d.style.cssText = 'display:none;position:fixed;inset:0;z-index:9998;cursor:grabbing;user-select:none';
+      document.addEventListener('DOMContentLoaded', () => document.body.appendChild(d), { once: true });
+      // Fallback if DOMContentLoaded already fired
+      if (document.readyState !== 'loading') document.body.appendChild(d);
+      return d;
+    })();
+
     function _ensureUiPhysics() {
       if (_uiRaf) return;
       function tick() {
@@ -1824,6 +1835,11 @@
       if (!d.lifted && (Math.abs(e.clientX - d.startX) > 5 || Math.abs(e.clientY - d.startY) > 5)) {
         const rect = d.el.getBoundingClientRect();
 
+        // Overlay captures all pointer events — prevents nav/text from
+        // intercepting the mouse or starting a text selection mid-drag
+        _uiOverlay.style.display = 'block';
+        document.body.style.userSelect = 'none';
+
         // Placeholder holds the space so siblings don't collapse
         if (!d.el._uiPlaceholder) {
           const ph = document.createElement('div');
@@ -1860,11 +1876,14 @@
     document.addEventListener('mouseup', () => {
       if (!_uiDrag) return;
       const d = _uiDrag;
+      // Always clean up overlay + selection lock
+      _uiOverlay.style.display = '';
+      document.body.style.userSelect = '';
       d.el.classList.remove('ui-dragging');
       if (d.state) {
         d.state.dragging = false;
         const { vx, vy } = _throwVelocity(d.history);
-        const MAX_V = 20;
+        const MAX_V = 8;
         d.state.vx = Math.max(-MAX_V, Math.min(MAX_V, vx));
         d.state.vy = Math.max(-MAX_V, Math.min(MAX_V, vy));
         _ensureUiPhysics();
