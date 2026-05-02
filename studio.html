@@ -1184,10 +1184,13 @@
         <div class="settings-section about-editor">
           <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
             About Page
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
-              <input type="checkbox" id="about-show-input" onchange="markDirty()" />
-              <span style="color:var(--fg-dim)">Show About page</span>
-            </label>
+            <div style="display:flex;align-items:center;gap:12px">
+              <button type="button" onclick="previewPage('about')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+                <input type="checkbox" id="about-show-input" onchange="markDirty()" />
+                <span style="color:var(--fg-dim)">Show About page</span>
+              </label>
+            </div>
           </div>
 
           <!-- Photo -->
@@ -1398,7 +1401,10 @@
       <!-- ── PAGES TAB ── -->
       <div class="settings-tab-pane" id="stab-pages">
         <div class="settings-section">
-          <div class="settings-section-title">Home Page</div>
+          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+            Home Page
+            <button type="button" onclick="previewPage('home')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+          </div>
           <div class="field">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
               <input type="checkbox" id="home-enabled" onchange="markDirty()" />
@@ -1458,7 +1464,10 @@
       <div class="settings-tab-pane" id="stab-advanced">
 
         <div class="settings-section">
-          <div class="settings-section-title">Contact</div>
+          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+            Contact
+            <button type="button" onclick="previewPage('contact')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+          </div>
           <div class="field">
             <label>Mode</label>
             <select id="contact-mode-select" onchange="updateContactMode();markDirty()" style="margin-top:4px;width:240px">
@@ -1519,10 +1528,13 @@
         <div class="settings-section">
           <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
             Splash Screen
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
-              <span style="color:var(--fg-dim)">Enable</span>
-              <input type="checkbox" id="splash-enabled" onchange="updateSplashFieldsVisibility();markDirty()" />
-            </label>
+            <div style="display:flex;align-items:center;gap:12px">
+              <button type="button" onclick="previewPage('splash')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px;font-weight:300;margin:0">
+                <span style="color:var(--fg-dim)">Enable</span>
+                <input type="checkbox" id="splash-enabled" onchange="updateSplashFieldsVisibility();markDirty()" />
+              </label>
+            </div>
           </div>
           <div id="splash-fields" style="display:none">
             <div class="field">
@@ -1638,7 +1650,10 @@
         </div>
 
         <div class="settings-section">
-          <div class="settings-section-title">404 Page</div>
+          <div class="settings-section-title" style="display:flex;align-items:center;justify-content:space-between">
+            404 Page
+            <button type="button" onclick="previewPage('404')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--fg-dim);padding:0;text-transform:none;letter-spacing:0;font-weight:400">Preview ↗</button>
+          </div>
           <div class="field">
             <label>Heading</label>
             <input type="text" id="nf-heading" placeholder="Pulled for another shoot." />
@@ -5076,7 +5091,13 @@ function previewAccentColor(color) {
 }
 
 function syncAccentFromHex(val) {
-  const color = val.trim();
+  let color = val.trim();
+  // Auto-prepend # if missing
+  if (color && color[0] !== '#') color = '#' + color;
+  // Expand 3-digit shorthand → 6-digit (#abc → #aabbcc)
+  if (/^#[0-9a-fA-F]{3}$/.test(color)) {
+    color = '#' + color[1]+color[1] + color[2]+color[2] + color[3]+color[3];
+  }
   if (/^#[0-9a-fA-F]{6}$/.test(color)) {
     document.documentElement.style.setProperty('--accent', color);
     const picker = document.getElementById('site-accent-color');
@@ -5466,8 +5487,26 @@ function openPreview() {
       else if (section === '404')     base = '404.html?preview=1&pk=' + pk;
       else if (section === 'contact') base = 'index.html?preview=1&pk=' + pk + '#contact';
       else if (section === 'splash')  base = 'index.html?preview=1&pk=' + pk + '&splash=1';
+      else if (section === 'pages')   base = 'index.html?preview=1&pk=' + pk + '#home';
       else                            base = 'index.html?preview=1&pk=' + pk;
     }
+    window.open(base, '_blank');
+  } catch(e) {
+    showToast('Preview failed — ' + e.message, 'error');
+  }
+}
+
+function previewPage(page) {
+  try {
+    flushSettingsForms();
+    const pk = document.getElementById('pk-input')?.value?.trim() || '';
+    let base;
+    if (page === 'about')        base = 'index.html?preview=1&pk=' + pk + '#about';
+    else if (page === 'contact') base = 'index.html?preview=1&pk=' + pk + '#contact';
+    else if (page === 'home')    base = 'index.html?preview=1&pk=' + pk + '#home';
+    else if (page === 'splash')  base = 'index.html?preview=1&pk=' + pk + '&splash=1';
+    else if (page === '404')     base = '404.html?preview=1&pk=' + pk;
+    else                         base = 'index.html?preview=1&pk=' + pk;
     window.open(base, '_blank');
   } catch(e) {
     showToast('Preview failed — ' + e.message, 'error');
