@@ -594,12 +594,15 @@
       font-size: clamp(52px, 9vw, 120px);
       font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
       color: var(--fg); line-height: 0.95; word-spacing: 9999px;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
     }
     .home-landing-nav {
       display: flex; gap: 12px; justify-content: center;
-      flex-wrap: wrap; margin-bottom: 40px;
+      flex-wrap: wrap; margin-bottom: 32px;
     }
+    /* Desktop-only nav buttons: hidden on mobile (hamburger handles nav there) */
+    .home-landing-nav--desktop { display: flex; }
+    @media (max-width: 768px) { .home-landing-nav--desktop { display: none !important; } }
     .home-landing-nav-btn {
       text-decoration: none;
       font-family: var(--font-sans); font-size: 11px;
@@ -2251,8 +2254,8 @@
           ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
           <div class="home-landing">
             ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
+            ${navBtnsHtml ? `<div class="home-landing-nav home-landing-nav--desktop">${navBtnsHtml}</div>` : ''}
             ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
-            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
           </div>
         </div>`;
     }
