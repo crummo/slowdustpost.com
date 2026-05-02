@@ -589,6 +589,14 @@
       color: var(--fg-dim); max-width: 440px; line-height: 1.9;
     }
 
+    /* Full-bleed bg support for home-landing */
+    .home-wrap-bg .home-overlay { background: rgba(0,0,0,0.35); }
+    .home-wrap-bg .home-landing { position: relative; z-index: 2; }
+    .home-wrap-bg .home-landing-logo { color: rgba(237,232,224,0.95); }
+    .home-wrap-bg .home-landing-nav-btn { color: rgba(237,232,224,0.7); border-color: rgba(237,232,224,0.38); }
+    .home-wrap-bg .home-landing-nav-btn:hover { color: #ede8e0; border-color: var(--accent); }
+    .home-wrap-bg .home-landing-tagline { color: rgba(237,232,224,0.5); }
+
     /* ── SPLASH ── */
     #splash { position: fixed; inset: 0; z-index: 800; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease); }
     #splash.fading { opacity: 0; pointer-events: none; }
@@ -1339,7 +1347,18 @@
         drawerEl.appendChild(da);
       }
 
-      if (siteConfig.homePage?.enabled) addLink('home', 'Home');
+      // Always show Home at top of hamburger drawer
+      { const da = document.createElement('a');
+        da.href = '#home'; da.dataset.page = 'home'; da.textContent = 'Home';
+        da.onclick = e => { e.preventDefault(); showPage('home'); closeDrawer(); };
+        drawerEl.appendChild(da); }
+      // Add to desktop nav only when a home page exists
+      if (siteConfig.homePage?.enabled) {
+        const li = document.createElement('li'); const a = document.createElement('a');
+        a.href = '#home'; a.dataset.page = 'home'; a.textContent = 'Home';
+        a.onclick = e => { e.preventDefault(); showPage('home'); };
+        li.appendChild(a); linksEl.appendChild(li);
+      }
       if (siteConfig.about?.show !== false) addLink('about', 'The Team');
       cats.forEach(cat => addLink(cat.id, cat.label));
       const _ctMode = siteConfig.contact?.mode;
@@ -2161,8 +2180,10 @@
           >${x(cat.label)}</a>`
       ).join('');
 
+      const bgUrl = (siteConfig.homePage || {}).bg || siteConfig.siteBg || '';
       pg.innerHTML = `
-        <div class="home-wrap">
+        <div class="home-wrap${bgUrl ? ' home-wrap-bg' : ''}">
+          ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
           <div class="home-landing">
             ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
             ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
