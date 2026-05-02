@@ -65,7 +65,7 @@
     "id": ""
   },
   "navStyle": "left",
-  "themeMode": "light",
+  "themeMode": "dark",
   "allowThemeToggle": false,
   "filmGrain": 0.2,
   "thumbnailFilter": 0,
@@ -73,7 +73,7 @@
   "zoomLock": false,
   "mobileThumbsNative": false,
   "fontSans": "source-code-pro",
-  "fontSerif": "",
+  "fontSerif": "playfair",
   "homePage": {
     "enabled": true,
     "headline": "What We Do",
