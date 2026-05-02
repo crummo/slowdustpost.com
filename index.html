@@ -532,29 +532,31 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    /* Background lives on <html> only. Body just controls overlay opacity.
-       This prevents the pop that happens when body switches between two
-       different renderings of the same bg image on page load. */
-    body[data-page="home"] {
-      background-color: rgba(0,0,0,0.4);
+    /* Background lives on <html> only. Body just controls overlay opacity. */
+    body[data-page="home"] { background-color: rgba(0,0,0,0.4); }
+
+    /* Desktop nav-left: kill the sidebar — buttons live in the landing content */
+    body.nav-left[data-page="home"] nav { display: none; }
+    body.nav-left[data-page="home"] main { padding-left: 0; }
+    /* No width-override needed once main has no left padding */
+    body.nav-left[data-page="home"] #page-home { margin-left: 0; width: 100%; }
+    /* Center content in full viewport — no nav-h offset needed */
+    body.nav-left[data-page="home"] .home-wrap { padding-top: 0; padding-bottom: 0; }
+
+    /* Mobile / top-nav: keep nav transparent, hide just the brand text */
+    body:not(.nav-left)[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
+    body:not(.nav-left)[data-page="home"] .nav-brand { visibility: hidden; }
+    /* Hamburger: fixed above everything on mobile */
+    body[data-page="home"] .nav-hamburger {
+      position: fixed !important;
+      top: 14px !important; right: 16px !important; z-index: 99999 !important;
+      background: rgba(0,0,0,0.35) !important; padding: 10px !important; border-radius: 5px !important;
     }
-    body[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
+    body[data-page="home"] .nav-hamburger span { background: #fff !important; height: 2px !important; width: 24px !important; }
+
     body[data-page="home"] .home-bg,
     body[data-page="home"] .home-overlay { display: none; }
     body[data-page="home"] .home-wrap { align-items: center; justify-content: center; padding-top: var(--nav-h); padding-bottom: 18vh; box-sizing: border-box; }
-    body[data-page="home"] .nav-brand { visibility: hidden; }
-    /* Hamburger: fixed above everything so bg can never cover it */
-    body[data-page="home"] .nav-hamburger {
-      position: fixed !important;
-      top: 14px !important;
-      right: 16px !important;
-      z-index: 99999 !important;
-      background: rgba(0,0,0,0.35) !important;
-      padding: 10px !important;
-      border-radius: 5px !important;
-    }
-    body[data-page="home"] .nav-hamburger span { background: #fff !important; height: 2px !important; width: 24px !important; }
-    body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
       position: relative; width: 100%;
@@ -2249,8 +2251,8 @@
           ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
           <div class="home-landing">
             ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
-            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
             ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
+            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
           </div>
         </div>`;
     }
