@@ -1775,7 +1775,6 @@
 
     function _ensureUiPhysics() {
       if (_uiRaf) return;
-      const MAX_V = 15;
       function tick() {
         const vW = window.innerWidth, vH = window.innerHeight;
         _uiStates.forEach(s => {
@@ -1794,22 +1793,54 @@
       _uiRaf = requestAnimationFrame(tick);
     }
 
+    // Compute throw velocity from a rolling 100ms position history
+    function _throwVelocity(history) {
+      if (history.length < 2) return { vx: 0, vy: 0 };
+      const now = performance.now();
+      // Find the oldest sample within the last 100ms
+      let oldest = history[0];
+      for (let i = 1; i < history.length; i++) {
+        if (now - history[i].t <= 100) { oldest = history[i]; break; }
+      }
+      const newest = history[history.length - 1];
+      const dt = Math.max(8, newest.t - oldest.t);
+      return {
+        vx: ((newest.x - oldest.x) / dt) * 16.7,
+        vy: ((newest.y - oldest.y) / dt) * 16.7,
+      };
+    }
+
     // Shared mousemove — only active during a drag session
     document.addEventListener('mousemove', e => {
       if (!_uiDrag) return;
       const d = _uiDrag;
       const now = performance.now();
-      const dx  = e.clientX - d.lastX;
-      const dy  = e.clientY - d.lastY;
-      const dt  = Math.max(1, now - d.lastT);
-      d.throwVx = (dx / dt) * 16.7;
-      d.throwVy = (dy / dt) * 16.7;
-      d.lastX = e.clientX; d.lastY = e.clientY; d.lastT = now;
+
+      // Rolling position history for reliable throw velocity
+      d.history.push({ x: e.clientX, y: e.clientY, t: now });
+      if (d.history.length > 30) d.history.shift(); // keep last ~30 samples
 
       // Lift element on first threshold crossing — not on mousedown
       if (!d.lifted && (Math.abs(e.clientX - d.startX) > 5 || Math.abs(e.clientY - d.startY) > 5)) {
         const rect = d.el.getBoundingClientRect();
-        d.el.style.cssText += ';position:fixed !important;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;margin:0;z-index:9999';
+
+        // Placeholder holds the space so siblings don't collapse
+        if (!d.el._uiPlaceholder) {
+          const ph = document.createElement('div');
+          ph.style.cssText = 'display:block;flex-shrink:0;pointer-events:none;visibility:hidden;' +
+            'width:' + rect.width + 'px;height:' + rect.height + 'px';
+          d.el.parentNode.insertBefore(ph, d.el);
+          d.el._uiPlaceholder = ph;
+        }
+
+        d.el.style.position   = 'fixed';
+        d.el.style.left       = rect.left   + 'px';
+        d.el.style.top        = rect.top    + 'px';
+        d.el.style.width      = rect.width  + 'px';
+        d.el.style.height     = rect.height + 'px';
+        d.el.style.margin     = '0';
+        d.el.style.zIndex     = '9999';
+
         const s = { el: d.el, x: rect.left, y: rect.top, w: rect.width, h: rect.height, vx: 0, vy: 0, dragging: true };
         _uiStates.set(d.el, s);
         d.state = s;
@@ -1832,8 +1863,10 @@
       d.el.classList.remove('ui-dragging');
       if (d.state) {
         d.state.dragging = false;
-        d.state.vx = Math.max(-15, Math.min(15, d.throwVx));
-        d.state.vy = Math.max(-15, Math.min(15, d.throwVy));
+        const { vx, vy } = _throwVelocity(d.history);
+        const MAX_V = 20;
+        d.state.vx = Math.max(-MAX_V, Math.min(MAX_V, vx));
+        d.state.vy = Math.max(-MAX_V, Math.min(MAX_V, vy));
         _ensureUiPhysics();
       }
       _uiDrag = null;
@@ -1860,8 +1893,7 @@
           origX: existing ? existing.x : rect.left,
           origY: existing ? existing.y : rect.top,
           startX: e.clientX, startY: e.clientY,
-          lastX: e.clientX, lastY: e.clientY, lastT: performance.now(),
-          throwVx: 0, throwVy: 0, lifted: !!existing,
+          history: [], lifted: !!existing,
         };
         el.classList.add('ui-dragging');
         // No preventDefault — lets clicks through when not dragged
