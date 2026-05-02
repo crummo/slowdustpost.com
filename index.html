@@ -537,7 +537,17 @@
     }
     body[data-page="home"] .home-wrap { align-items: flex-start; justify-content: flex-start; }
     body[data-page="home"] .nav-brand { display: none; }
-    body[data-page="home"] .nav-hamburger span { background: #fff !important; }
+    .nav-hamburger {
+      display: flex !important;
+      position: fixed !important;
+      top: 12px !important;
+      right: 12px !important;
+      z-index: 99999 !important;
+      background: rgba(200,0,0,0.85) !important;
+      padding: 12px !important;
+      border-radius: 6px !important;
+    }
+    .nav-hamburger span { background: #fff !important; height: 3px !important; width: 28px !important; }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
