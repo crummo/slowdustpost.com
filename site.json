@@ -74,12 +74,18 @@
   "mobileThumbsNative": false,
   "fontSans": "source-code-pro",
   "homePage": {
-    "enabled": false,
-    "headline": "",
-    "subhead": "",
-    "body": "",
-    "bg": "",
+    "enabled": true,
+    "headline": "What We Do",
+    "subhead": "some post stuff",
+    "body": "Our post-production services offer comprehensive solutions to elevate your project to the next level of excellence. With a focus on precision, creativity, and efficiency, we cover every aspect of the post-production process to bring your vision to life. From editing and visual effects to sound design, color grading, and final mastering, our team of experts ensures that every detail is polished to perfection. Whether you're working on a film, commercial, animation, or any other multimedia project, we provide the expertise and resources to enhance its quality and impact. With our dedication to delivering exceptional results, we strive to exceed your expectations and contribute to the success of your endeavor",
+    "bg": "bg.jpg",
     "bgVideo": "",
-    "ctas": []
+    "ctas": [
+      {
+        "label": "Our Work",
+        "target": "temp",
+        "style": "primary"
+      }
+    ]
   }
 }
