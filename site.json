@@ -59,13 +59,13 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#00FF41",
+  "accentColor": "#00ff41",
   "analytics": {
     "provider": "",
     "id": ""
   },
   "navStyle": "left",
-  "themeMode": "dark",
+  "themeMode": "light",
   "allowThemeToggle": false,
   "filmGrain": 0.2,
   "thumbnailFilter": 0,
@@ -73,7 +73,7 @@
   "zoomLock": false,
   "mobileThumbsNative": false,
   "fontSans": "source-code-pro",
-  "fontSerif": "source-code-pro",
+  "fontSerif": "",
   "homePage": {
     "enabled": true,
     "headline": "What We Do",
@@ -88,5 +88,7 @@
         "style": "primary"
       }
     ]
-  }
+  },
+  "fontSerifScale": 1,
+  "fontSansScale": 1
 }
