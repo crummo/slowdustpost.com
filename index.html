@@ -757,6 +757,42 @@
       }
       body.is-preview.nav-left nav { top: 28px; height: var(--nav-h); right: 0; width: 100%; bottom: auto; }
       body.is-preview.nav-left main { padding-top: var(--nav-h); }
+
+      /* ── HOME LANDING — MOBILE ── */
+      /* Reset the desktop nav-left negative-margin trick; on mobile the nav
+         is a top bar so #page-home must sit flush within main. */
+      body.nav-left[data-page="home"] #page-home { margin-left: 0; width: 100%; }
+      .home-landing {
+        padding: 40px 24px 52px;
+        max-width: 100%;
+      }
+      /* Let the logo scale smoothly with viewport width on phones rather
+         than clamping hard at 52px; still caps at 64px so it never crowds
+         the button and tagline on a mid-size phone. */
+      .home-landing-logo {
+        font-size: clamp(40px, 13vw, 64px);
+        margin-bottom: 32px;
+        letter-spacing: 0.03em;
+      }
+      /* Stack nav buttons full-width — intentional, not incidental wrapping. */
+      .home-landing-nav {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .home-landing-nav-btn {
+        width: 100%;
+        padding: 13px 20px;
+        text-align: center;
+      }
+      /* Tagline: slightly larger and tighter tracking so it reads at arm's length. */
+      .home-landing-tagline {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        max-width: 100%;
+      }
     }
 
     @media (max-height: 600px) and (orientation: landscape) {
@@ -909,6 +945,17 @@
       /* Full-height tap zones so arrows are centred on the image */
       .lb-float-prev { left: max(16px, env(safe-area-inset-left, 0px)); top: 0; }
       .lb-float-next { right: max(16px, env(safe-area-inset-right, 0px)); top: 0; }
+
+      /* ── HOME LANDING — LANDSCAPE ── */
+      /* Re-assert the full-bleed override with matching specificity so the
+         desktop nav-left negative-margin rule can't win. */
+      body.nav-left[data-page="home"] #page-home { margin-left: -10%; width: calc(100% + 20%); }
+      /* Compact vertical padding — landscape viewports are short. */
+      .home-landing { padding: 20px 10%; }
+      .home-landing-logo { font-size: clamp(32px, 6vh, 56px); margin-bottom: 20px; }
+      .home-landing-nav { gap: 8px; margin-bottom: 18px; flex-direction: row; align-items: center; }
+      .home-landing-nav-btn { width: auto; padding: 10px 22px; }
+      .home-landing-tagline { font-size: 10px; letter-spacing: 0.14em; }
     }
 
     /* ── SAFE AREA TOP COVER ── */
@@ -933,6 +980,8 @@
       .mobile-meta { padding: 12px 16px 16px; }
       .about-bio { font-size: 17px; }
       .lb-title { font-size: 16px; }
+      /* Very small phones: nudge landing padding in a touch tighter. */
+      .home-landing { padding: 32px 20px 44px; }
     }
   </style>
 </head>
