@@ -1759,57 +1759,109 @@
       });
     }
 
-    // ── Free drag (UI elements — no physics, resets on reload) ──────────────
+    // ── Free drag (UI elements — physics on release, resets on reload) ─────────
 
-    let _freeDrag = null;
+    const _uiStates  = new Map(); // el → { x, y, vx, vy, w, h, dragging }
+    let   _uiDrag    = null;      // active drag session
+    let   _uiRaf     = null;      // shared physics RAF
 
+    function _ensureUiPhysics() {
+      if (_uiRaf) return;
+      const MAX_V = 15;
+      function tick() {
+        const vW = window.innerWidth, vH = window.innerHeight;
+        _uiStates.forEach(s => {
+          if (s.dragging) return;
+          s.x += s.vx;
+          s.y += s.vy;
+          if (s.x <= 0)          { s.x = 0;        s.vx =  Math.abs(s.vx); }
+          if (s.x + s.w >= vW)   { s.x = vW - s.w; s.vx = -Math.abs(s.vx); }
+          if (s.y <= 0)          { s.y = 0;        s.vy =  Math.abs(s.vy); }
+          if (s.y + s.h >= vH)   { s.y = vH - s.h; s.vy = -Math.abs(s.vy); }
+          s.el.style.left = s.x + 'px';
+          s.el.style.top  = s.y + 'px';
+        });
+        _uiRaf = requestAnimationFrame(tick);
+      }
+      _uiRaf = requestAnimationFrame(tick);
+    }
+
+    // Shared mousemove — only active during a drag session
     document.addEventListener('mousemove', e => {
-      if (!_freeDrag) return;
-      const { el, offX, offY, startX, startY } = _freeDrag;
-      if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) el._wasDragged = true;
-      el.style.left = (e.clientX - offX) + 'px';
-      el.style.top  = (e.clientY - offY) + 'px';
+      if (!_uiDrag) return;
+      const d = _uiDrag;
+      const now = performance.now();
+      const dx  = e.clientX - d.lastX;
+      const dy  = e.clientY - d.lastY;
+      const dt  = Math.max(1, now - d.lastT);
+      d.throwVx = (dx / dt) * 16.7;
+      d.throwVy = (dy / dt) * 16.7;
+      d.lastX = e.clientX; d.lastY = e.clientY; d.lastT = now;
+
+      // Lift element on first threshold crossing — not on mousedown
+      if (!d.lifted && (Math.abs(e.clientX - d.startX) > 5 || Math.abs(e.clientY - d.startY) > 5)) {
+        const rect = d.el.getBoundingClientRect();
+        d.el.style.cssText += ';position:fixed !important;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;margin:0;z-index:9999';
+        const s = { el: d.el, x: rect.left, y: rect.top, w: rect.width, h: rect.height, vx: 0, vy: 0, dragging: true };
+        _uiStates.set(d.el, s);
+        d.state = s;
+        d.lifted = true;
+        d.el._wasDragged = true;
+        if (d.onFirstLift) d.onFirstLift();
+      }
+
+      if (d.state) {
+        d.state.x = d.origX + (e.clientX - d.startX);
+        d.state.y = d.origY + (e.clientY - d.startY);
+        d.el.style.left = d.state.x + 'px';
+        d.el.style.top  = d.state.y + 'px';
+      }
     });
 
     document.addEventListener('mouseup', () => {
-      if (!_freeDrag) return;
-      _freeDrag.el.classList.remove('ui-dragging');
-      _freeDrag = null;
+      if (!_uiDrag) return;
+      const d = _uiDrag;
+      d.el.classList.remove('ui-dragging');
+      if (d.state) {
+        d.state.dragging = false;
+        d.state.vx = Math.max(-15, Math.min(15, d.throwVx));
+        d.state.vy = Math.max(-15, Math.min(15, d.throwVy));
+        _ensureUiPhysics();
+      }
+      _uiDrag = null;
     });
 
-    function makeDraggable(el) {
+    function makeDraggable(el, onFirstLift) {
       if (!el || el._uiDrag) return;
       el._uiDrag = true;
       el.classList.add('ui-drag');
-      let floating = false;
 
-      // Block the element's own click handler if this was a drag
+      // Capture-phase click blocker — only fires if we actually dragged
       el.addEventListener('click', e => {
         if (el._wasDragged) { e.stopImmediatePropagation(); e.preventDefault(); el._wasDragged = false; }
       }, true);
 
       el.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
+        // If already floating, grab current state
+        const existing = _uiStates.get(el);
+        if (existing) { existing.dragging = true; existing.vx = existing.vy = 0; }
         const rect = el.getBoundingClientRect();
-        // First drag: lift out of flow, freeze at current screen position
-        if (!floating) {
-          el.style.position = 'fixed';
-          el.style.left     = rect.left + 'px';
-          el.style.top      = rect.top  + 'px';
-          el.style.width    = rect.width  + 'px';
-          el.style.height   = rect.height + 'px';
-          el.style.margin   = '0';
-          el.style.zIndex   = '9999';
-          floating = true;
-        }
+        _uiDrag = {
+          el, state: existing || null, onFirstLift,
+          origX: existing ? existing.x : rect.left,
+          origY: existing ? existing.y : rect.top,
+          startX: e.clientX, startY: e.clientY,
+          lastX: e.clientX, lastY: e.clientY, lastT: performance.now(),
+          throwVx: 0, throwVy: 0, lifted: !!existing,
+        };
         el.classList.add('ui-dragging');
-        _freeDrag = { el, offX: e.clientX - parseFloat(el.style.left), offY: e.clientY - parseFloat(el.style.top), startX: e.clientX, startY: e.clientY };
-        e.preventDefault();
+        // No preventDefault — lets clicks through when not dragged
       });
     }
 
     function initDraggables() {
-      // Build the reset pill (hidden until first drag)
+      // Reset pill — hidden until first element is dragged
       const resetBtn = document.createElement('div');
       resetBtn.id = 'drag-reset';
       resetBtn.textContent = 'reset layout';
@@ -1818,34 +1870,20 @@
       makeDraggable(resetBtn);
 
       let hintShown = false;
-      function showHint() {
-        if (hintShown) return;
-        hintShown = true;
-        resetBtn.classList.add('visible');
-      }
+      function showHint() { if (!hintShown) { hintShown = true; resetBtn.classList.add('visible'); } }
 
       // Hidden keystroke: R reloads
       document.addEventListener('keydown', e => {
-        if (e.key === 'r' || e.key === 'R') {
-          if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
-          location.reload();
-        }
+        if ((e.key === 'r' || e.key === 'R') && !['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) location.reload();
       });
 
-      // Patch makeDraggable to reveal hint on first drag of any UI element
-      const _origFreeDragSetter = Object.getOwnPropertyDescriptor(window, '_freeDrag');
-      const targets = [
+      [
         document.getElementById('nav-name'),
         document.getElementById('nav-title-el'),
         ...document.querySelectorAll('#nav-links a'),
         ...document.querySelectorAll('.home-headline, .home-subhead, .home-body'),
         ...document.querySelectorAll('.home-cta'),
-      ];
-      targets.forEach(el => {
-        if (!el) return;
-        makeDraggable(el);
-        el.addEventListener('mousedown', showHint);
-      });
+      ].forEach(el => { if (el) makeDraggable(el, showHint); });
     }
 
     // ── Resize ───────────────────────────────────────────────────────────────
