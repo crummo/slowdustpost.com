@@ -121,7 +121,7 @@
       height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
       display: flex; align-items: center; justify-content: space-between;
       padding: env(safe-area-inset-top, 0px) 44px 0;
-      background: rgba(13,11,10,0.88);
+      background: transparent;
       border-bottom: 1px solid var(--fg-dimmer);
       transition: background 0.4s, border-color 0.4s;
       /* iOS Safari: force own compositing layer so scrolled page content
@@ -252,7 +252,7 @@
     /* nav-left: pull scattered grid to full viewport so cards cross the sidebar */
     body.nav-left .gallery-grid.layout-scattered {
       position: fixed; inset: 0; width: 100vw; height: 100vh;
-      overflow: visible; z-index: 195; pointer-events: none;
+      overflow: visible; z-index: 201; pointer-events: none;
     }
     body.nav-left .gallery-grid.layout-scattered .grid-item { pointer-events: auto; }
 
@@ -528,7 +528,7 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    body[data-page="home"] nav { background: transparent; border-bottom-color: transparent; transition: background 0.4s, border-color 0.4s; }
+    body[data-page="home"] nav { border-bottom-color: transparent; }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
