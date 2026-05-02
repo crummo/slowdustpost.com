@@ -5,7 +5,6 @@ site.json.bak
 _internal/
 
 # Media — managed per site
-images/
 gallery/
 thumbs/
 downloads/
