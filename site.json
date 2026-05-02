@@ -1,7 +1,7 @@
 {
   "ownerName": "Slow Dust Post",
-  "ownerTitle": "Post-Production",
-  "metaDescription": "A Los Angeles area post-production house.",
+  "ownerTitle": "Editing, Color Grading, Audio Mixing and All Things Post-Production.",
+  "metaDescription": "Post-production out of Los Angeles. Legitimately professional. Deeply weird. Edit, color, audio — done right.",
   "favicon": "08_hanger.svg",
   "ogImage": "",
   "allowIndexing": true,
@@ -15,8 +15,8 @@
     "photoY": 50,
     "photoZoom": 1,
     "photoScale": 1,
-    "bio": "<p><strong>Slow Dust Post</strong> is a Los Angeles area post-production house offering editing, color grading, audio mixing, and all things post.</p>",
-    "bio2": "",
+    "bio": "<p>We are professionals. We are also weirdos. These two things are not in conflict. Edit, color, audio — the whole finish line, handled by people who care about it in a way that probably isn't healthy. Your project is safe here. Possibly better than safe.</p>",
+    "bio2": "<p>We've cut commercials for billion-dollar companies and never once let that make us boring. Small shop, no middlemen, strong opinions about color temperature. Come in with footage. Leave with something that feels alive.</p>",
     "contactEmail": "cameron@slowdustpost.com",
     "showEmail": true,
     "resume": "",
@@ -49,9 +49,9 @@
     }
   ],
   "notFound": {
-    "heading": "",
-    "sub": "",
-    "back": "Back to home"
+    "heading": "You've drifted out of frame.",
+    "sub": "It happens. The desert is wide and the signs are strange. What you were looking for isn't here, but something better probably is.",
+    "back": "Find your way back"
   },
   "splash": {
     "enabled": false,
@@ -59,7 +59,7 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#c9a96e",
+  "accentColor": "#FF6B35",
   "analytics": {
     "provider": "",
     "id": ""
