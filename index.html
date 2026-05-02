@@ -529,7 +529,9 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    body[data-page="home"] nav { border-bottom-color: transparent; background: rgba(0,0,0,0.18); }
+    body[data-page="home"] nav { border-bottom-color: transparent; }
+    body[data-page="home"] main { padding-top: 0 !important; }
+    body[data-page="home"] .home-wrap { min-height: 100vh; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); box-sizing: border-box; }
     body[data-page="home"] .nav-brand-name { color: rgba(237,232,224,0.9); }
     body[data-page="home"] .nav-hamburger span { background: rgba(237,232,224,0.85); }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
