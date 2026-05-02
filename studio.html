@@ -1039,8 +1039,10 @@
       <!-- Sub-tabs -->
       <div class="settings-tabs">
         <button class="settings-tab-btn active" onclick="switchSettingsTab('general')">General</button>
+        <button class="settings-tab-btn" onclick="switchSettingsTab('appearance')">Appearance</button>
         <button class="settings-tab-btn" onclick="switchSettingsTab('categories')">Categories</button>
         <button class="settings-tab-btn" onclick="switchSettingsTab('about')">About</button>
+        <button class="settings-tab-btn" onclick="switchSettingsTab('pages')">Pages</button>
         <button class="settings-tab-btn" onclick="switchSettingsTab('advanced')">Advanced</button>
       </div>
 
@@ -1064,9 +1066,12 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- ── APPEARANCE TAB ── -->
+      <div class="settings-tab-pane" id="stab-appearance">
         <div class="settings-section">
-          <div class="settings-section-title">Appearance</div>
+          <div class="settings-section-title">Color</div>
           <div class="field">
             <label>Accent Color</label>
             <div style="display:flex;align-items:center;gap:10px">
@@ -1075,13 +1080,6 @@
               <button class="btn btn-ghost btn-sm" onclick="resetAccentColor()" type="button">Reset</button>
             </div>
             <div class="field-hint" style="margin-top:4px">Used for highlights, active nav links, and client labels across the site</div>
-          </div>
-          <div class="field" style="margin-top:12px">
-            <label>Nav Position</label>
-            <select id="site-nav-style" onchange="markDirty()" style="margin-top:6px;width:100%">
-              <option value="top">Top — horizontal bar</option>
-              <option value="left">Left — vertical sidebar</option>
-            </select>
           </div>
           <div class="field" style="margin-top:12px">
             <label>Site Theme</label>
@@ -1104,7 +1102,36 @@
             </select>
             <div class="field-hint" style="margin-top:4px">Background color of the lightbox and gallery viewer. Auto follows the site theme.</div>
           </div>
-          <div class="field" style="margin-top:12px">
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Typography</div>
+          <div class="field">
+            <label>UI Font</label>
+            <select id="site-font-sans" onchange="applyFontSans(this.value);markDirty()" style="margin-top:6px;width:100%">
+              <option value="dm-sans">DM Sans — clean geometric sans</option>
+              <option value="source-code-pro">Source Code Pro — monospace</option>
+              <option value="space-grotesk">Space Grotesk — geometric modern</option>
+              <option value="inter">Inter — neutral workhorse</option>
+            </select>
+            <div class="field-hint" style="margin-top:4px">Applies to nav, labels, and all UI text across the site.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Layout</div>
+          <div class="field">
+            <label>Nav Position</label>
+            <select id="site-nav-style" onchange="markDirty()" style="margin-top:6px;width:100%">
+              <option value="top">Top — horizontal bar</option>
+              <option value="left">Left — vertical sidebar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Texture &amp; Detail</div>
+          <div class="field">
             <label>Film Grain <span id="site-film-grain-pct" style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400"></span></label>
             <input type="range" id="site-film-grain" min="0" max="100" step="1" value="28"
               style="width:100%;accent-color:var(--accent)"
@@ -1133,7 +1160,6 @@
             <div class="field-hint" style="margin-top:4px">Each thumbnail in the mobile list keeps its original proportions instead of being cropped to 16:9. Magazine-feed style.</div>
           </div>
         </div>
-
       </div>
 
       <!-- ── SECTIONS TAB ── -->
@@ -1364,6 +1390,65 @@
                 </div>
               </div>
               <div class="field-hint" style="margin-top:6px">Upload a PNG/SVG, or paste any direct image URL.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGES TAB ── -->
+      <div class="settings-tab-pane" id="stab-pages">
+        <div class="settings-section">
+          <div class="settings-section-title">Home Page</div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px">
+              <input type="checkbox" id="home-enabled" onchange="markDirty()" />
+              Enable home page
+            </label>
+            <div class="field-hint" style="margin-top:4px">When enabled, visitors land here first instead of the portfolio grid. The nav brand name returns here.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Headline</label>
+            <input type="text" id="home-headline" placeholder="e.g. We make things look good." oninput="markDirty()" style="margin-top:6px" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Subhead <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(displayed in uppercase above or below headline)</span></label>
+            <input type="text" id="home-subhead" placeholder="e.g. Post-production / Los Angeles" oninput="markDirty()" style="margin-top:6px" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Body Copy <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional — keep it short)</span></label>
+            <textarea id="home-body" rows="3" placeholder="A sentence or two about who you are…" oninput="markDirty()" style="margin-top:6px"></textarea>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Background</div>
+          <div class="field">
+            <label>Image</label>
+            <input type="text" id="home-bg" placeholder="images/hero.jpg or https://…" oninput="markDirty()" style="margin-top:6px" />
+            <div class="field-hint" style="margin-top:4px">Full-bleed background image. A dark overlay is applied automatically.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(mp4 — plays silently, loops)</span></label>
+            <input type="text" id="home-bg-video" placeholder="videos/reel.mp4 or https://…" oninput="markDirty()" style="margin-top:6px" />
+            <div class="field-hint" style="margin-top:4px">If both image and video are set, the video plays over the image as a fallback.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Call to Action Buttons</div>
+          <div class="field">
+            <label>Primary Button</label>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="text" id="home-cta1-label" placeholder="Label" oninput="markDirty()" style="flex:1" />
+              <input type="text" id="home-cta1-target" placeholder="Category ID, about, or URL" oninput="markDirty()" style="flex:1.5" />
+            </div>
+            <div class="field-hint" style="margin-top:4px">Highlighted in accent color. Target can be a category ID (e.g. <em>work</em>), <em>about</em>, <em>contact</em>, or a full URL.</div>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>Secondary Button <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="text" id="home-cta2-label" placeholder="Label" oninput="markDirty()" style="flex:1" />
+              <input type="text" id="home-cta2-target" placeholder="Category ID, about, or URL" oninput="markDirty()" style="flex:1.5" />
             </div>
           </div>
         </div>
@@ -2059,7 +2144,7 @@ function togglePw(id) {
 const DEFAULT_FAVICON = "data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23c9a96e' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpolygon points='16,2 28,9 16,16 4,9'/%3E%3Cpolygon points='28,9 28,23 16,30 16,16'/%3E%3Cpolygon points='4,9 16,16 16,30 4,23'/%3E%3C/svg%3E";
 
 // ─── VERSION ─────────────────────────────────────────────────────────────────
-const ADMIN_VERSION = '0.6.5';
+const ADMIN_VERSION = '0.1.0';
 
 // ─── STORAGE KEYS ───────────────────────────────────────────────────────────
 const K_HASH   = 'cr_pw_hash';
@@ -4954,6 +5039,26 @@ async function saveContactFields() {
 // ─── ACCENT COLOR + ANALYTICS ────────────────────────────────────────────────
 const DEFAULT_ACCENT = '#c9a96e';
 
+const FONT_SANS_OPTIONS = {
+  'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
+  'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
+  'space-grotesk':   { url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap',   stack: "'Space Grotesk', sans-serif" },
+  'inter':           { url: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap',           stack: "'Inter', sans-serif" },
+};
+
+function applyFontSans(key) {
+  const opt = FONT_SANS_OPTIONS[key] || FONT_SANS_OPTIONS['dm-sans'];
+  let link = document.getElementById('dynamic-font-sans');
+  if (!link) {
+    link = document.createElement('link');
+    link.id  = 'dynamic-font-sans';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+  link.href = opt.url;
+  document.documentElement.style.setProperty('--font-sans', opt.stack);
+}
+
 function updateThumbFilter(val) {
   document.getElementById('site-thumb-filter-pct').textContent = '— ' + val + '%';
   const t = val / 100;
@@ -5323,6 +5428,21 @@ function flushSettingsForms() {
   siteConfig.thumbnailFilter = parseInt(document.getElementById('site-thumb-filter')?.value || 0);
   siteConfig.zoomLock       = document.getElementById('site-zoom-lock')?.checked || false;
   siteConfig.mobileThumbsNative = document.getElementById('site-mobile-thumbs-native')?.checked || false;
+  siteConfig.fontSans       = document.getElementById('site-font-sans')?.value || '';
+
+  // Home page
+  siteConfig.homePage = {
+    enabled:  document.getElementById('home-enabled')?.checked || false,
+    headline: document.getElementById('home-headline')?.value.trim() || '',
+    subhead:  document.getElementById('home-subhead')?.value.trim()  || '',
+    body:     document.getElementById('home-body')?.value.trim()     || '',
+    bg:       document.getElementById('home-bg')?.value.trim()       || '',
+    bgVideo:  document.getElementById('home-bg-video')?.value.trim() || '',
+    ctas: [
+      { label: document.getElementById('home-cta1-label')?.value.trim() || '', target: document.getElementById('home-cta1-target')?.value.trim() || '', style: 'primary' },
+      { label: document.getElementById('home-cta2-label')?.value.trim() || '', target: document.getElementById('home-cta2-target')?.value.trim() || '', style: 'ghost'   },
+    ].filter(c => c.label),
+  };
 
   updateNavBrand();
 }
@@ -5753,6 +5873,24 @@ function populateGeneralSettings() {
   document.getElementById('site-allow-theme-toggle').checked = !!siteConfig.allowThemeToggle;
   document.getElementById('site-zoom-lock').checked = !!siteConfig.zoomLock;
   document.getElementById('site-mobile-thumbs-native').checked = !!siteConfig.mobileThumbsNative;
+  const fontSansKey = siteConfig.fontSans || 'dm-sans';
+  document.getElementById('site-font-sans').value = fontSansKey;
+  applyFontSans(fontSansKey);
+
+  // Home page
+  const hp = siteConfig.homePage || {};
+  document.getElementById('home-enabled').checked     = !!hp.enabled;
+  document.getElementById('home-headline').value      = hp.headline  || '';
+  document.getElementById('home-subhead').value       = hp.subhead   || '';
+  document.getElementById('home-body').value          = hp.body      || '';
+  document.getElementById('home-bg').value            = hp.bg        || '';
+  document.getElementById('home-bg-video').value      = hp.bgVideo   || '';
+  const cta1 = (hp.ctas || [])[0] || {};
+  const cta2 = (hp.ctas || [])[1] || {};
+  document.getElementById('home-cta1-label').value  = cta1.label  || '';
+  document.getElementById('home-cta1-target').value = cta1.target || '';
+  document.getElementById('home-cta2-label').value  = cta2.label  || '';
+  document.getElementById('home-cta2-target').value = cta2.target || '';
   applyAdminTheme(themeMode);
   document.getElementById('site-viewer-bg').value = siteConfig.viewerBg || 'auto';
   // Version

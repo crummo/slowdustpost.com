@@ -16,7 +16,7 @@
   <link rel="icon" id="site-favicon" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23c9a96e' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpolygon points='16,2 28,9 16,16 4,9'/%3E%3Cpolygon points='28,9 28,23 16,30 16,16'/%3E%3Cpolygon points='4,9 16,16 16,30 4,23'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Source+Code+Pro:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
 
   <script>
     /* Runs before paint to prevent theme flash */
@@ -51,7 +51,7 @@
       --fg-dimmer:  #ccc7be;
       --accent:     #c9a96e;
       --font-serif: 'Playfair Display', Georgia, serif;
-      --font-sans:  'Source Code Pro', monospace;
+      --font-sans:  'DM Sans', sans-serif;
       --nav-h:      60px;
       --nav-w:      270px;
       --ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -495,6 +495,31 @@
     .contact-submit:disabled { opacity: 0.4; cursor: default; }
     .contact-result { margin-top: 18px; font-size: 13px; color: var(--fg-mid); min-height: 20px; }
 
+    /* ── HOME PAGE ── */
+    #page-home { padding: 0; }
+    .home-wrap {
+      position: relative; width: 100%;
+      min-height: calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px));
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .home-bg { position: absolute; inset: 0; z-index: 0; background: var(--bg2); }
+    .home-bg-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .home-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .home-overlay { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,0.48); }
+    .home-content { position: relative; z-index: 2; max-width: 820px; padding: 80px 44px; text-align: center; }
+    .home-headline { font-family: var(--font-serif); font-size: clamp(36px, 6vw, 76px); font-weight: 400; font-style: italic; color: #ede8e0; line-height: 1.12; margin-bottom: 20px; }
+    .home-subhead { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(237,232,224,0.55); margin-bottom: 28px; }
+    .home-body { font-family: var(--font-serif); font-size: clamp(15px, 1.8vw, 19px); color: rgba(237,232,224,0.75); line-height: 1.8; margin-bottom: 44px; max-width: 620px; margin-left: auto; margin-right: auto; }
+    .home-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .home-cta { text-decoration: none; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; border: 1px solid rgba(237,232,224,0.35); color: rgba(237,232,224,0.7); transition: border-color 0.25s, color 0.25s; cursor: pointer; background: none; }
+    .home-cta:hover { border-color: rgba(237,232,224,0.8); color: #ede8e0; }
+    .home-cta.home-cta-primary { border-color: var(--accent); color: var(--accent); }
+    .home-cta.home-cta-primary:hover { border-color: var(--accent); color: var(--accent); opacity: 0.75; }
+    @media (max-width: 768px) {
+      .home-content { padding: 60px 28px; }
+      .home-subhead { letter-spacing: 0.22em; }
+    }
+
     /* ── SPLASH ── */
     #splash { position: fixed; inset: 0; z-index: 800; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease); }
     #splash.fading { opacity: 0; pointer-events: none; }
@@ -709,8 +734,8 @@
          landscape uses a top bar, not a side nav. Tighter padding to
          nudge content toward the top, matching portrait spacing. */
       body.nav-left .about-wrap { left: 0; }
-      .about-wrap { padding: 16px 44px 12px; }
-      .contact-wrap { padding: 16px 44px 24px; }
+      .about-wrap { padding: 16px 16px 12px 0; }
+      .contact-wrap { padding: 16px 16px 24px; }
       /* Tight eyebrow gap in landscape — was 36px which created a big
          band above the photo/text block. Pulls block up toward heading. */
       .about-eyebrow { margin-bottom: 8px; }
@@ -721,20 +746,33 @@
       .about-layout {
         flex-direction: row !important;
         align-items: flex-start;
-        gap: 24px;
+        gap: 16px;
       }
+      /* Offset the half-leading above the first line of bio text so the
+         text visually aligns with the top of the photo. */
+      .about-content { margin-top: -7px; }
+      .about-bio  { font-size: 15px; line-height: 1.6; }
+      .about-bio2 { font-size: 13px; line-height: 1.65; }
       .about-photo-frame.shape-natural.photo-full-width {
         width: auto !important;
       }
       .about-photo-frame.shape-natural .about-photo-img,
       .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
         width: auto !important;
-        max-width: 40vw;
+        max-width: 28vw;
         /* Use svh (smallest viewport height) instead of dvh so the photo
            stays the same size when iOS Safari's URL bar collapses on
            scroll — sized once for URL-bar-visible state and stays put. */
         max-height: calc(100svh - 120px);
         height: auto;
+      }
+      /* The desktop placement-above full-width rule sets max-width/max-height: none
+         with higher specificity than the rule above, overriding the landscape
+         constraints. Re-assert them here at matching specificity. */
+      .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
+        width: auto !important;
+        max-width: 28vw !important;
+        max-height: calc(100svh - 120px) !important;
       }
 
       /* Viewer covers the full viewport — sits above the nav (z-index 200) */
@@ -1011,6 +1049,27 @@
       }
     }
 
+    /* ── FONT SWAP ── */
+    const FONT_SANS_OPTIONS = {
+      'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
+      'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
+      'space-grotesk':   { url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap',   stack: "'Space Grotesk', sans-serif" },
+      'inter':           { url: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap',           stack: "'Inter', sans-serif" },
+    };
+    function applyFontSans(key) {
+      const opt = FONT_SANS_OPTIONS[key];
+      if (!opt || key === 'dm-sans') return; // DM Sans already loaded in <head>
+      let link = document.getElementById('dynamic-font-sans');
+      if (!link) {
+        link = document.createElement('link');
+        link.id  = 'dynamic-font-sans';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      link.href = opt.url;
+      document.documentElement.style.setProperty('--font-sans', opt.stack);
+    }
+
     /* ── APPLY CONFIG ── */
     function applyConfig() {
       const cfg = siteConfig;
@@ -1061,6 +1120,8 @@
       if (toggleBtn) toggleBtn.classList.toggle('hidden', !cfg.allowThemeToggle);
 
       document.body.classList.toggle('nav-left', cfg.navStyle === 'left');
+
+      if (cfg.fontSans) applyFontSans(cfg.fontSans);
 
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
@@ -1179,6 +1240,14 @@
       const main = document.getElementById('main-content');
       main.innerHTML = '';
 
+      // Home page — prepended so it's the first section
+      if (siteConfig.homePage?.enabled) {
+        const homeEl = document.createElement('section');
+        homeEl.id = 'page-home';
+        homeEl.className = 'page';
+        main.appendChild(homeEl);
+      }
+
       cats.forEach(cat => {
         const sec = document.createElement('section');
         sec.id = 'page-' + cat.id;
@@ -1273,6 +1342,7 @@
         : siteConfig.categories.filter(c => c.published !== false);
       if (cats.some(c => c.id === id)) { buildCat(id); reanimateMobileList(id); }
 
+      if (id === 'home')  renderHome();
       if (id === 'about') renderAbout();
     }
 
@@ -1280,10 +1350,12 @@
       const hash = location.hash.slice(1);
       if (hash === 'about')   { showPage('about');   return; }
       if (hash === 'contact') { showPage('contact'); return; }
+      if (hash === 'home')    { showPage('home');    return; }
       const visible = isPreview
         ? siteConfig.categories
         : siteConfig.categories.filter(c => c.published !== false);
       if (hash && visible.some(c => c.id === hash)) { showPage(hash); return; }
+      if (siteConfig.homePage?.enabled) { showPage('home'); return; }
       const first = visible[0];
       if (first) { showPage(first.id); return; }
       if (siteConfig.about?.show !== false) showPage('about');
@@ -1542,6 +1614,39 @@
     }
 
     /* ── ABOUT ── */
+    /* ── HOME PAGE RENDER ── */
+    function renderHome() {
+      const pg = document.getElementById('page-home');
+      if (!pg || pg.dataset.rendered) return;
+      pg.dataset.rendered = '1';
+      const h = siteConfig.homePage || {};
+
+      const bgHtml = h.bg || h.bgVideo ? `
+        <div class="home-bg">
+          ${h.bg ? `<img class="home-bg-img" src="${x(h.bg)}" alt="">` : ''}
+          ${h.bgVideo ? `<video class="home-bg-video" src="${x(h.bgVideo)}" autoplay muted loop playsinline></video>` : ''}
+        </div>
+        <div class="home-overlay"></div>` : '<div class="home-bg"></div>';
+
+      const ctasHtml = (h.ctas || []).filter(c => c.label).map(c => {
+        const isUrl = c.target && /^https?:\/\//.test(c.target);
+        const cls   = 'home-cta' + (c.style === 'primary' ? ' home-cta-primary' : '');
+        if (isUrl) return `<a class="${cls}" href="${x(c.target)}" target="_blank" rel="noopener">${x(c.label)}</a>`;
+        return `<a class="${cls}" href="#${x(c.target||'')}" onclick="event.preventDefault();showPage('${x(c.target||'')}');closeDrawer&&closeDrawer()">${x(c.label)}</a>`;
+      }).join('');
+
+      pg.innerHTML = `
+        <div class="home-wrap">
+          ${bgHtml}
+          <div class="home-content">
+            ${h.headline ? `<div class="home-headline">${x(h.headline)}</div>` : ''}
+            ${h.subhead  ? `<div class="home-subhead">${x(h.subhead)}</div>`   : ''}
+            ${h.body     ? `<div class="home-body">${h.body}</div>`            : ''}
+            ${ctasHtml   ? `<div class="home-ctas">${ctasHtml}</div>`          : ''}
+          </div>
+        </div>`;
+    }
+
     function renderAbout() {
       if (_aboutRendered) return;
       _aboutRendered = true;
