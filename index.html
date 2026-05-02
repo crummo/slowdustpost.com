@@ -95,8 +95,8 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
-    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
+    html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
+    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; transition: background 0.35s; }
 
     /* film grain */
     body::before {
@@ -1298,12 +1298,17 @@
       if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.siteBg) {
-        document.documentElement.style.backgroundImage = `url('${cfg.siteBg}')`;
-        document.documentElement.style.backgroundSize       = 'cover';
-        document.documentElement.style.backgroundPosition   = 'center';
-        document.documentElement.style.backgroundAttachment = 'fixed';
+        document.documentElement.style.backgroundImage    = `url('${cfg.siteBg}')`;
+        document.documentElement.style.backgroundSize     = 'cover';
+        document.documentElement.style.backgroundPosition = 'center';
+        // no background-attachment:fixed — fixed causes a different compositing
+        // path than the body's non-fixed home-page background, creating a visible
+        // size pop when the two swap on page load. Keep both scroll-relative.
+        document.documentElement.style.backgroundAttachment = '';
       } else {
-        document.documentElement.style.backgroundImage = '';
+        document.documentElement.style.backgroundImage    = '';
+        document.documentElement.style.backgroundSize     = '';
+        document.documentElement.style.backgroundPosition = '';
       }
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
