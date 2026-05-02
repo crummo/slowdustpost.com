@@ -249,6 +249,12 @@
     .gallery-grid.layout-scattered { overflow: visible; }
     .gallery-grid.layout-scattered .grid-item { z-index: 1; transition: z-index 0s, box-shadow 0.3s; }
     .gallery-grid.layout-scattered .grid-item:hover { z-index: 100; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
+    /* nav-left: pull scattered grid to full viewport so cards cross the sidebar */
+    body.nav-left .gallery-grid.layout-scattered {
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      overflow: visible; z-index: 195; pointer-events: none;
+    }
+    body.nav-left .gallery-grid.layout-scattered .grid-item { pointer-events: auto; }
 
     .grid-item {
       position: absolute; overflow: hidden; cursor: pointer;
@@ -1628,16 +1634,18 @@
       const rng = mulberry32(catDef.scatteredSeed ?? (Math.random() * 0xFFFFFFFF | 0));
 
       // Card dimensions: ~40% of grid width, 16:9
-      const CARD_W = Math.round(gridW * 0.40);
+      // Use full viewport so cards can roam behind/over the nav sidebar
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const CARD_W = Math.round(W * 0.30);
       const CARD_H = Math.round(CARD_W * 9 / 16);
-
-      // Container height: fill the parent page section
-      const section = grid.closest('.page');
-      const H = Math.max((section ? section.clientHeight : 0) || window.innerHeight, CARD_H * 3);
       const topZoneH = H * topZonePct;
 
-      grid.style.height   = H + 'px';
-      grid.style.overflow = 'hidden';
+      // Only set explicit dimensions for non-fixed layouts (top-nav)
+      if (!window.getComputedStyle(grid).position.includes('fixed')) {
+        grid.style.height   = H + 'px';
+        grid.style.overflow = 'hidden';
+      }
 
       const MAX_TRIES = 120;
       const placed = [];
@@ -1649,7 +1657,7 @@
         item.style.width  = CARD_W + 'px';
         item.style.height = CARD_H + 'px';
 
-        const xMax = gridW - CARD_W;
+        const xMax = W - CARD_W;
         let yMax;
         if      (i === 0) yMax = topZoneH;
         else if (i === 1) yMax = topZoneH + CARD_H * 0.5;
@@ -1694,17 +1702,17 @@
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
 
       function tick() {
-        const gW = grid.clientWidth;
-        const gH = grid.clientHeight;
+        const gW = window.innerWidth;
+        const gH = window.innerHeight;
         items.forEach(item => {
           if (item._dragging) return;
           item._px += item._vx;
           item._py += item._vy;
-          // Bounce off walls
-          if (item._px <= 0)          { item._px = 0;           item._vx =  Math.abs(item._vx); }
-          if (item._px + cardW >= gW) { item._px = gW - cardW;  item._vx = -Math.abs(item._vx); }
-          if (item._py <= 0)          { item._py = 0;           item._vy =  Math.abs(item._vy); }
-          if (item._py + cardH >= gH) { item._py = gH - cardH;  item._vy = -Math.abs(item._vy); }
+          // Bounce off viewport edges
+          if (item._px <= 0)           { item._px = 0;           item._vx =  Math.abs(item._vx); }
+          if (item._px + cardW >= gW)  { item._px = gW - cardW;  item._vx = -Math.abs(item._vx); }
+          if (item._py <= 0)           { item._py = 0;           item._vy =  Math.abs(item._vy); }
+          if (item._py + cardH >= gH)  { item._py = gH - cardH;  item._vy = -Math.abs(item._vy); }
           item.style.left = item._px + 'px';
           item.style.top  = item._py + 'px';
         });
@@ -1750,8 +1758,9 @@
             Math.abs(e.clientY - startY) > CLICK_PX) didDrag = true;
 
         const gRect = grid.getBoundingClientRect();
-        item._px = Math.max(0, Math.min(grid.clientWidth  - item.offsetWidth,  e.clientX - gRect.left  - item.offsetWidth  / 2));
-        item._py = Math.max(0, Math.min(grid.clientHeight - item.offsetHeight, e.clientY - gRect.top   - item.offsetHeight / 2));
+        const bW = window.innerWidth, bH = window.innerHeight;
+        item._px = Math.max(0, Math.min(bW - item.offsetWidth,  e.clientX - gRect.left - item.offsetWidth  / 2));
+        item._py = Math.max(0, Math.min(bH - item.offsetHeight, e.clientY - gRect.top  - item.offsetHeight / 2));
         item.style.left = item._px + 'px';
         item.style.top  = item._py + 'px';
       });
