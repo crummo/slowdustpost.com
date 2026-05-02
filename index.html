@@ -529,17 +529,14 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    /* Home page: put the hero image directly on the body so the transparent
-       nav sees the same image as main — no z-index seam, no coverage issues. */
-    body[data-page="home"] {
-      background: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)), url('images/bg.jpg') center/cover no-repeat;
+    /* Home page: background on the nav itself so the hamburger (inside nav)
+       can never be covered by it. home-bg handles the main content area. */
+    body[data-page="home"] nav {
+      background: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)), url('images/bg.jpg') center top/cover no-repeat;
+      border-bottom-color: transparent;
     }
-    body[data-page="home"] nav { border-bottom-color: transparent; }
-    body[data-page="home"] .home-bg,
-    body[data-page="home"] .home-overlay { display: none; }
     body[data-page="home"] .home-wrap { align-items: flex-start; justify-content: flex-start; }
     body[data-page="home"] .nav-brand-name { color: rgba(237,232,224,0.9); }
-    body[data-page="home"] .nav-hamburger { background: rgba(0,0,0,0.45) !important; border-radius: 5px; }
     body[data-page="home"] .nav-hamburger span { background: #fff !important; }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
