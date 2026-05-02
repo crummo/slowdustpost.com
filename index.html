@@ -450,6 +450,8 @@
     .about-col-list li { font-family: var(--font-serif); font-size: 15px; color: var(--fg-mid); line-height: 2; }
     .about-footer { border-top: 1px solid var(--fg-dimmer); padding-top: 28px; margin-top: 28px; margin-left: -44px; margin-right: -44px; padding-left: 44px; padding-right: 44px; }
     .about-footer p { font-size: 12px; color: var(--fg-dim); line-height: 2.4; }
+    .about-team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 44px; margin-bottom: 12px; }
+    .about-team-photo { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border: 1px solid var(--fg-dimmer); }
     .about-social-links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 56px; align-items: center; }
     .about-social-links a { display: flex; align-items: center; color: var(--accent); text-decoration: none; transition: opacity 0.2s; opacity: 0.5; }
     .about-social-links a:hover { opacity: 1; }
@@ -595,6 +597,7 @@
       .mobile-list { display: block; padding: 4px 0 32px; }
       .about-wrap { padding: 16px 22px 40px; }
       body.nav-left .about-wrap { left: 0; }
+      .about-team-grid { grid-template-columns: repeat(2, 1fr); }
       /* Portrait mobile reveal: each item slides up + fades in as it
          enters the viewport (managed by IntersectionObserver in JS,
          which adds .in-view). Uses a keyframe animation rather than
@@ -1215,7 +1218,7 @@
 
       if (siteConfig.homePage?.enabled) addLink('home', 'Home');
       cats.forEach(cat => addLink(cat.id, cat.label));
-      if (siteConfig.about?.show !== false) addLink('about', 'About');
+      if (siteConfig.about?.show !== false) addLink('about', 'The Team');
       const _ctMode = siteConfig.contact?.mode;
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
       if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav') {
@@ -1740,7 +1743,7 @@
       }
 
       container.innerHTML = `
-        <h2 class="about-eyebrow">About</h2>
+        <h2 class="about-eyebrow">The Team</h2>
         <div class="about-layout placement-${x(a.photoPlacement || 'above')}">
           ${photoHtml}
           <div class="about-content">
@@ -1749,6 +1752,12 @@
             ${a.contactEmail && a.showEmail !== false ? `<div class="about-contact-line">Reach me at <a href="mailto:${x(a.contactEmail)}">${x(a.contactEmail)}</a></div>` : ''}
             ${resumeLink}
           </div>
+        </div>
+        <div class="about-team-grid">
+          <img src="images/portrait.jpg"       class="about-team-photo" alt="Team member">
+          <img src="images/gallery-editor.jpg"  class="about-team-photo" alt="Team member">
+          <img src="images/gallery-mixing.jpg"  class="about-team-photo" alt="Team member">
+          <img src="images/gallery-cowboy.jpg"  class="about-team-photo" alt="Team member">
         </div>
         ${clientsSection}
         ${socialHtml ? `<div class="about-social-links">${socialHtml}</div>` : ''}
