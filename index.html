@@ -1223,8 +1223,8 @@
       }
 
       if (siteConfig.homePage?.enabled) addLink('home', 'Home');
-      cats.forEach(cat => addLink(cat.id, cat.label));
       if (siteConfig.about?.show !== false) addLink('about', 'The Team');
+      cats.forEach(cat => addLink(cat.id, cat.label));
       const _ctMode = siteConfig.contact?.mode;
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
       if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav') {

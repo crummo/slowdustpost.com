@@ -31,9 +31,9 @@
     "clients": []
   },
   "contact": {
-    "enabled": false,
-    "mode": "card-mobile-only",
-    "showCard": false,
+    "enabled": true,
+    "mode": "form",
+    "showCard": true,
     "endpoint": "",
     "email": "cameron@slowdustpost.com",
     "photo": "",
@@ -42,7 +42,7 @@
   "categories": [
     {
       "id": "motion",
-      "label": "Motion",
+      "label": "Our Work",
       "published": true,
       "layout": "grid",
       "type": "motion"
