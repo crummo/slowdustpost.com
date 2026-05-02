@@ -1923,7 +1923,7 @@
       // Reset pill — hidden until first element is dragged
       const resetBtn = document.createElement('div');
       resetBtn.id = 'drag-reset';
-      resetBtn.textContent = 'reset layout';
+      resetBtn.textContent = 'reset layout (R)';
       document.body.appendChild(resetBtn);
       resetBtn.addEventListener('click', () => { if (!resetBtn._wasDragged) location.reload(); });
       makeDraggable(resetBtn);
