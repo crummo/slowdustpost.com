@@ -1587,6 +1587,10 @@
       return (ox * oy) / Math.min(a.w * a.h, b.w * b.h);
     }
 
+    // ── Scattered + Physics ─────────────────────────────────────────────────
+
+    const _physicsRafs = new WeakMap(); // grid → RAF id
+
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
@@ -1596,28 +1600,33 @@
         return;
       }
 
-      const seed      = catDef.scatteredSeed    ?? (Math.random() * 0xFFFFFFFF | 0);
-      const maxOvlap  = catDef.scatteredOverlap ?? 0.20;  // 20%
-      const topZonePct= catDef.scatteredTopZone ?? 0.30;  // 30%
-      const rng = mulberry32(seed);
+      const maxOvlap   = catDef.scatteredOverlap ?? 0.20;
+      const topZonePct = catDef.scatteredTopZone ?? 0.30;
+      const rng = mulberry32(catDef.scatteredSeed ?? (Math.random() * 0xFFFFFFFF | 0));
 
       // Card dimensions: ~40% of grid width, 16:9
       const CARD_W = Math.round(gridW * 0.40);
       const CARD_H = Math.round(CARD_W * 9 / 16);
-      const ROWS   = Math.ceil(items.length / 2);  // rough estimate for total height
-      const H      = Math.max(ROWS * (CARD_H * 1.6), CARD_H * 3);
+
+      // Container height: fill the parent page section
+      const section = grid.closest('.page');
+      const H = Math.max((section ? section.clientHeight : 0) || window.innerHeight, CARD_H * 3);
       const topZoneH = H * topZonePct;
 
-      // Max attempts per card before relaxing overlap constraint
+      grid.style.height   = H + 'px';
+      grid.style.overflow = 'hidden';
+
       const MAX_TRIES = 120;
       const placed = [];
 
       items.forEach((item, i) => {
+        // Preserve existing velocity if physics already running (resize case)
+        const keepVelocity = typeof item._vx === 'number';
+
         item.style.width  = CARD_W + 'px';
         item.style.height = CARD_H + 'px';
 
         const xMax = gridW - CARD_W;
-        // Top-zone anchoring: first two cards stay near the top
         let yMax;
         if      (i === 0) yMax = topZoneH;
         else if (i === 1) yMax = topZoneH + CARD_H * 0.5;
@@ -1633,15 +1642,109 @@
           if (maxO < bestOvlap) { bestOvlap = maxO; best = candidate; }
         }
 
-        item.style.left = Math.round(best.x) + 'px';
-        item.style.top  = Math.round(best.y) + 'px';
+        item._px = Math.round(best.x);
+        item._py = Math.round(best.y);
+        item.style.left = item._px + 'px';
+        item.style.top  = item._py + 'px';
         placed.push(best);
+
+        if (!keepVelocity) {
+          // Gentle initial drift — just a hint that things can move
+          const angle = rng() * Math.PI * 2;
+          const spd   = 0.25 + rng() * 0.15; // 0.25–0.40 px/frame
+          item._vx = Math.cos(angle) * spd;
+          item._vy = Math.sin(angle) * spd;
+        }
+
+        // Wire up drag (once per item)
+        if (!item._dragReady) {
+          item._dragReady = true;
+          _setupCardDrag(item, grid);
+        }
       });
 
-      // Grid container height = lowest card bottom + small margin
-      const bottom = placed.reduce((m, p) => Math.max(m, p.y + p.h), 0);
-      grid.style.height = (bottom + 40) + 'px';
+      _startPhysicsLoop(grid, CARD_W, CARD_H);
     }
+
+    function _startPhysicsLoop(grid, cardW, cardH) {
+      if (_physicsRafs.has(grid)) cancelAnimationFrame(_physicsRafs.get(grid));
+      const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
+
+      function tick() {
+        const gW = grid.clientWidth;
+        const gH = grid.clientHeight;
+        items.forEach(item => {
+          if (item._dragging) return;
+          item._px += item._vx;
+          item._py += item._vy;
+          // Bounce off walls
+          if (item._px <= 0)          { item._px = 0;           item._vx =  Math.abs(item._vx); }
+          if (item._px + cardW >= gW) { item._px = gW - cardW;  item._vx = -Math.abs(item._vx); }
+          if (item._py <= 0)          { item._py = 0;           item._vy =  Math.abs(item._vy); }
+          if (item._py + cardH >= gH) { item._py = gH - cardH;  item._vy = -Math.abs(item._vy); }
+          item.style.left = item._px + 'px';
+          item.style.top  = item._py + 'px';
+        });
+        _physicsRafs.set(grid, requestAnimationFrame(tick));
+      }
+      _physicsRafs.set(grid, requestAnimationFrame(tick));
+    }
+
+    function _setupCardDrag(item, grid) {
+      const MAX_V = 12, CLICK_PX = 5;
+      let startX, startY, lastX, lastY, lastT, throwVx, throwVy, didDrag;
+
+      // Block the project-open click if this was a drag-throw
+      item.addEventListener('click', e => {
+        if (didDrag) { e.stopImmediatePropagation(); e.preventDefault(); didDrag = false; }
+      }, true);
+
+      item.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        startX = lastX = e.clientX;
+        startY = lastY = e.clientY;
+        lastT = performance.now();
+        throwVx = throwVy = 0;
+        didDrag = false;
+        item._dragging = true;
+        item._vx = 0;
+        item._vy = 0;
+        item.style.zIndex = '200';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!item._dragging) return;
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        const dt = Math.max(1, performance.now() - lastT);
+        // velocity in px/frame (60 fps ≈ 16.7ms)
+        throwVx = (dx / dt) * 16.7;
+        throwVy = (dy / dt) * 16.7;
+        lastX = e.clientX; lastY = e.clientY; lastT = performance.now();
+
+        if (Math.abs(e.clientX - startX) > CLICK_PX ||
+            Math.abs(e.clientY - startY) > CLICK_PX) didDrag = true;
+
+        const gRect = grid.getBoundingClientRect();
+        item._px = Math.max(0, Math.min(grid.clientWidth  - item.offsetWidth,  e.clientX - gRect.left  - item.offsetWidth  / 2));
+        item._py = Math.max(0, Math.min(grid.clientHeight - item.offsetHeight, e.clientY - gRect.top   - item.offsetHeight / 2));
+        item.style.left = item._px + 'px';
+        item.style.top  = item._py + 'px';
+      });
+
+      document.addEventListener('mouseup', e => {
+        if (!item._dragging) return;
+        item._dragging = false;
+        item.style.zIndex = '';
+        if (didDrag) {
+          item._vx = Math.max(-MAX_V, Math.min(MAX_V, throwVx));
+          item._vy = Math.max(-MAX_V, Math.min(MAX_V, throwVy));
+        }
+      });
+    }
+
+    // ── Resize ───────────────────────────────────────────────────────────────
 
     let _masonryRaf;
     window.addEventListener('resize', () => {
