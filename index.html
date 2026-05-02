@@ -221,7 +221,7 @@
     .page { display: none; }
     .page.visible { display: block; animation: pageIn 0.35s var(--ease) both; }
     .page.leaving  { display: block; animation: pageOut 0.2s var(--ease) both; pointer-events: none; }
-    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: translateY(0); } }
+    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; } }
     @keyframes pageOut { from { opacity: 1; transform: translateY(0); }     to { opacity: 0; transform: translateY(-6px); } }
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
@@ -1745,16 +1745,50 @@
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
-      // Force full-viewport in JS — CSS specificity is unreliable here
-      if (document.body.classList.contains('nav-left')) {
-        grid.style.position     = 'fixed';
-        grid.style.inset        = '0';
-        grid.style.width        = '100vw';
-        grid.style.height       = '100vh';
-        grid.style.overflow     = 'visible';
-        grid.style.zIndex       = '201';
-        grid.style.pointerEvents = 'none';
+
+      // Escape the animated .page containing block.
+      // .page.visible has animation-fill-mode:both; even after pageIn ends the
+      // element can retain a non-none transform (translateY(0)) which makes it
+      // the containing block for position:fixed descendants — so the grid ends
+      // up pinned to the content area instead of the viewport.
+      // Fix: reparent the grid to document.body once so it sits outside any
+      // animated ancestor. A MutationObserver keeps its visibility in sync.
+      if (!grid._reparented && document.body.classList.contains('nav-left')) {
+        const parentPage = grid.closest('.page');
+        grid._parentPage = parentPage;
+        document.body.appendChild(grid);
+        grid._reparented = true;
+        if (parentPage) {
+          new MutationObserver(() => {
+            const vis = parentPage.classList.contains('visible');
+            const out = parentPage.classList.contains('leaving');
+            if (vis) {
+              grid.style.display    = '';
+              grid.style.opacity    = '';
+              grid.style.transition = '';
+            } else if (out) {
+              grid.style.opacity    = '0';
+              grid.style.transition = 'opacity 0.2s';
+            } else {
+              grid.style.display    = 'none';
+              grid.style.opacity    = '';
+              grid.style.transition = '';
+            }
+          }).observe(parentPage, { attributes: true, attributeFilter: ['class'] });
+        }
       }
+
+      // Force full-viewport positioning (explicit sides — avoids inset: 0 compat issues)
+      grid.style.position      = 'fixed';
+      grid.style.top           = '0';
+      grid.style.left          = '0';
+      grid.style.right         = '0';
+      grid.style.bottom        = '0';
+      grid.style.width         = '100vw';
+      grid.style.height        = '100vh';
+      grid.style.overflow      = 'visible';
+      grid.style.zIndex        = '201';
+      grid.style.pointerEvents = 'none';
 
       const W = window.innerWidth;
       const H = window.innerHeight;
