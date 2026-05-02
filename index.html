@@ -95,7 +95,10 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
+    html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none;
+           /* Never let a stray scrollbar narrow the viewport — that would change
+              background-size:cover's reference width and cause a visible zoom pop. */
+           overflow: hidden; }
     body { min-height: 100vh; background-color: rgba(13,11,10,0.78); overscroll-behavior-y: none; transition: background-color 0.35s; }
 
     /* film grain */
@@ -213,7 +216,7 @@
     body.nav-left .nav-hamburger { display: none !important; }
     body.nav-left .nav-drawer { display: none !important; }
     body.nav-left .theme-toggle { margin-top: auto; }
-    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); }
+    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); height: 100vh; overflow-y: auto; overflow-x: hidden; }
     body.is-preview.nav-left nav { top: 28px; height: calc(100vh - 28px); }
 
     /* ── MAIN ── */
