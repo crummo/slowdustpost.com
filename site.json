@@ -31,8 +31,8 @@
     "clients": []
   },
   "contact": {
-    "enabled": false,
-    "mode": "card-mobile-only",
+    "enabled": true,
+    "mode": "form",
     "showCard": false,
     "endpoint": "",
     "email": "cameron@slowdustpost.com",
