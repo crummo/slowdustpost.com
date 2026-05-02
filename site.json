@@ -2,7 +2,7 @@
   "ownerName": "Slow Dust Post",
   "ownerTitle": "Editing, Color Grading, Audio Mixing and All Things Post-Production.",
   "metaDescription": "Post-production out of Los Angeles. Legitimately professional. Deeply weird. Edit, color, audio — done right.",
-  "favicon": "08_hanger.svg",
+  "favicon": "favicon-lines.svg",
   "ogImage": "",
   "allowIndexing": true,
   "about": {
@@ -31,8 +31,8 @@
     "clients": []
   },
   "contact": {
-    "enabled": true,
-    "mode": "form",
+    "enabled": false,
+    "mode": "card-mobile-only",
     "showCard": false,
     "endpoint": "",
     "email": "cameron@slowdustpost.com",
