@@ -59,7 +59,7 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#ff40ff",
+  "accentColor": "#4aff00",
   "analytics": {
     "provider": "",
     "id": ""
@@ -67,7 +67,7 @@
   "navStyle": "left",
   "themeMode": "dark",
   "allowThemeToggle": false,
-  "filmGrain": 0.2,
+  "filmGrain": 0.114,
   "thumbnailFilter": 0,
   "viewerBg": "auto",
   "zoomLock": false,
@@ -87,5 +87,8 @@
         "style": "primary"
       }
     ]
-  }
+  },
+  "fontSerif": "libre-baskerville",
+  "fontSerifScale": 1,
+  "fontSansScale": 1.3
 }
