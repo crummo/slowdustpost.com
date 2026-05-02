@@ -59,17 +59,27 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#FF6B35",
+  "accentColor": "#b1dd8c",
   "analytics": {
     "provider": "",
     "id": ""
   },
   "navStyle": "left",
-  "themeMode": "dark",
+  "themeMode": "light",
   "allowThemeToggle": false,
-  "filmGrain": 0.06,
+  "filmGrain": 0.144,
   "thumbnailFilter": 0,
   "viewerBg": "auto",
   "zoomLock": false,
-  "mobileThumbsNative": false
+  "mobileThumbsNative": false,
+  "fontSans": "source-code-pro",
+  "homePage": {
+    "enabled": false,
+    "headline": "",
+    "subhead": "",
+    "body": "",
+    "bg": "",
+    "bgVideo": "",
+    "ctas": []
+  }
 }
