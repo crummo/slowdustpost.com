@@ -555,6 +555,40 @@
       .home-subhead { letter-spacing: 0.22em; }
     }
 
+    /* ── HOME LANDING (minimal) ── */
+    .home-landing {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      padding: 60px 44px;
+      max-width: 640px;
+    }
+    .home-landing-logo {
+      font-family: 'Alfa Slab One', serif;
+      font-size: clamp(52px, 9vw, 120px);
+      font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--fg); line-height: 0.95; word-spacing: 9999px;
+      margin-bottom: 48px;
+    }
+    .home-landing-nav {
+      display: flex; gap: 12px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 40px;
+    }
+    .home-landing-nav-btn {
+      text-decoration: none;
+      font-family: var(--font-sans); font-size: 11px;
+      font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 12px 32px;
+      border: 1px solid var(--fg-mid); color: var(--fg-mid);
+      transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+      cursor: pointer; background: none;
+    }
+    .home-landing-nav-btn:hover { border-color: var(--accent); color: var(--fg); }
+    .home-landing-tagline {
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg-dim); max-width: 440px; line-height: 1.9;
+    }
+
     /* ── SPLASH ── */
     #splash { position: fixed; inset: 0; z-index: 800; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease); }
     #splash.fading { opacity: 0; pointer-events: none; }
@@ -2064,30 +2098,26 @@
       const pg = document.getElementById('page-home');
       if (!pg || pg.dataset.rendered) return;
       pg.dataset.rendered = '1';
-      const h = siteConfig.homePage || {};
 
-      const bgHtml = h.bg || h.bgVideo ? `
-        <div class="home-bg">
-          ${h.bg ? `<img class="home-bg-img" src="${x(h.bg)}" alt="">` : ''}
-          ${h.bgVideo ? `<video class="home-bg-video" src="${x(h.bgVideo)}" autoplay muted loop playsinline></video>` : ''}
-        </div>
-        <div class="home-overlay"></div>` : '<div class="home-bg"></div>';
+      const ownerName = siteConfig.ownerName || '';
+      const tagline   = siteConfig.ownerTitle || (siteConfig.homePage || {}).subhead || '';
 
-      const ctasHtml = (h.ctas || []).filter(c => c.label).map(c => {
-        const isUrl = c.target && /^https?:\/\//.test(c.target);
-        const cls   = 'home-cta' + (c.style === 'primary' ? ' home-cta-primary' : '');
-        if (isUrl) return `<a class="${cls}" href="${x(c.target)}" target="_blank" rel="noopener">${x(c.label)}</a>`;
-        return `<a class="${cls}" href="#${x(c.target||'')}" onclick="event.preventDefault();showPage('${x(c.target||'')}');closeDrawer&&closeDrawer()">${x(c.label)}</a>`;
-      }).join('');
+      // Build nav buttons from published categories
+      const publishedCats = isPreview
+        ? siteConfig.categories
+        : siteConfig.categories.filter(c => c.published !== false);
+      const navBtnsHtml = publishedCats.map(cat =>
+        `<a class="home-landing-nav-btn" href="#${x(cat.id)}"
+            onclick="event.preventDefault();showPage('${x(cat.id)}');closeDrawer&&closeDrawer()"
+          >${x(cat.label)}</a>`
+      ).join('');
 
       pg.innerHTML = `
         <div class="home-wrap">
-          ${bgHtml}
-          <div class="home-content">
-            ${h.headline ? `<div class="home-headline">${x(h.headline)}</div>` : ''}
-            ${h.subhead  ? `<div class="home-subhead">${x(h.subhead)}</div>`   : ''}
-            ${h.body     ? `<div class="home-body">${h.body}</div>`            : ''}
-            ${ctasHtml   ? `<div class="home-ctas">${ctasHtml}</div>`          : ''}
+          <div class="home-landing">
+            ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
+            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
+            ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
           </div>
         </div>`;
     }
