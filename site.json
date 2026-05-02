@@ -44,7 +44,10 @@
       "id": "motion",
       "label": "Our Work",
       "published": true,
-      "layout": "grid",
+      "layout": "scattered",
+      "scatteredSeed": 7,
+      "scatteredOverlap": 0.20,
+      "scatteredTopZone": 0.30,
       "type": "motion"
     }
   ],
@@ -59,7 +62,7 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#00ff41",
+  "accentColor": "#00FF41",
   "analytics": {
     "provider": "",
     "id": ""
@@ -73,7 +76,7 @@
   "zoomLock": false,
   "mobileThumbsNative": false,
   "fontSans": "source-code-pro",
-  "fontSerif": "playfair",
+  "fontSerif": "source-code-pro",
   "homePage": {
     "enabled": true,
     "headline": "What We Do",
@@ -88,7 +91,5 @@
         "style": "primary"
       }
     ]
-  },
-  "fontSerifScale": 1,
-  "fontSansScale": 1
+  }
 }

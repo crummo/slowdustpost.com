@@ -231,6 +231,10 @@
     .gallery-grid.layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
     .gallery-grid.layout-grid .grid-item { aspect-ratio: 16/9; }
     .gallery-grid.layout-grid .grid-thumb { height: 100%; object-fit: cover; }
+    /* scattered: JS positions items with random offsets; z-index stacking on hover */
+    .gallery-grid.layout-scattered { overflow: visible; }
+    .gallery-grid.layout-scattered .grid-item { z-index: 1; transition: z-index 0s, box-shadow 0.3s; }
+    .gallery-grid.layout-scattered .grid-item:hover { z-index: 100; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
 
     .grid-item {
       position: absolute; overflow: hidden; cursor: pointer;
@@ -1292,7 +1296,7 @@
         sec.id = 'page-' + cat.id;
         sec.className = 'page';
         sec.innerHTML = [
-          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : ''}" id="grid-${x(cat.id)}"></div>`,
+          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : cat.layout === 'scattered' ? ' layout-scattered' : ''}" id="grid-${x(cat.id)}"></div>`,
           `<div class="mobile-list"  id="mlist-${x(cat.id)}"></div>`,
           isPreview ? `<div class="preview-tray" id="preview-tray-${x(cat.id)}" style="display:none"></div>` : ''
         ].join('');
@@ -1530,9 +1534,14 @@
       });
       resolveVimeoThumbs(grid);
 
-      // Masonry layout (JS-positioned, left-to-right order)
+      // Layout dispatch
       const catDef = siteConfig.categories.find(c => c.id === cat);
-      if (catDef?.layout !== 'grid') {
+      if (catDef?.layout === 'scattered') {
+        layoutScattered(grid, catDef);
+        grid.querySelectorAll('img.grid-thumb').forEach(img => {
+          if (!img.complete) img.addEventListener('load', () => layoutScattered(grid, catDef), { once: true });
+        });
+      } else if (catDef?.layout !== 'grid') {
         layoutMasonry(grid);
         grid.querySelectorAll('img.grid-thumb').forEach(img => {
           if (!img.complete) img.addEventListener('load', () => layoutMasonry(grid), { once: true });
@@ -1546,7 +1555,6 @@
       if (!items.length) return;
       const gridW = grid.clientWidth - PAD * 2;
       if (gridW <= 0) {
-        // Grid not yet rendered — retry up to 10 frames before giving up
         if ((_retry || 0) < 10) requestAnimationFrame(() => layoutMasonry(grid, (_retry || 0) + 1));
         return;
       }
@@ -1562,11 +1570,92 @@
       grid.style.height = (Math.max(...colH) + PAD) + 'px';
     }
 
+    // Deterministic seeded RNG (mulberry32)
+    function mulberry32(seed) {
+      return function() {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    // Axis-aligned bounding-box overlap as fraction of smaller card
+    function overlapPct(a, b) {
+      const ox = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+      const oy = Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+      return (ox * oy) / Math.min(a.w * a.h, b.w * b.h);
+    }
+
+    function layoutScattered(grid, catDef, _retry) {
+      const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
+      if (!items.length) return;
+      const gridW = grid.clientWidth;
+      if (gridW <= 0) {
+        if ((_retry || 0) < 10) requestAnimationFrame(() => layoutScattered(grid, catDef, (_retry || 0) + 1));
+        return;
+      }
+
+      const seed      = catDef.scatteredSeed    ?? 7;
+      const maxOvlap  = catDef.scatteredOverlap ?? 0.20;  // 20%
+      const topZonePct= catDef.scatteredTopZone ?? 0.30;  // 30%
+      const rng = mulberry32(seed);
+
+      // Card dimensions: ~40% of grid width, 16:9
+      const CARD_W = Math.round(gridW * 0.40);
+      const CARD_H = Math.round(CARD_W * 9 / 16);
+      const ROWS   = Math.ceil(items.length / 2);  // rough estimate for total height
+      const H      = Math.max(ROWS * (CARD_H * 1.6), CARD_H * 3);
+      const topZoneH = H * topZonePct;
+
+      // Max attempts per card before relaxing overlap constraint
+      const MAX_TRIES = 120;
+      const placed = [];
+
+      items.forEach((item, i) => {
+        item.style.width  = CARD_W + 'px';
+        item.style.height = CARD_H + 'px';
+
+        const xMax = gridW - CARD_W;
+        // Top-zone anchoring: first two cards stay near the top
+        let yMax;
+        if      (i === 0) yMax = topZoneH;
+        else if (i === 1) yMax = topZoneH + CARD_H * 0.5;
+        else              yMax = H - CARD_H;
+
+        let best = null, bestOvlap = Infinity;
+        for (let t = 0; t < MAX_TRIES; t++) {
+          const cx = rng() * xMax;
+          const cy = rng() * Math.max(1, yMax);
+          const candidate = { x: cx, y: cy, w: CARD_W, h: CARD_H };
+          const maxO = placed.reduce((m, p) => Math.max(m, overlapPct(candidate, p)), 0);
+          if (maxO <= maxOvlap) { best = candidate; break; }
+          if (maxO < bestOvlap) { bestOvlap = maxO; best = candidate; }
+        }
+
+        item.style.left = Math.round(best.x) + 'px';
+        item.style.top  = Math.round(best.y) + 'px';
+        placed.push(best);
+      });
+
+      // Grid container height = lowest card bottom + small margin
+      const bottom = placed.reduce((m, p) => Math.max(m, p.y + p.h), 0);
+      grid.style.height = (bottom + 40) + 'px';
+    }
+
     let _masonryRaf;
     window.addEventListener('resize', () => {
       cancelAnimationFrame(_masonryRaf);
       _masonryRaf = requestAnimationFrame(() => {
-        document.querySelectorAll('.gallery-grid:not(.layout-grid)').forEach(layoutMasonry);
+        document.querySelectorAll('.gallery-grid:not(.layout-grid)').forEach(g => {
+          if (g.classList.contains('layout-scattered')) {
+            const catId = g.id.replace('grid-', '');
+            const catDef = siteConfig.categories.find(c => c.id === catId);
+            if (catDef) layoutScattered(g, catDef);
+          } else {
+            layoutMasonry(g);
+          }
+        });
         updateDrawerPadding();
       });
     });
