@@ -529,11 +529,16 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
+    /* Home page: put the hero image directly on the body so the transparent
+       nav sees the same image as main — no z-index seam, no coverage issues. */
+    body[data-page="home"] {
+      background: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)), url('images/bg.jpg') center/cover no-repeat;
+    }
     body[data-page="home"] nav { border-bottom-color: transparent; }
-    body[data-page="home"] main { padding-top: 0 !important; }
-    body[data-page="home"] .home-wrap { min-height: 100vh; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 24px); box-sizing: border-box; align-items: flex-start; justify-content: flex-start; }
+    body[data-page="home"] .home-bg,
+    body[data-page="home"] .home-overlay { display: none; }
+    body[data-page="home"] .home-wrap { align-items: flex-start; justify-content: flex-start; }
     body[data-page="home"] .nav-brand-name { color: rgba(237,232,224,0.9); }
-    body[data-page="home"] nav .nav-hamburger span,
     body[data-page="home"] .nav-hamburger span { background: rgba(237,232,224,0.9) !important; }
     body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
