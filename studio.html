@@ -1173,6 +1173,14 @@
               <option value="left">Left — vertical sidebar</option>
             </select>
           </div>
+          <div class="field" style="margin-top:12px">
+            <label>Site Background Image</label>
+            <div style="display:flex;gap:6px;align-items:center;margin-top:6px">
+              <input type="text" id="site-bg-input" placeholder="images/bg.jpg or https://…" oninput="applySiteBgPreview(this.value);markDirty()" style="flex:1" />
+              <button class="field-clear-btn" type="button" onclick="clearField('site-bg-input');applySiteBgPreview('');markDirty()" title="Clear">×</button>
+            </div>
+            <div class="field-hint" style="margin-top:4px">Full-bleed background shown on all pages — and right here in the admin view.</div>
+          </div>
         </div>
 
         <div class="settings-section">
@@ -5218,6 +5226,18 @@ function initAdminTheme() {
   applyAdminTheme('auto');
 }
 
+function applySiteBgPreview(val) {
+  const el = document.documentElement;
+  if (val) {
+    el.style.backgroundImage      = `url('${val}')`;
+    el.style.backgroundSize       = 'cover';
+    el.style.backgroundPosition   = 'center';
+    el.style.backgroundAttachment = 'fixed';
+  } else {
+    el.style.backgroundImage = '';
+  }
+}
+
 function applyAdminTheme(theme) {
   const resolved = theme === 'auto'
     ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
@@ -5524,6 +5544,7 @@ function flushSettingsForms() {
     provider: document.getElementById('site-analytics-provider')?.value || '',
     id:       document.getElementById('site-analytics-id')?.value.trim() || '',
   };
+  siteConfig.siteBg         = document.getElementById('site-bg-input')?.value.trim() || '';
   siteConfig.navStyle       = document.getElementById('site-nav-style')?.value || 'top';
   siteConfig.themeMode      = document.getElementById('site-theme-mode')?.value || 'auto';
   siteConfig.allowThemeToggle = document.getElementById('site-allow-theme-toggle')?.checked || false;
@@ -5992,6 +6013,9 @@ function populateGeneralSettings() {
   const an = siteConfig.analytics || {};
   document.getElementById('site-analytics-provider').value = an.provider || '';
   document.getElementById('site-analytics-id').value       = an.id       || '';
+  const siteBgVal = siteConfig.siteBg || '';
+  document.getElementById('site-bg-input').value = siteBgVal;
+  applySiteBgPreview(siteBgVal);
   document.getElementById('site-nav-style').value = siteConfig.navStyle || 'top';
   const themeMode = siteConfig.themeMode || 'auto';
   document.getElementById('site-theme-mode').value = themeMode;

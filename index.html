@@ -95,7 +95,7 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: url('images/bg.jpg') center/cover fixed #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
+    html { background: #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
     body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
 
     /* film grain */
@@ -1180,6 +1180,14 @@
       if (cfg.fontSerifScale) document.documentElement.style.setProperty('--font-serif-scale', cfg.fontSerifScale);
       if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
+      if (cfg.siteBg) {
+        document.documentElement.style.backgroundImage = `url('${cfg.siteBg}')`;
+        document.documentElement.style.backgroundSize       = 'cover';
+        document.documentElement.style.backgroundPosition   = 'center';
+        document.documentElement.style.backgroundAttachment = 'fixed';
+      } else {
+        document.documentElement.style.backgroundImage = '';
+      }
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
         const prev = document.getElementById('site-favicon');
