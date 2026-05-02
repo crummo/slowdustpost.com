@@ -226,6 +226,20 @@
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
     /* ── GRID — DESKTOP ── */
+    /* free-draggable UI elements */
+    .ui-drag { cursor: grab; user-select: none; }
+    .ui-drag.ui-dragging { cursor: grabbing; z-index: 9999 !important; }
+    #drag-reset {
+      position: fixed; bottom: 24px; left: 24px; z-index: 8888;
+      padding: 7px 14px; font-family: var(--font-sans); font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-mid);
+      border: 1px solid var(--fg-dim); background: rgba(13,11,10,0.82);
+      cursor: grab; user-select: none; opacity: 0; pointer-events: none;
+      transition: opacity 0.5s; white-space: nowrap;
+    }
+    #drag-reset.visible { opacity: 1; pointer-events: auto; }
+    #drag-reset:hover { color: var(--fg); border-color: var(--fg-mid); }
+
     /* masonry: JS positions items absolutely; layout-grid uses CSS grid */
     .gallery-grid { position: relative; padding: 3px; }
     .gallery-grid.layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
@@ -1056,6 +1070,7 @@
       }
 
       showFirst();
+      initDraggables();
 
       if (_isShareLink) {
         const _shared = projects.find(p => String(p.id) === _shareId && p.shareKey === _shareKey);
@@ -1741,6 +1756,95 @@
           item._vx = Math.max(-MAX_V, Math.min(MAX_V, throwVx));
           item._vy = Math.max(-MAX_V, Math.min(MAX_V, throwVy));
         }
+      });
+    }
+
+    // ── Free drag (UI elements — no physics, resets on reload) ──────────────
+
+    let _freeDrag = null;
+
+    document.addEventListener('mousemove', e => {
+      if (!_freeDrag) return;
+      const { el, offX, offY, startX, startY } = _freeDrag;
+      if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) el._wasDragged = true;
+      el.style.left = (e.clientX - offX) + 'px';
+      el.style.top  = (e.clientY - offY) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!_freeDrag) return;
+      _freeDrag.el.classList.remove('ui-dragging');
+      _freeDrag = null;
+    });
+
+    function makeDraggable(el) {
+      if (!el || el._uiDrag) return;
+      el._uiDrag = true;
+      el.classList.add('ui-drag');
+      let floating = false;
+
+      // Block the element's own click handler if this was a drag
+      el.addEventListener('click', e => {
+        if (el._wasDragged) { e.stopImmediatePropagation(); e.preventDefault(); el._wasDragged = false; }
+      }, true);
+
+      el.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        const rect = el.getBoundingClientRect();
+        // First drag: lift out of flow, freeze at current screen position
+        if (!floating) {
+          el.style.position = 'fixed';
+          el.style.left     = rect.left + 'px';
+          el.style.top      = rect.top  + 'px';
+          el.style.width    = rect.width  + 'px';
+          el.style.height   = rect.height + 'px';
+          el.style.margin   = '0';
+          el.style.zIndex   = '9999';
+          floating = true;
+        }
+        el.classList.add('ui-dragging');
+        _freeDrag = { el, offX: e.clientX - parseFloat(el.style.left), offY: e.clientY - parseFloat(el.style.top), startX: e.clientX, startY: e.clientY };
+        e.preventDefault();
+      });
+    }
+
+    function initDraggables() {
+      // Build the reset pill (hidden until first drag)
+      const resetBtn = document.createElement('div');
+      resetBtn.id = 'drag-reset';
+      resetBtn.textContent = 'reset layout';
+      document.body.appendChild(resetBtn);
+      resetBtn.addEventListener('click', () => { if (!resetBtn._wasDragged) location.reload(); });
+      makeDraggable(resetBtn);
+
+      let hintShown = false;
+      function showHint() {
+        if (hintShown) return;
+        hintShown = true;
+        resetBtn.classList.add('visible');
+      }
+
+      // Hidden keystroke: R reloads
+      document.addEventListener('keydown', e => {
+        if (e.key === 'r' || e.key === 'R') {
+          if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+          location.reload();
+        }
+      });
+
+      // Patch makeDraggable to reveal hint on first drag of any UI element
+      const _origFreeDragSetter = Object.getOwnPropertyDescriptor(window, '_freeDrag');
+      const targets = [
+        document.getElementById('nav-name'),
+        document.getElementById('nav-title-el'),
+        ...document.querySelectorAll('#nav-links a'),
+        ...document.querySelectorAll('.home-headline, .home-subhead, .home-body'),
+        ...document.querySelectorAll('.home-cta'),
+      ];
+      targets.forEach(el => {
+        if (!el) return;
+        makeDraggable(el);
+        el.addEventListener('mousedown', showHint);
       });
     }
 
