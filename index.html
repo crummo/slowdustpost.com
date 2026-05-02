@@ -1877,7 +1877,7 @@
       if (!_uiDrag) return;
       const d = _uiDrag;
       // Always clean up overlay + selection lock
-      _uiOverlay.style.display = '';
+      _uiOverlay.style.display = 'none';
       document.body.style.userSelect = '';
       d.el.classList.remove('ui-dragging');
       if (d.state) {
