@@ -594,20 +594,11 @@
       font-size: clamp(52px, 9vw, 120px);
       font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
       color: var(--fg); line-height: 0.95; word-spacing: 9999px;
-      margin-bottom: 36px;
+      margin-bottom: 48px;
     }
     .home-landing-nav {
       display: flex; gap: 12px; justify-content: center;
-      flex-wrap: wrap; margin-bottom: 32px;
-    }
-    /* Desktop: logo(1) → nav buttons(2) → tagline(3) */
-    .home-landing-logo    { order: 1; }
-    .home-landing-nav     { order: 2; }
-    .home-landing-tagline { order: 3; }
-    /* Mobile: logo(1) → tagline(2) → nav buttons(3) — same as original */
-    @media (max-width: 768px) {
-      .home-landing-tagline { order: 2; }
-      .home-landing-nav     { order: 3; }
+      flex-wrap: wrap; margin-bottom: 40px;
     }
     .home-landing-nav-btn {
       text-decoration: none;
@@ -2260,8 +2251,8 @@
           ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
           <div class="home-landing">
             ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
-            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
             ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
+            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
           </div>
         </div>`;
     }
