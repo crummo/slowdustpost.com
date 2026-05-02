@@ -1623,8 +1623,20 @@
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
-      const gridW = grid.clientWidth;
-      if (gridW <= 0) {
+      // Force full-viewport in JS — CSS specificity is unreliable here
+      if (document.body.classList.contains('nav-left')) {
+        grid.style.position     = 'fixed';
+        grid.style.inset        = '0';
+        grid.style.width        = '100vw';
+        grid.style.height       = '100vh';
+        grid.style.overflow     = 'visible';
+        grid.style.zIndex       = '201';
+        grid.style.pointerEvents = 'none';
+      }
+
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      if (W <= 0) {
         if ((_retry || 0) < 10) requestAnimationFrame(() => layoutScattered(grid, catDef, (_retry || 0) + 1));
         return;
       }
@@ -1633,19 +1645,9 @@
       const topZonePct = catDef.scatteredTopZone ?? 0.30;
       const rng = mulberry32(catDef.scatteredSeed ?? (Math.random() * 0xFFFFFFFF | 0));
 
-      // Card dimensions: ~40% of grid width, 16:9
-      // Use full viewport so cards can roam behind/over the nav sidebar
-      const W = window.innerWidth;
-      const H = window.innerHeight;
       const CARD_W = Math.round(W * 0.30);
       const CARD_H = Math.round(CARD_W * 9 / 16);
       const topZoneH = H * topZonePct;
-
-      // Only set explicit dimensions for non-fixed layouts (top-nav)
-      if (!window.getComputedStyle(grid).position.includes('fixed')) {
-        grid.style.height   = H + 'px';
-        grid.style.overflow = 'hidden';
-      }
 
       const MAX_TRIES = 120;
       const placed = [];
