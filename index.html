@@ -95,11 +95,8 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none;
-           /* Never let a stray scrollbar narrow the viewport — that would change
-              background-size:cover's reference width and cause a visible zoom pop. */
-           overflow: hidden; }
-    body { min-height: 100vh; background-color: rgba(13,11,10,0.78); overscroll-behavior-y: none; transition: background-color 0.35s; }
+    html { background: #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
+    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
 
     /* film grain */
     body::before {
@@ -216,7 +213,7 @@
     body.nav-left .nav-hamburger { display: none !important; }
     body.nav-left .nav-drawer { display: none !important; }
     body.nav-left .theme-toggle { margin-top: auto; }
-    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); height: 100vh; overflow-y: auto; overflow-x: hidden; }
+    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); }
     body.is-preview.nav-left nav { top: 28px; height: calc(100vh - 28px); }
 
     /* ── MAIN ── */
@@ -224,7 +221,7 @@
     .page { display: none; }
     .page.visible { display: block; animation: pageIn 0.35s var(--ease) both; }
     .page.leaving  { display: block; animation: pageOut 0.2s var(--ease) both; pointer-events: none; }
-    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; } }
+    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: translateY(0); } }
     @keyframes pageOut { from { opacity: 1; transform: translateY(0); }     to { opacity: 0; transform: translateY(-6px); } }
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
@@ -532,31 +529,27 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    /* Background lives on <html> only. Body just controls overlay opacity. */
-    body[data-page="home"] { background-color: rgba(0,0,0,0.4); }
-
-    /* Desktop nav-left: kill the sidebar — buttons live in the landing content */
-    body.nav-left[data-page="home"] nav { display: none; }
-    body.nav-left[data-page="home"] main { padding-left: 0; }
-    /* No width-override needed once main has no left padding */
-    body.nav-left[data-page="home"] #page-home { margin-left: 0; width: 100%; }
-    /* Center content in full viewport — no nav-h offset needed */
-    body.nav-left[data-page="home"] .home-wrap { padding-top: 0; padding-bottom: 0; }
-
-    /* Mobile / top-nav: keep nav transparent, hide just the brand text */
-    body:not(.nav-left)[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
-    body:not(.nav-left)[data-page="home"] .nav-brand { visibility: hidden; }
-    /* Hamburger: fixed above everything on mobile */
-    body[data-page="home"] .nav-hamburger {
-      position: fixed !important;
-      top: 14px !important; right: 16px !important; z-index: 99999 !important;
-      background: rgba(0,0,0,0.35) !important; padding: 10px !important; border-radius: 5px !important;
+    /* Single unified bg on body — nav + main share the same full-bleed image */
+    body[data-page="home"] {
+      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('images/bg.jpg') center/cover no-repeat;
     }
-    body[data-page="home"] .nav-hamburger span { background: #fff !important; height: 2px !important; width: 24px !important; }
-
+    body[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
     body[data-page="home"] .home-bg,
     body[data-page="home"] .home-overlay { display: none; }
-    body[data-page="home"] .home-wrap { align-items: center; justify-content: center; padding-bottom: 10vh; box-sizing: border-box; overflow: visible; }
+    body[data-page="home"] .home-wrap { align-items: center; justify-content: center; padding-top: var(--nav-h); padding-bottom: 18vh; box-sizing: border-box; }
+    body[data-page="home"] .nav-brand { visibility: hidden; }
+    /* Hamburger: fixed above everything so bg can never cover it */
+    body[data-page="home"] .nav-hamburger {
+      position: fixed !important;
+      top: 14px !important;
+      right: 16px !important;
+      z-index: 99999 !important;
+      background: rgba(0,0,0,0.35) !important;
+      padding: 10px !important;
+      border-radius: 5px !important;
+    }
+    body[data-page="home"] .nav-hamburger span { background: #fff !important; height: 2px !important; width: 24px !important; }
+    body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
       position: relative; width: 100%;
@@ -1305,17 +1298,12 @@
       if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.siteBg) {
-        document.documentElement.style.backgroundImage    = `url('${cfg.siteBg}')`;
-        document.documentElement.style.backgroundSize     = 'cover';
-        document.documentElement.style.backgroundPosition = 'center';
-        // no background-attachment:fixed — fixed causes a different compositing
-        // path than the body's non-fixed home-page background, creating a visible
-        // size pop when the two swap on page load. Keep both scroll-relative.
-        document.documentElement.style.backgroundAttachment = '';
+        document.documentElement.style.backgroundImage = `url('${cfg.siteBg}')`;
+        document.documentElement.style.backgroundSize       = 'cover';
+        document.documentElement.style.backgroundPosition   = 'center';
+        document.documentElement.style.backgroundAttachment = 'fixed';
       } else {
-        document.documentElement.style.backgroundImage    = '';
-        document.documentElement.style.backgroundSize     = '';
-        document.documentElement.style.backgroundPosition = '';
+        document.documentElement.style.backgroundImage = '';
       }
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
@@ -1757,50 +1745,16 @@
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
-
-      // Escape the animated .page containing block.
-      // .page.visible has animation-fill-mode:both; even after pageIn ends the
-      // element can retain a non-none transform (translateY(0)) which makes it
-      // the containing block for position:fixed descendants — so the grid ends
-      // up pinned to the content area instead of the viewport.
-      // Fix: reparent the grid to document.body once so it sits outside any
-      // animated ancestor. A MutationObserver keeps its visibility in sync.
-      if (!grid._reparented && document.body.classList.contains('nav-left')) {
-        const parentPage = grid.closest('.page');
-        grid._parentPage = parentPage;
-        document.body.appendChild(grid);
-        grid._reparented = true;
-        if (parentPage) {
-          new MutationObserver(() => {
-            const vis = parentPage.classList.contains('visible');
-            const out = parentPage.classList.contains('leaving');
-            if (vis) {
-              grid.style.display    = '';
-              grid.style.opacity    = '';
-              grid.style.transition = '';
-            } else if (out) {
-              grid.style.opacity    = '0';
-              grid.style.transition = 'opacity 0.2s';
-            } else {
-              grid.style.display    = 'none';
-              grid.style.opacity    = '';
-              grid.style.transition = '';
-            }
-          }).observe(parentPage, { attributes: true, attributeFilter: ['class'] });
-        }
+      // Force full-viewport in JS — CSS specificity is unreliable here
+      if (document.body.classList.contains('nav-left')) {
+        grid.style.position     = 'fixed';
+        grid.style.inset        = '0';
+        grid.style.width        = '100vw';
+        grid.style.height       = '100vh';
+        grid.style.overflow     = 'visible';
+        grid.style.zIndex       = '201';
+        grid.style.pointerEvents = 'none';
       }
-
-      // Force full-viewport positioning (explicit sides — avoids inset: 0 compat issues)
-      grid.style.position      = 'fixed';
-      grid.style.top           = '0';
-      grid.style.left          = '0';
-      grid.style.right         = '0';
-      grid.style.bottom        = '0';
-      grid.style.width         = '100vw';
-      grid.style.height        = '100vh';
-      grid.style.overflow      = 'visible';
-      grid.style.zIndex        = '201';
-      grid.style.pointerEvents = 'none';
 
       const W = window.innerWidth;
       const H = window.innerHeight;
@@ -2251,8 +2205,8 @@
           ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
           <div class="home-landing">
             ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
-            ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
             ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
+            ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
           </div>
         </div>`;
     }
