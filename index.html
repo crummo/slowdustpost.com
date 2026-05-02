@@ -1596,7 +1596,7 @@
         return;
       }
 
-      const seed      = catDef.scatteredSeed    ?? 7;
+      const seed      = catDef.scatteredSeed    ?? (Math.random() * 0xFFFFFFFF | 0);
       const maxOvlap  = catDef.scatteredOverlap ?? 0.20;  // 20%
       const topZonePct= catDef.scatteredTopZone ?? 0.30;  // 30%
       const rng = mulberry32(seed);

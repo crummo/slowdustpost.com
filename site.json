@@ -45,7 +45,6 @@
       "label": "Our Work",
       "published": true,
       "layout": "scattered",
-      "scatteredSeed": 7,
       "scatteredOverlap": 0.20,
       "scatteredTopZone": 0.30,
       "type": "motion"
