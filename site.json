@@ -64,10 +64,10 @@
     "provider": "",
     "id": ""
   },
-  "navStyle": "top",
-  "themeMode": "auto",
+  "navStyle": "left",
+  "themeMode": "dark",
   "allowThemeToggle": false,
-  "filmGrain": 0,
+  "filmGrain": 0.06,
   "thumbnailFilter": 0,
   "viewerBg": "auto",
   "zoomLock": false,
