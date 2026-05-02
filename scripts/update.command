@@ -1,33 +1,8 @@
 #!/bin/bash
-# Pull the latest template files from upstream.
-# Your site data (projects.json, site.json, images, gallery) is never touched.
-# Double-click to run in Terminal.
-
-set -e
-
-# Change to the repo root (one level up from this script)
-cd "$(dirname "$0")/.."
-
-if ! git remote get-url upstream &>/dev/null; then
-  echo "Adding upstream remote..."
-  git remote add upstream https://github.com/crummo/folio-template.git
-fi
-
-echo "Fetching latest template..."
-git fetch upstream
-
-echo "Updating template files..."
-git checkout upstream/main -- \
-  index.html \
-  studio.html \
-  dashboard.html \
-  404.html \
-  08_hanger.svg \
-  robots.txt \
-  update.sh
-
+# Template sync disabled.
+# This site has diverged from folio-template — syncing would overwrite customisations.
 echo ""
-echo "Done. Review changes with: git diff --staged"
-echo "Then commit and push:      git commit -m 'sync: update template' && git push"
+echo "⚠️  Template sync is disabled for this site."
+echo "    Edit index.html, site.json, or projects.json directly."
 echo ""
 read -p "Press Enter to close..."
