@@ -52,6 +52,8 @@
       --accent:     #c9a96e;
       --font-serif: 'Playfair Display', Georgia, serif;
       --font-sans:  'DM Sans', sans-serif;
+      --font-serif-scale: 1;
+      --font-sans-scale:  1;
       --nav-h:      60px;
       --nav-w:      270px;
       --ease:       cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -128,13 +130,13 @@
     }
 
     .nav-brand { display: flex; align-items: baseline; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
-    .nav-brand-name { font-family: var(--font-serif); font-size: 19px; font-weight: 500; letter-spacing: 0.02em; color: var(--fg); line-height: 1; }
+    .nav-brand-name { font-family: var(--font-serif); font-size: calc(19px * var(--font-serif-scale, 1)); font-weight: 500; letter-spacing: 0.02em; color: var(--fg); line-height: 1; }
     .nav-brand-rule { width: 1px; height: 13px; background: var(--fg-dim); }
     .nav-brand-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #a89e90; font-weight: 300; }
 
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
     .nav-links a {
-      text-decoration: none; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      text-decoration: none; font-size: calc(10px * var(--font-sans-scale, 1)); letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--fg-dim); transition: color 0.25s var(--ease); font-weight: 400;
       cursor: pointer; position: relative; padding-bottom: 3px; white-space: nowrap;
     }
@@ -435,8 +437,8 @@
     .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width { width: 100%; }
     .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width .about-photo-img { width: 100%; max-width: none; max-height: none; height: auto; }
     .about-content { flex: 1; }
-    .about-bio { font-family: var(--font-serif); font-size: 20px; font-weight: 400; line-height: 1.75; color: var(--fg); margin-bottom: 12px; }
-    .about-bio2 { font-family: var(--font-serif); font-size: 17px; font-weight: 400; line-height: 1.8; color: var(--fg-mid); margin-bottom: 36px; }
+    .about-bio { font-family: var(--font-serif); font-size: calc(20px * var(--font-serif-scale, 1)); font-weight: 400; line-height: 1.75; color: var(--fg); margin-bottom: 12px; }
+    .about-bio2 { font-family: var(--font-serif); font-size: calc(17px * var(--font-serif-scale, 1)); font-weight: 400; line-height: 1.8; color: var(--fg-mid); margin-bottom: 36px; }
     .about-contact-line { font-size: 12px; color: var(--fg-dim); font-style: italic; margin-bottom: 56px; }
     .about-contact-line a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
     .about-contact-line a:hover { color: var(--fg); }
@@ -507,7 +509,7 @@
     .home-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .home-overlay { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,0.48); }
     .home-content { position: relative; z-index: 2; max-width: 820px; padding: 80px 44px; text-align: center; }
-    .home-headline { font-family: var(--font-serif); font-size: clamp(36px, 6vw, 76px); font-weight: 400; font-style: italic; color: #ede8e0; line-height: 1.12; margin-bottom: 20px; }
+    .home-headline { font-family: var(--font-serif); font-size: clamp(calc(36px * var(--font-serif-scale, 1)), 6vw, calc(76px * var(--font-serif-scale, 1))); font-weight: 400; font-style: italic; color: #ede8e0; line-height: 1.12; margin-bottom: 20px; }
     .home-subhead { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(237,232,224,0.55); margin-bottom: 28px; }
     .home-body { font-family: var(--font-serif); font-size: clamp(15px, 1.8vw, 19px); color: rgba(237,232,224,0.75); line-height: 1.8; margin-bottom: 44px; max-width: 620px; margin-left: auto; margin-right: auto; }
     .home-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
@@ -1052,6 +1054,27 @@
     }
 
     /* ── FONT SWAP ── */
+    const FONT_SERIF_OPTIONS = {
+      'playfair':           { url: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap', stack: "'Playfair Display', Georgia, serif" },
+      'cormorant':          { url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap', stack: "'Cormorant Garamond', Georgia, serif" },
+      'lora':               { url: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap',                          stack: "'Lora', Georgia, serif" },
+      'eb-garamond':        { url: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap',                   stack: "'EB Garamond', Georgia, serif" },
+      'libre-baskerville':  { url: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap',             stack: "'Libre Baskerville', Georgia, serif" },
+    };
+    function applyFontSerif(key) {
+      const opt = FONT_SERIF_OPTIONS[key];
+      if (!opt || key === 'playfair') return; // Playfair already loaded in <head>
+      let link = document.getElementById('dynamic-font-serif');
+      if (!link) {
+        link = document.createElement('link');
+        link.id  = 'dynamic-font-serif';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      link.href = opt.url;
+      document.documentElement.style.setProperty('--font-serif', opt.stack);
+    }
+
     const FONT_SANS_OPTIONS = {
       'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
       'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
@@ -1123,7 +1146,10 @@
 
       document.body.classList.toggle('nav-left', cfg.navStyle === 'left');
 
-      if (cfg.fontSans) applyFontSans(cfg.fontSans);
+      if (cfg.fontSerif)      applyFontSerif(cfg.fontSerif);
+      if (cfg.fontSans)       applyFontSans(cfg.fontSans);
+      if (cfg.fontSerifScale) document.documentElement.style.setProperty('--font-serif-scale', cfg.fontSerifScale);
+      if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.viewerBg) document.documentElement.setAttribute('data-viewer-bg', cfg.viewerBg);
       if (cfg.favicon) {
