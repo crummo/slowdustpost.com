@@ -31,9 +31,9 @@
     "clients": []
   },
   "contact": {
-    "enabled": false,
-    "mode": "card-mobile-only",
-    "showCard": false,
+    "enabled": true,
+    "mode": "form",
+    "showCard": true,
     "endpoint": "",
     "email": "cameron@slowdustpost.com",
     "photo": "",
@@ -42,9 +42,11 @@
   "categories": [
     {
       "id": "motion",
-      "label": "Motion",
+      "label": "Our Work",
       "published": true,
-      "layout": "grid",
+      "layout": "scattered",
+      "scatteredOverlap": 0.20,
+      "scatteredTopZone": 0.30,
       "type": "motion"
     }
   ],
@@ -59,7 +61,7 @@
     "duration": 6,
     "skipReturning": true
   },
-  "accentColor": "#ff40ff",
+  "accentColor": "#00FF41",
   "analytics": {
     "provider": "",
     "id": ""
@@ -73,6 +75,7 @@
   "zoomLock": false,
   "mobileThumbsNative": false,
   "fontSans": "source-code-pro",
+  "fontSerif": "source-code-pro",
   "homePage": {
     "enabled": true,
     "headline": "What We Do",

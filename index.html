@@ -16,7 +16,7 @@
   <link rel="icon" id="site-favicon" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23c9a96e' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpolygon points='16,2 28,9 16,16 4,9'/%3E%3Cpolygon points='28,9 28,23 16,30 16,16'/%3E%3Cpolygon points='4,9 16,16 16,30 4,23'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Alfa+Slab+One&display=swap" rel="stylesheet" />
 
   <script>
     /* Runs before paint to prevent theme flash */
@@ -95,8 +95,8 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 300; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
-    body { min-height: 100vh; background: var(--bg); overscroll-behavior-y: none; }
+    html { background: url('images/bg.jpg') center/cover fixed #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
+    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
 
     /* film grain */
     body::before {
@@ -121,8 +121,9 @@
       height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
       display: flex; align-items: center; justify-content: space-between;
       padding: env(safe-area-inset-top, 0px) 44px 0;
-      background: var(--bg);
+      background: rgba(13,11,10,0.88);
       border-bottom: 1px solid var(--fg-dimmer);
+      transition: background 0.4s, border-color 0.4s;
       /* iOS Safari: force own compositing layer so scrolled page content
          doesn't end up rendered above the nav during scroll. */
       transform: translateZ(0);
@@ -131,7 +132,7 @@
     }
 
     .nav-brand { display: flex; align-items: baseline; gap: 14px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
-    .nav-brand-name { font-family: var(--font-serif); font-size: calc(19px * var(--font-serif-scale, 1)); font-weight: 500; letter-spacing: 0.02em; color: var(--fg); line-height: 1; }
+    .nav-brand-name { font-family: 'Alfa Slab One', serif; font-size: calc(22px * var(--font-serif-scale, 1)); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg); line-height: 1; }
     .nav-brand-rule { width: 1px; height: 13px; background: var(--fg-dim); }
     .nav-brand-title { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #a89e90; font-weight: 300; }
 
@@ -200,15 +201,15 @@
       border-bottom: none; border-right: none;
     }
     body.nav-left .nav-brand { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 40px; }
-    body.nav-left .nav-brand-name { font-size: 24px; }
+    body.nav-left .nav-brand-name { font-size: 52px; line-height: 0.95; word-spacing: 9999px; }
     body.nav-left .nav-brand-rule { width: 24px; height: 1px; }
     body.nav-left .nav-right { flex-direction: column; align-items: flex-start; flex: 1; width: 100%; }
     body.nav-left .nav-links { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
-    body.nav-left .nav-links a { font-weight: 500; letter-spacing: 0.15em; white-space: nowrap; padding: 10px 16px; border: 1px solid var(--fg-dimmer); display: block; transition: color 0.25s var(--ease), border-color 0.25s var(--ease); }
+    body.nav-left .nav-links a { font-weight: 700; font-size: 16px; letter-spacing: 0.1em; white-space: nowrap; padding: 12px 16px; border: 1px solid var(--fg-mid); color: var(--fg-mid); display: block; text-align: center; transition: color 0.25s var(--ease), border-color 0.25s var(--ease); }
     body.nav-left .nav-links a::after { display: none; }
-    body.nav-left .nav-links a:hover { color: var(--fg); border-color: var(--fg-mid); }
+    body.nav-left .nav-links a:hover { color: var(--fg); border-color: var(--fg); }
     body.nav-left .nav-links a.active { color: var(--accent); border-color: var(--accent); }
-    body.nav-left .nav-brand-title { font-weight: 500; letter-spacing: 0.25em; }
+    body.nav-left .nav-brand-title { font-weight: 500; letter-spacing: 0.25em; color: var(--fg); }
     body.nav-left .nav-hamburger { display: none !important; }
     body.nav-left .nav-drawer { display: none !important; }
     body.nav-left .theme-toggle { margin-top: auto; }
@@ -225,11 +226,29 @@
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
     /* ── GRID — DESKTOP ── */
+    /* free-draggable UI elements */
+    .ui-drag { cursor: grab; user-select: none; }
+    .ui-drag.ui-dragging { cursor: grabbing; z-index: 9999 !important; }
+    #drag-reset {
+      position: fixed; bottom: 24px; left: 24px; z-index: 8888;
+      padding: 7px 14px; font-family: var(--font-sans); font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-mid);
+      border: 1px solid var(--fg-dim); background: rgba(13,11,10,0.82);
+      cursor: grab; user-select: none; opacity: 0; pointer-events: none;
+      transition: opacity 0.5s; white-space: nowrap;
+    }
+    #drag-reset.visible { opacity: 1; pointer-events: auto; }
+    #drag-reset:hover { color: var(--fg); border-color: var(--fg-mid); }
+
     /* masonry: JS positions items absolutely; layout-grid uses CSS grid */
     .gallery-grid { position: relative; padding: 3px; }
     .gallery-grid.layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
     .gallery-grid.layout-grid .grid-item { aspect-ratio: 16/9; }
     .gallery-grid.layout-grid .grid-thumb { height: 100%; object-fit: cover; }
+    /* scattered: JS positions items with random offsets; z-index stacking on hover */
+    .gallery-grid.layout-scattered { overflow: visible; }
+    .gallery-grid.layout-scattered .grid-item { z-index: 1; transition: z-index 0s, box-shadow 0.3s; }
+    .gallery-grid.layout-scattered .grid-item:hover { z-index: 100; box-shadow: 0 8px 40px rgba(0,0,0,0.7); }
 
     .grid-item {
       position: absolute; overflow: hidden; cursor: pointer;
@@ -503,6 +522,9 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
+    body[data-page="home"] nav { background: transparent; border-bottom-color: transparent; transition: background 0.4s, border-color 0.4s; }
+    body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
+    body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
       position: relative; width: 100%;
       min-height: calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px));
@@ -517,7 +539,7 @@
     .home-subhead { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(237,232,224,0.55); margin-bottom: 28px; }
     .home-body { font-family: var(--font-serif); font-size: clamp(15px, 1.8vw, 19px); color: rgba(237,232,224,0.75); line-height: 1.8; margin-bottom: 44px; max-width: 620px; margin-left: auto; margin-right: auto; }
     .home-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .home-cta { text-decoration: none; font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; border: 1px solid rgba(237,232,224,0.35); color: rgba(237,232,224,0.7); transition: border-color 0.25s, color 0.25s; cursor: pointer; background: none; }
+    .home-cta { text-decoration: none; font-family: var(--font-sans); font-size: 16px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px 36px; border: 1px solid rgba(237,232,224,0.6); color: rgba(237,232,224,0.9); transition: border-color 0.25s, color 0.25s; cursor: pointer; background: none; }
     .home-cta:hover { border-color: rgba(237,232,224,0.8); color: #ede8e0; }
     .home-cta.home-cta-primary { border-color: var(--accent); color: var(--accent); }
     .home-cta.home-cta-primary:hover { border-color: var(--accent); color: var(--accent); opacity: 0.75; }
@@ -1048,6 +1070,7 @@
       }
 
       showFirst();
+      initDraggables();
 
       if (_isShareLink) {
         const _shared = projects.find(p => String(p.id) === _shareId && p.shareKey === _shareKey);
@@ -1065,6 +1088,7 @@
       'lora':               { url: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap',                          stack: "'Lora', Georgia, serif" },
       'eb-garamond':        { url: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap',                   stack: "'EB Garamond', Georgia, serif" },
       'libre-baskerville':  { url: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap',             stack: "'Libre Baskerville', Georgia, serif" },
+      'source-code-pro':    { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap', stack: "'Source Code Pro', monospace" },
     };
     function applyFontSerif(key) {
       const opt = FONT_SERIF_OPTIONS[key];
@@ -1218,8 +1242,8 @@
       }
 
       if (siteConfig.homePage?.enabled) addLink('home', 'Home');
-      cats.forEach(cat => addLink(cat.id, cat.label));
       if (siteConfig.about?.show !== false) addLink('about', 'The Team');
+      cats.forEach(cat => addLink(cat.id, cat.label));
       const _ctMode = siteConfig.contact?.mode;
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
       if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav') {
@@ -1287,7 +1311,7 @@
         sec.id = 'page-' + cat.id;
         sec.className = 'page';
         sec.innerHTML = [
-          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : ''}" id="grid-${x(cat.id)}"></div>`,
+          `<div class="gallery-grid${cat.layout === 'grid' ? ' layout-grid' : cat.layout === 'scattered' ? ' layout-scattered' : ''}" id="grid-${x(cat.id)}"></div>`,
           `<div class="mobile-list"  id="mlist-${x(cat.id)}"></div>`,
           isPreview ? `<div class="preview-tray" id="preview-tray-${x(cat.id)}" style="display:none"></div>` : ''
         ].join('');
@@ -1359,6 +1383,7 @@
       document.querySelectorAll('.page.leaving').forEach(p => { if (p === pg) p.classList.remove('leaving'); });
 
       pg.classList.add('visible');
+      document.body.dataset.page = id;
       history.replaceState(null, '', '#' + id);
       window.scrollTo(0, 0);
       // Path B mobile portrait: main is the scroll container, not window
@@ -1524,9 +1549,14 @@
       });
       resolveVimeoThumbs(grid);
 
-      // Masonry layout (JS-positioned, left-to-right order)
+      // Layout dispatch
       const catDef = siteConfig.categories.find(c => c.id === cat);
-      if (catDef?.layout !== 'grid') {
+      if (catDef?.layout === 'scattered') {
+        layoutScattered(grid, catDef);
+        grid.querySelectorAll('img.grid-thumb').forEach(img => {
+          if (!img.complete) img.addEventListener('load', () => layoutScattered(grid, catDef), { once: true });
+        });
+      } else if (catDef?.layout !== 'grid') {
         layoutMasonry(grid);
         grid.querySelectorAll('img.grid-thumb').forEach(img => {
           if (!img.complete) img.addEventListener('load', () => layoutMasonry(grid), { once: true });
@@ -1540,7 +1570,6 @@
       if (!items.length) return;
       const gridW = grid.clientWidth - PAD * 2;
       if (gridW <= 0) {
-        // Grid not yet rendered — retry up to 10 frames before giving up
         if ((_retry || 0) < 10) requestAnimationFrame(() => layoutMasonry(grid, (_retry || 0) + 1));
         return;
       }
@@ -1556,11 +1585,284 @@
       grid.style.height = (Math.max(...colH) + PAD) + 'px';
     }
 
+    // Deterministic seeded RNG (mulberry32)
+    function mulberry32(seed) {
+      return function() {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    // Axis-aligned bounding-box overlap as fraction of smaller card
+    function overlapPct(a, b) {
+      const ox = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+      const oy = Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+      return (ox * oy) / Math.min(a.w * a.h, b.w * b.h);
+    }
+
+    // ── Scattered + Physics ─────────────────────────────────────────────────
+
+    const _physicsRafs = new WeakMap(); // grid → RAF id
+
+    function layoutScattered(grid, catDef, _retry) {
+      const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
+      if (!items.length) return;
+      const gridW = grid.clientWidth;
+      if (gridW <= 0) {
+        if ((_retry || 0) < 10) requestAnimationFrame(() => layoutScattered(grid, catDef, (_retry || 0) + 1));
+        return;
+      }
+
+      const maxOvlap   = catDef.scatteredOverlap ?? 0.20;
+      const topZonePct = catDef.scatteredTopZone ?? 0.30;
+      const rng = mulberry32(catDef.scatteredSeed ?? (Math.random() * 0xFFFFFFFF | 0));
+
+      // Card dimensions: ~40% of grid width, 16:9
+      const CARD_W = Math.round(gridW * 0.40);
+      const CARD_H = Math.round(CARD_W * 9 / 16);
+
+      // Container height: fill the parent page section
+      const section = grid.closest('.page');
+      const H = Math.max((section ? section.clientHeight : 0) || window.innerHeight, CARD_H * 3);
+      const topZoneH = H * topZonePct;
+
+      grid.style.height   = H + 'px';
+      grid.style.overflow = 'hidden';
+
+      const MAX_TRIES = 120;
+      const placed = [];
+
+      items.forEach((item, i) => {
+        // Preserve existing velocity if physics already running (resize case)
+        const keepVelocity = typeof item._vx === 'number';
+
+        item.style.width  = CARD_W + 'px';
+        item.style.height = CARD_H + 'px';
+
+        const xMax = gridW - CARD_W;
+        let yMax;
+        if      (i === 0) yMax = topZoneH;
+        else if (i === 1) yMax = topZoneH + CARD_H * 0.5;
+        else              yMax = H - CARD_H;
+
+        let best = null, bestOvlap = Infinity;
+        for (let t = 0; t < MAX_TRIES; t++) {
+          const cx = rng() * xMax;
+          const cy = rng() * Math.max(1, yMax);
+          const candidate = { x: cx, y: cy, w: CARD_W, h: CARD_H };
+          const maxO = placed.reduce((m, p) => Math.max(m, overlapPct(candidate, p)), 0);
+          if (maxO <= maxOvlap) { best = candidate; break; }
+          if (maxO < bestOvlap) { bestOvlap = maxO; best = candidate; }
+        }
+
+        item._px = Math.round(best.x);
+        item._py = Math.round(best.y);
+        item.style.left = item._px + 'px';
+        item.style.top  = item._py + 'px';
+        placed.push(best);
+
+        if (!keepVelocity) {
+          // Gentle initial drift — just a hint that things can move
+          const angle = rng() * Math.PI * 2;
+          const spd   = 0.25 + rng() * 0.15; // 0.25–0.40 px/frame
+          item._vx = Math.cos(angle) * spd;
+          item._vy = Math.sin(angle) * spd;
+        }
+
+        // Wire up drag (once per item)
+        if (!item._dragReady) {
+          item._dragReady = true;
+          _setupCardDrag(item, grid);
+        }
+      });
+
+      _startPhysicsLoop(grid, CARD_W, CARD_H);
+    }
+
+    function _startPhysicsLoop(grid, cardW, cardH) {
+      if (_physicsRafs.has(grid)) cancelAnimationFrame(_physicsRafs.get(grid));
+      const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
+
+      function tick() {
+        const gW = grid.clientWidth;
+        const gH = grid.clientHeight;
+        items.forEach(item => {
+          if (item._dragging) return;
+          item._px += item._vx;
+          item._py += item._vy;
+          // Bounce off walls
+          if (item._px <= 0)          { item._px = 0;           item._vx =  Math.abs(item._vx); }
+          if (item._px + cardW >= gW) { item._px = gW - cardW;  item._vx = -Math.abs(item._vx); }
+          if (item._py <= 0)          { item._py = 0;           item._vy =  Math.abs(item._vy); }
+          if (item._py + cardH >= gH) { item._py = gH - cardH;  item._vy = -Math.abs(item._vy); }
+          item.style.left = item._px + 'px';
+          item.style.top  = item._py + 'px';
+        });
+        _physicsRafs.set(grid, requestAnimationFrame(tick));
+      }
+      _physicsRafs.set(grid, requestAnimationFrame(tick));
+    }
+
+    function _setupCardDrag(item, grid) {
+      const MAX_V = 12, CLICK_PX = 5;
+      let startX, startY, lastX, lastY, lastT, throwVx, throwVy, didDrag;
+
+      // Block the project-open click if this was a drag-throw
+      item.addEventListener('click', e => {
+        if (didDrag) { e.stopImmediatePropagation(); e.preventDefault(); didDrag = false; }
+      }, true);
+
+      item.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        startX = lastX = e.clientX;
+        startY = lastY = e.clientY;
+        lastT = performance.now();
+        throwVx = throwVy = 0;
+        didDrag = false;
+        item._dragging = true;
+        item._vx = 0;
+        item._vy = 0;
+        item.style.zIndex = '200';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!item._dragging) return;
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        const dt = Math.max(1, performance.now() - lastT);
+        // velocity in px/frame (60 fps ≈ 16.7ms)
+        throwVx = (dx / dt) * 16.7;
+        throwVy = (dy / dt) * 16.7;
+        lastX = e.clientX; lastY = e.clientY; lastT = performance.now();
+
+        if (Math.abs(e.clientX - startX) > CLICK_PX ||
+            Math.abs(e.clientY - startY) > CLICK_PX) didDrag = true;
+
+        const gRect = grid.getBoundingClientRect();
+        item._px = Math.max(0, Math.min(grid.clientWidth  - item.offsetWidth,  e.clientX - gRect.left  - item.offsetWidth  / 2));
+        item._py = Math.max(0, Math.min(grid.clientHeight - item.offsetHeight, e.clientY - gRect.top   - item.offsetHeight / 2));
+        item.style.left = item._px + 'px';
+        item.style.top  = item._py + 'px';
+      });
+
+      document.addEventListener('mouseup', e => {
+        if (!item._dragging) return;
+        item._dragging = false;
+        item.style.zIndex = '';
+        if (didDrag) {
+          item._vx = Math.max(-MAX_V, Math.min(MAX_V, throwVx));
+          item._vy = Math.max(-MAX_V, Math.min(MAX_V, throwVy));
+        }
+      });
+    }
+
+    // ── Free drag (UI elements — no physics, resets on reload) ──────────────
+
+    let _freeDrag = null;
+
+    document.addEventListener('mousemove', e => {
+      if (!_freeDrag) return;
+      const { el, offX, offY, startX, startY } = _freeDrag;
+      if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) el._wasDragged = true;
+      el.style.left = (e.clientX - offX) + 'px';
+      el.style.top  = (e.clientY - offY) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!_freeDrag) return;
+      _freeDrag.el.classList.remove('ui-dragging');
+      _freeDrag = null;
+    });
+
+    function makeDraggable(el) {
+      if (!el || el._uiDrag) return;
+      el._uiDrag = true;
+      el.classList.add('ui-drag');
+      let floating = false;
+
+      // Block the element's own click handler if this was a drag
+      el.addEventListener('click', e => {
+        if (el._wasDragged) { e.stopImmediatePropagation(); e.preventDefault(); el._wasDragged = false; }
+      }, true);
+
+      el.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        const rect = el.getBoundingClientRect();
+        // First drag: lift out of flow, freeze at current screen position
+        if (!floating) {
+          el.style.position = 'fixed';
+          el.style.left     = rect.left + 'px';
+          el.style.top      = rect.top  + 'px';
+          el.style.width    = rect.width  + 'px';
+          el.style.height   = rect.height + 'px';
+          el.style.margin   = '0';
+          el.style.zIndex   = '9999';
+          floating = true;
+        }
+        el.classList.add('ui-dragging');
+        _freeDrag = { el, offX: e.clientX - parseFloat(el.style.left), offY: e.clientY - parseFloat(el.style.top), startX: e.clientX, startY: e.clientY };
+        e.preventDefault();
+      });
+    }
+
+    function initDraggables() {
+      // Build the reset pill (hidden until first drag)
+      const resetBtn = document.createElement('div');
+      resetBtn.id = 'drag-reset';
+      resetBtn.textContent = 'reset layout';
+      document.body.appendChild(resetBtn);
+      resetBtn.addEventListener('click', () => { if (!resetBtn._wasDragged) location.reload(); });
+      makeDraggable(resetBtn);
+
+      let hintShown = false;
+      function showHint() {
+        if (hintShown) return;
+        hintShown = true;
+        resetBtn.classList.add('visible');
+      }
+
+      // Hidden keystroke: R reloads
+      document.addEventListener('keydown', e => {
+        if (e.key === 'r' || e.key === 'R') {
+          if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+          location.reload();
+        }
+      });
+
+      // Patch makeDraggable to reveal hint on first drag of any UI element
+      const _origFreeDragSetter = Object.getOwnPropertyDescriptor(window, '_freeDrag');
+      const targets = [
+        document.getElementById('nav-name'),
+        document.getElementById('nav-title-el'),
+        ...document.querySelectorAll('#nav-links a'),
+        ...document.querySelectorAll('.home-headline, .home-subhead, .home-body'),
+        ...document.querySelectorAll('.home-cta'),
+      ];
+      targets.forEach(el => {
+        if (!el) return;
+        makeDraggable(el);
+        el.addEventListener('mousedown', showHint);
+      });
+    }
+
+    // ── Resize ───────────────────────────────────────────────────────────────
+
     let _masonryRaf;
     window.addEventListener('resize', () => {
       cancelAnimationFrame(_masonryRaf);
       _masonryRaf = requestAnimationFrame(() => {
-        document.querySelectorAll('.gallery-grid:not(.layout-grid)').forEach(layoutMasonry);
+        document.querySelectorAll('.gallery-grid:not(.layout-grid)').forEach(g => {
+          if (g.classList.contains('layout-scattered')) {
+            const catId = g.id.replace('grid-', '');
+            const catDef = siteConfig.categories.find(c => c.id === catId);
+            if (catDef) layoutScattered(g, catDef);
+          } else {
+            layoutMasonry(g);
+          }
+        });
         updateDrawerPadding();
       });
     });
