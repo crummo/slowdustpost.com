@@ -747,6 +747,26 @@
     #about-photo-drop-zone.has-image .thumb-drop-hint { display: none; }
     #about-photo-drop-zone.has-image #about-photo-preview { display: block; }
 
+    /* ── HOME BG DROP ZONE ── */
+    #home-bg-drop-zone {
+      width: 100%; height: 100px;
+      border: 1px dashed var(--fg-dimmer); border-radius: 3px;
+      margin: 8px 0 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative; cursor: pointer;
+      user-select: none; -webkit-user-select: none;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    #home-bg-drop-zone.has-image { border-style: solid; }
+    #home-bg-drop-zone.drag-active { border-color: var(--accent); background: rgba(201,169,110,0.05); }
+    #home-bg-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; display: none;
+    }
+    #home-bg-drop-zone.has-image .thumb-drop-hint { display: none; }
+    #home-bg-drop-zone.has-image #home-bg-preview { display: block; }
+
     /* ── THUMB PREVIEW DROP ZONE ── */
     #thumb-drop-zone {
       border: 1px dashed var(--fg-dimmer);
@@ -1106,15 +1126,41 @@
 
         <div class="settings-section">
           <div class="settings-section-title">Typography</div>
+
           <div class="field">
-            <label>UI Font</label>
+            <label>Display / Heading Font</label>
+            <select id="site-font-serif" onchange="applyFontSerif(this.value);markDirty()" style="margin-top:6px;width:100%">
+              <option value="playfair">Playfair Display — dramatic editorial</option>
+              <option value="cormorant">Cormorant Garamond — elegant, delicate</option>
+              <option value="lora">Lora — modern and friendly</option>
+              <option value="eb-garamond">EB Garamond — classical</option>
+              <option value="libre-baskerville">Libre Baskerville — clean book</option>
+            </select>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <input type="range" id="site-font-serif-scale" min="0.8" max="1.3" step="0.05" value="1"
+                oninput="document.documentElement.style.setProperty('--font-serif-scale',this.value);document.getElementById('font-serif-scale-pct').textContent=Math.round(this.value*100)+'%';markDirty()"
+                style="flex:1" />
+              <span id="font-serif-scale-pct" style="font-size:11px;color:var(--fg-dim);min-width:36px;text-align:right">100%</span>
+            </div>
+            <div id="font-serif-sample" style="margin-top:8px;padding:8px 10px;border:1px solid var(--fg-dimmer);border-radius:3px;font-size:16px;font-style:italic;color:var(--fg-mid);font-family:var(--font-serif)">The quick brown fox — <em>Headline Sample</em></div>
+          </div>
+
+          <div class="field" style="margin-top:16px">
+            <label>UI / Body Font</label>
             <select id="site-font-sans" onchange="applyFontSans(this.value);markDirty()" style="margin-top:6px;width:100%">
               <option value="dm-sans">DM Sans — clean geometric sans</option>
               <option value="source-code-pro">Source Code Pro — monospace</option>
               <option value="space-grotesk">Space Grotesk — geometric modern</option>
               <option value="inter">Inter — neutral workhorse</option>
             </select>
-            <div class="field-hint" style="margin-top:4px">Applies to nav, labels, and all UI text across the site.</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+              <input type="range" id="site-font-sans-scale" min="0.8" max="1.3" step="0.05" value="1"
+                oninput="document.documentElement.style.setProperty('--font-sans-scale',this.value);document.getElementById('font-sans-scale-pct').textContent=Math.round(this.value*100)+'%';markDirty()"
+                style="flex:1" />
+              <span id="font-sans-scale-pct" style="font-size:11px;color:var(--fg-dim);min-width:36px;text-align:right">100%</span>
+            </div>
+            <div id="font-sans-sample" style="margin-top:8px;padding:8px 10px;border:1px solid var(--fg-dimmer);border-radius:3px;font-size:14px;color:var(--fg-mid);letter-spacing:0.02em;font-family:var(--font-sans)">Aa — The quick brown fox jumps over the lazy dog</div>
+            <div class="field-hint" style="margin-top:4px">Applies to nav, labels, and UI text across the site.</div>
           </div>
         </div>
 
@@ -1430,8 +1476,20 @@
           <div class="settings-section-title">Background</div>
           <div class="field">
             <label>Image</label>
-            <input type="text" id="home-bg" placeholder="images/hero.jpg or https://…" oninput="markDirty()" style="margin-top:6px" />
-            <div class="field-hint" style="margin-top:4px">Full-bleed background image. A dark overlay is applied automatically.</div>
+            <div class="field-clearable" style="margin-top:6px">
+              <input type="text" id="home-bg" placeholder="images/hero.jpg or https://…" oninput="updateHomeBgPreview();markDirty()" />
+              <button class="field-clear-btn" type="button" onclick="clearField('home-bg')" title="Clear">×</button>
+            </div>
+            <div id="home-bg-drop-zone">
+              <img id="home-bg-preview" alt="Background preview" />
+              <div class="thumb-drop-hint" style="font-size:9px;text-align:center;padding:12px;line-height:1.6;color:var(--fg-dim)">↓ Drop image<br>or browse below</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer">Browse local files…<input type="file" id="home-bg-file-input" accept="image/*" class="file-input-hidden" onchange="handleFileInput(this,'homebg')" /></label>
+              <button class="btn btn-ghost btn-sm" type="button" onclick="toggleHomeBgList()">Browse uploaded ↓</button>
+            </div>
+            <div class="field-hint" style="margin-top:4px;text-align:center">Full-bleed background · overlay added automatically</div>
+            <div class="thumb-file-list" id="home-bg-file-list"></div>
           </div>
           <div class="field" style="margin-top:12px">
             <label>Video <span style="color:var(--fg-dim);font-size:9px;text-transform:none;letter-spacing:0">(mp4 — plays silently, loops)</span></label>
@@ -5054,6 +5112,29 @@ async function saveContactFields() {
 // ─── ACCENT COLOR + ANALYTICS ────────────────────────────────────────────────
 const DEFAULT_ACCENT = '#c9a96e';
 
+const FONT_SERIF_OPTIONS = {
+  'playfair':          { url: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap', stack: "'Playfair Display', Georgia, serif" },
+  'cormorant':         { url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap', stack: "'Cormorant Garamond', Georgia, serif" },
+  'lora':              { url: 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap',                          stack: "'Lora', Georgia, serif" },
+  'eb-garamond':       { url: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap',                   stack: "'EB Garamond', Georgia, serif" },
+  'libre-baskerville': { url: 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap',             stack: "'Libre Baskerville', Georgia, serif" },
+};
+
+function applyFontSerif(key) {
+  const opt = FONT_SERIF_OPTIONS[key] || FONT_SERIF_OPTIONS['playfair'];
+  let link = document.getElementById('dynamic-font-serif');
+  if (!link) {
+    link = document.createElement('link');
+    link.id  = 'dynamic-font-serif';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+  link.href = opt.url;
+  document.documentElement.style.setProperty('--font-serif', opt.stack);
+  const sample = document.getElementById('font-serif-sample');
+  if (sample) sample.style.fontFamily = opt.stack;
+}
+
 const FONT_SANS_OPTIONS = {
   'dm-sans':         { url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&display=swap',         stack: "'DM Sans', sans-serif" },
   'source-code-pro': { url: 'https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400&display=swap', stack: "'Source Code Pro', monospace" },
@@ -5072,6 +5153,8 @@ function applyFontSans(key) {
   }
   link.href = opt.url;
   document.documentElement.style.setProperty('--font-sans', opt.stack);
+  const sample = document.getElementById('font-sans-sample');
+  if (sample) sample.style.fontFamily = opt.stack;
 }
 
 function updateThumbFilter(val) {
@@ -5265,7 +5348,7 @@ async function deleteUploadedFile(path, listEl, onSelectCallback) {
     const ti = thumbFiles.indexOf(path);
     if (ti !== -1) thumbFiles.splice(ti, 1);
     // Re-render the list in place
-    const inputIdMap = { 'thumb-file-list': 'f-thumbnail', 'og-file-list': 'site-og-input', 'about-photo-file-list': 'about-photo-input' };
+    const inputIdMap = { 'thumb-file-list': 'f-thumbnail', 'og-file-list': 'site-og-input', 'about-photo-file-list': 'about-photo-input', 'home-bg-file-list': 'home-bg' };
     const inputId = inputIdMap[listEl.id] || 'f-thumbnail';  // fallback to project thumbnail
     const currentVal = document.getElementById(inputId)?.value?.trim() || '';
     const files = listEl.id === 'about-photo-file-list' ? thumbFiles.filter(p => p.startsWith('images/')) : thumbFiles;
@@ -5449,7 +5532,10 @@ function flushSettingsForms() {
   siteConfig.thumbnailFilter = parseInt(document.getElementById('site-thumb-filter')?.value || 0);
   siteConfig.zoomLock       = document.getElementById('site-zoom-lock')?.checked || false;
   siteConfig.mobileThumbsNative = document.getElementById('site-mobile-thumbs-native')?.checked || false;
-  siteConfig.fontSans       = document.getElementById('site-font-sans')?.value || '';
+  siteConfig.fontSerif      = document.getElementById('site-font-serif')?.value      || '';
+  siteConfig.fontSerifScale = parseFloat(document.getElementById('site-font-serif-scale')?.value || 1);
+  siteConfig.fontSans       = document.getElementById('site-font-sans')?.value       || '';
+  siteConfig.fontSansScale  = parseFloat(document.getElementById('site-font-sans-scale')?.value  || 1);
 
   // Home page
   siteConfig.homePage = {
@@ -5912,9 +5998,21 @@ function populateGeneralSettings() {
   document.getElementById('site-allow-theme-toggle').checked = !!siteConfig.allowThemeToggle;
   document.getElementById('site-zoom-lock').checked = !!siteConfig.zoomLock;
   document.getElementById('site-mobile-thumbs-native').checked = !!siteConfig.mobileThumbsNative;
-  const fontSansKey = siteConfig.fontSans || 'dm-sans';
-  document.getElementById('site-font-sans').value = fontSansKey;
+  const fontSerifKey   = siteConfig.fontSerif || 'playfair';
+  const fontSerifScale = siteConfig.fontSerifScale ?? 1;
+  document.getElementById('site-font-serif').value       = fontSerifKey;
+  document.getElementById('site-font-serif-scale').value = fontSerifScale;
+  document.getElementById('font-serif-scale-pct').textContent = Math.round(fontSerifScale * 100) + '%';
+  applyFontSerif(fontSerifKey);
+  document.documentElement.style.setProperty('--font-serif-scale', fontSerifScale);
+
+  const fontSansKey   = siteConfig.fontSans || 'dm-sans';
+  const fontSansScale = siteConfig.fontSansScale ?? 1;
+  document.getElementById('site-font-sans').value       = fontSansKey;
+  document.getElementById('site-font-sans-scale').value = fontSansScale;
+  document.getElementById('font-sans-scale-pct').textContent = Math.round(fontSansScale * 100) + '%';
   applyFontSans(fontSansKey);
+  document.documentElement.style.setProperty('--font-sans-scale', fontSansScale);
 
   // Home page
   const hp = siteConfig.homePage || {};
@@ -5924,6 +6022,7 @@ function populateGeneralSettings() {
   document.getElementById('home-body').value          = hp.body      || '';
   document.getElementById('home-bg').value            = hp.bg        || '';
   document.getElementById('home-bg-video').value      = hp.bgVideo   || '';
+  updateHomeBgPreview();
   const cta1 = (hp.ctas || [])[0] || {};
   const cta2 = (hp.ctas || [])[1] || {};
   document.getElementById('home-cta1-label').value  = cta1.label  || '';
@@ -6061,6 +6160,33 @@ function toggleOgList() {
   );
 }
 
+function updateHomeBgPreview() {
+  const val  = document.getElementById('home-bg')?.value.trim() || '';
+  const zone = document.getElementById('home-bg-drop-zone');
+  const prev = document.getElementById('home-bg-preview');
+  if (zone) zone.classList.toggle('has-image', !!val);
+  if (prev && val) prev.src = _previewBlobUrls['home-bg'] || val;
+}
+
+function toggleHomeBgList() {
+  const list = document.getElementById('home-bg-file-list');
+  const isOpen = list.classList.toggle('open');
+  if (!isOpen) return;
+  const current = document.getElementById('home-bg').value.trim();
+  const imagesGroup = thumbFiles.filter(p => p.startsWith('images/'));
+  renderFileList(
+    list,
+    imagesGroup,
+    current,
+    path => {
+      document.getElementById('home-bg').value = path;
+      updateHomeBgPreview();
+      markDirty();
+    },
+    'No files found in /images/'
+  );
+}
+
 function toggleAboutPhotoList() {
   const list = document.getElementById('about-photo-file-list');
   const isOpen = list.classList.toggle('open');
@@ -6186,6 +6312,13 @@ function initThumbDropZone() {
       showToast('Wrong file type — please drop an image (JPG, PNG, WebP, etc.)', 'error'); return;
     }
     uploadImageFile(file, 'images', 'about-photo-input', updateAboutPhotoPreview);
+  });
+  initDropZone('home-bg-drop-zone', files => {
+    const file = files[0];
+    if (!file.type.startsWith('image/')) {
+      showToast('Wrong file type — please drop an image (JPG, PNG, WebP, etc.)', 'error'); return;
+    }
+    uploadImageFile(file, 'images', 'home-bg', updateHomeBgPreview);
   });
   initDropZone('favicon-drop-zone', files => {
     const file = files[0];
@@ -6334,7 +6467,7 @@ async function uploadImageFile(file, folder, inputId, previewFn) {
   // Don't revoke on onload — Safari re-fetches revoked blobs on repaint → "offline" indicator.
   if (inputId && _previewBlobUrls[inputId]) URL.revokeObjectURL(_previewBlobUrls[inputId]);
   if (inputId) _previewBlobUrls[inputId] = blobUrl;
-  const previewIds = { 'about-photo-input': 'about-photo-preview', 'site-og-input': 'og-preview', 'site-favicon-input': 'favicon-preview' };
+  const previewIds = { 'about-photo-input': 'about-photo-preview', 'home-bg': 'home-bg-preview', 'site-og-input': 'og-preview', 'site-favicon-input': 'favicon-preview' };
   // Call previewFn first so it handles zone state, drag transform, etc.
   // Then immediately override src with the blob URL — GitHub Pages hasn't
   // deployed yet so the path-based src would show "offline".
@@ -6379,6 +6512,8 @@ function handleFileInput(input, type) {
     uploadThumbFile(file);
   } else if (type === 'photo') {
     uploadImageFile(file, 'images', 'about-photo-input', updateAboutPhotoPreview);
+  } else if (type === 'homebg') {
+    uploadImageFile(file, 'images', 'home-bg', updateHomeBgPreview);
   } else if (type === 'favicon') {
     uploadFaviconFile(file);
   } else if (type === 'og') {
