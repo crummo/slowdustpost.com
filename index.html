@@ -123,6 +123,7 @@
       padding: env(safe-area-inset-top, 0px) 44px 0;
       background: var(--bg);
       border-bottom: 1px solid var(--fg-dimmer);
+      transition: background 0.4s, border-color 0.4s;
       /* iOS Safari: force own compositing layer so scrolled page content
          doesn't end up rendered above the nav during scroll. */
       transform: translateZ(0);
@@ -503,6 +504,8 @@
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
+    body[data-page="home"] nav { background: transparent; border-bottom-color: transparent; transition: background 0.4s, border-color 0.4s; }
+    body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
     .home-wrap {
       position: relative; width: 100%;
       min-height: calc(100vh - var(--nav-h) - env(safe-area-inset-top, 0px));
@@ -1359,6 +1362,7 @@
       document.querySelectorAll('.page.leaving').forEach(p => { if (p === pg) p.classList.remove('leaving'); });
 
       pg.classList.add('visible');
+      document.body.dataset.page = id;
       history.replaceState(null, '', '#' + id);
       window.scrollTo(0, 0);
       // Path B mobile portrait: main is the scroll container, not window
