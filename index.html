@@ -95,8 +95,8 @@
       --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
     }
 
-    html { background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
-    body { min-height: 100vh; background: var(--bg); overscroll-behavior-y: none; }
+    html { background: url('images/bg.jpg') center/cover fixed #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
+    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
 
     /* film grain */
     body::before {
@@ -121,7 +121,7 @@
       height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
       display: flex; align-items: center; justify-content: space-between;
       padding: env(safe-area-inset-top, 0px) 44px 0;
-      background: var(--bg);
+      background: rgba(13,11,10,0.88);
       border-bottom: 1px solid var(--fg-dimmer);
       transition: background 0.4s, border-color 0.4s;
       /* iOS Safari: force own compositing layer so scrolled page content
@@ -209,7 +209,7 @@
     body.nav-left .nav-links a::after { display: none; }
     body.nav-left .nav-links a:hover { color: var(--fg); border-color: var(--fg); }
     body.nav-left .nav-links a.active { color: var(--accent); border-color: var(--accent); }
-    body.nav-left .nav-brand-title { font-weight: 500; letter-spacing: 0.25em; color: var(--fg-mid); }
+    body.nav-left .nav-brand-title { font-weight: 500; letter-spacing: 0.25em; color: var(--fg); }
     body.nav-left .nav-hamburger { display: none !important; }
     body.nav-left .nav-drawer { display: none !important; }
     body.nav-left .theme-toggle { margin-top: auto; }
