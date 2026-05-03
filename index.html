@@ -97,7 +97,7 @@
     }
 
     html { background: #131110; background-size: cover; background-position: center; background-repeat: no-repeat; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; overflow: hidden; height: 100%; min-height: 100vh; }
-    body { min-height: 100vh; background-color: rgba(13,11,10,0.65); overscroll-behavior-y: none; }
+    body { min-height: 100vh; overscroll-behavior-y: none; }
 
     /* film grain */
     body::before {
@@ -557,7 +557,7 @@
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
     /* Home page lightens the body overlay so the bg shows through more */
-    body[data-page="home"] { background-color: rgba(0,0,0,0.42); }
+    body[data-page="home"] { background-color: transparent; }
     body[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
     body[data-page="home"] .home-wrap { align-items: center; justify-content: center; padding-top: var(--nav-h); padding-bottom: 18vh; box-sizing: border-box; }
     /* Mobile: lock scroll on landing page — home-wrap padding can exceed viewport */
@@ -1378,10 +1378,13 @@
       if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.siteBg) {
-        document.documentElement.style.backgroundImage    = `url('${cfg.siteBg}')`;
-        document.documentElement.style.backgroundSize     = 'cover';
-        document.documentElement.style.backgroundPosition = 'center';
-        document.documentElement.style.backgroundRepeat   = 'no-repeat';
+        // Overlay is composited directly on html so it covers the full frame on
+        // all devices — avoids the body positioning gap on iOS portrait mobile.
+        const _ov = 'rgba(13,11,10,0.65)';
+        document.documentElement.style.backgroundImage    = `linear-gradient(${_ov},${_ov}),url('${cfg.siteBg}')`;
+        document.documentElement.style.backgroundSize     = 'auto,cover';
+        document.documentElement.style.backgroundPosition = '0 0,center';
+        document.documentElement.style.backgroundRepeat   = 'no-repeat,no-repeat';
         document.documentElement.style.backgroundAttachment = '';
       } else {
         document.documentElement.style.backgroundImage = '';
