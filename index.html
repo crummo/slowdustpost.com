@@ -926,11 +926,30 @@
         cursor: pointer;
         overflow: hidden;
       }
-      /* Home rail is translucent so the bg media reads through */
+      /* Override the desktop @media(min-width:769px) home-page rules that hide
+         the nav and reset main's left-padding. Phones in landscape can be
+         wider than 768px (iPhone Pro Max landscape is 932px) so they would
+         otherwise match those desktop rules and lose the rail. Same specificity
+         as the desktop rules; landscape block is later in source order so it
+         wins the cascade when both media queries are active. */
+      body.nav-left[data-page="home"] nav { display: flex; }
+      body.nav-left[data-page="home"] main { padding-left: var(--nav-w); }
+
+      /* Home rail is translucent so the bg media reads through, but the
+         buttons need light colors to be visible against the dark bg overlay. */
       body[data-page="home"] nav, body.nav-left[data-page="home"] nav {
-        background: rgba(13,11,10,0.18);
-        border-right-color: rgba(237,232,224,0.12);
+        background: rgba(13,11,10,0.32);
+        border-right-color: rgba(237,232,224,0.18);
       }
+      body[data-page="home"] .nav-links a {
+        border-color: rgba(237,232,224,0.42);
+        color: rgba(237,232,224,0.78);
+      }
+      body[data-page="home"] .nav-links a:hover { color: #ede8e0; border-color: var(--accent); }
+      body[data-page="home"] .nav-links a.active { color: var(--accent); border-color: var(--accent); }
+      body[data-page="home"] .nav-brand-name { color: rgba(237,232,224,0.95); }
+      body[data-page="home"] .nav-brand-title { color: rgba(237,232,224,0.6); }
+      body[data-page="home"] .theme-toggle { color: rgba(237,232,224,0.7); }
 
       /* Expanded state — wider, opaque, padded for full text */
       body.rail-open nav, body.nav-left.rail-open nav {
