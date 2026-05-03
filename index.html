@@ -190,7 +190,7 @@
     }
     .nav-drawer a {
       display: block; text-decoration: none; font-size: 12px; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--fg-mid); padding: 14px 0 14px 10px;
+      text-transform: uppercase; color: var(--fg); padding: 14px 0 14px 10px;
       border-bottom: 1px solid var(--fg-dimmer); border-left: 2px solid transparent; cursor: pointer;
       transition: color 0.25s var(--ease), border-color 0.25s var(--ease); font-weight: 400;
     }
@@ -1385,7 +1385,7 @@
       if (cfg.siteBg) {
         // Overlay is composited directly on html so it covers the full frame on
         // all devices — avoids the body positioning gap on iOS portrait mobile.
-        const _ov = 'rgba(13,11,10,0.65)';
+        const _ov = 'rgba(13,11,10,0.50)';
         document.documentElement.style.backgroundImage    = `linear-gradient(${_ov},${_ov}),url('${cfg.siteBg}')`;
         document.documentElement.style.backgroundSize     = 'auto,cover';
         document.documentElement.style.backgroundPosition = '0 0,center';
