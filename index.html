@@ -659,6 +659,8 @@
       font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--fg-dim); max-width: 300px; line-height: 1.9; text-align: center;
     }
+    /* Forced line-break after "Mixing" on portrait — hidden on desktop */
+    .tagline-br { display: none; }
 
     /* Landing text always shows over the site bg */
     .home-landing-logo { color: rgba(237,232,224,0.95); }
@@ -892,6 +894,8 @@
         letter-spacing: 0.12em;
         max-width: 100%;
       }
+      /* Break after "Mixing" on portrait */
+      .tagline-br { display: block; height: 0; line-height: 0; }
     }
 
     @media (max-height: 600px) and (orientation: landscape) {
@@ -2330,7 +2334,13 @@
         <div class="home-wrap">
           <div class="home-landing">
             ${logoHtml}
-            ${tagline   ? `<div class="home-landing-tagline">${x(tagline)}</div>` : ''}
+            ${tagline   ? (() => {
+                const mi = tagline.toLowerCase().indexOf('mixing ');
+                const inner = mi !== -1
+                  ? x(tagline.slice(0, mi + 6)) + '<span class="tagline-br"></span>' + x(tagline.slice(mi + 6))
+                  : x(tagline);
+                return `<div class="home-landing-tagline">${inner}</div>`;
+              })() : ''}
             ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>` : ''}
           </div>
         </div>`;
