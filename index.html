@@ -91,12 +91,13 @@
       --lb-fg: #1a1714; --lb-fg-dim: #8a8078; --lb-fg-dimmer: #ccc7be; --lb-fg-mid: #5a5248;
       --gv-bg: #f0ece6; --gv-fg: #1a1714; --gv-fg-dim: #8a8078; --gv-fg-dimmer: #ccc7be; --gv-bg2: #e8e3dc;
     }
-    html[data-viewer-bg="dark"] {
-      --gv-bg: #131110; --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: #1c1917;
+    html[data-viewer-bg="dark"],
+    html[data-viewer-bg="auto"][data-theme="dark"] {
+      --gv-bg: rgba(13,11,10,0.88); --gv-fg: #ede8e0; --gv-fg-dim: #5a5248; --gv-fg-dimmer: #2a2623; --gv-bg2: rgba(13,11,10,0.92);
     }
 
-    html { background: #131110; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; }
-    body { min-height: 100vh; background: rgba(13,11,10,0.78); overscroll-behavior-y: none; }
+    html { background: #131110; background-size: cover; background-position: center; color: var(--fg); font-family: var(--font-sans); font-weight: 500; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; user-select: none; -webkit-user-select: none; overflow: hidden; }
+    body { min-height: 100vh; background-color: rgba(13,11,10,0.65); overscroll-behavior-y: none; }
 
     /* film grain */
     body::before {
@@ -139,7 +140,7 @@
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
     .nav-links a {
       text-decoration: none; font-size: calc(10px * var(--font-sans-scale, 1)); letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--fg-dim); transition: color 0.25s var(--ease); font-weight: 400;
+      color: var(--fg-mid); transition: color 0.25s var(--ease); font-weight: 400;
       cursor: pointer; position: relative; padding-bottom: 3px; white-space: nowrap;
     }
     .nav-links a::after {
@@ -163,16 +164,33 @@
     .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--fg-mid); transition: all 0.25s var(--ease); border-radius: 1px; }
 
     .nav-drawer {
-      position: fixed; top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); left: 0; right: 0;
-      background: var(--bg);
+      position: fixed; top: calc(var(--nav-h) + var(--safe-top)); left: 0; right: 0;
+      background: rgba(13,11,10,0.35);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       padding: 0 24px; z-index: 190;
       max-height: 0; overflow: hidden;
       transition: max-height 0.35s var(--ease), padding 0.35s var(--ease);
     }
-    .nav-drawer.open { max-height: 500px; padding: 16px 24px 20px; border-bottom: 1px solid var(--fg-dimmer); }
+    .nav-drawer.open { max-height: 600px; padding: 16px 24px 0; border-bottom: none; }
+    .nav-drawer.open::before {
+      content: ''; position: absolute; top: 0; left: 12px; right: 12px;
+      height: 1px; background: var(--fg-dimmer);
+    }
+    nav.drawer-open {
+      background: rgba(13,11,10,0.35) !important;
+      backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important;
+    }
+    /* Landing: no brand in nav, so drawer slides over it — first item aligns to brand zone */
+    body[data-page="home"] .nav-drawer { top: 0; }
+    body[data-page="home"] .nav-drawer.open { padding-top: calc(var(--safe-top) + 20px); }
+    body[data-page="home"] .nav-drawer.open::before { display: none; }
+    body[data-page="home"] nav.drawer-open {
+      background: transparent !important;
+      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    }
     .nav-drawer a {
       display: block; text-decoration: none; font-size: 12px; letter-spacing: 0.16em;
-      text-transform: uppercase; color: var(--fg-dim); padding: 14px 0 14px 10px;
+      text-transform: uppercase; color: var(--fg-mid); padding: 14px 0 14px 10px;
       border-bottom: 1px solid var(--fg-dimmer); border-left: 2px solid transparent; cursor: pointer;
       transition: color 0.25s var(--ease), border-color 0.25s var(--ease); font-weight: 400;
     }
@@ -187,10 +205,11 @@
        lowercase. Reads as a sub-item beneath CONTACT. */
     .nav-drawer a.nav-drawer-contact-email-line {
       font-size: 12px; letter-spacing: 0; text-transform: none;
-      color: var(--accent); padding-top: 4px; padding-bottom: 14px;
-      border-bottom: 1px solid var(--fg-dimmer); border-left-width: 0;
+      color: var(--accent); padding-top: 2px; padding-bottom: 0;
+      border-top: none; border-bottom: none; border-left-width: 0;
       margin-top: -10px;
     }
+    .nav-drawer a:has(+ .nav-drawer-contact-email-line) { border-bottom: none; }
 
     /* ── LEFT NAV ── */
     body.nav-left nav {
@@ -207,13 +226,13 @@
     body.nav-left .nav-links { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
     body.nav-left .nav-links a { font-weight: 700; font-size: 16px; letter-spacing: 0.1em; white-space: nowrap; padding: 12px 16px; border: 1px solid var(--fg-mid); color: var(--fg-mid); display: block; text-align: center; transition: color 0.25s var(--ease), border-color 0.25s var(--ease); }
     body.nav-left .nav-links a::after { display: none; }
-    body.nav-left .nav-links a:hover { color: var(--fg); border-color: var(--fg); }
+    body.nav-left .nav-links a:hover { color: var(--fg-mid); border-color: var(--accent); }
     body.nav-left .nav-links a.active { color: var(--accent); border-color: var(--accent); }
     body.nav-left .nav-brand-title { font-weight: 500; letter-spacing: 0.25em; color: var(--fg); }
     body.nav-left .nav-hamburger { display: none !important; }
     body.nav-left .nav-drawer { display: none !important; }
     body.nav-left .theme-toggle { margin-top: auto; }
-    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); }
+    body.nav-left main { padding-top: 0; padding-left: var(--nav-w); height: 100vh; overflow-y: auto; overflow-x: hidden; }
     body.is-preview.nav-left nav { top: 28px; height: calc(100vh - 28px); }
 
     /* ── MAIN ── */
@@ -221,7 +240,7 @@
     .page { display: none; }
     .page.visible { display: block; animation: pageIn 0.35s var(--ease) both; }
     .page.leaving  { display: block; animation: pageOut 0.2s var(--ease) both; pointer-events: none; }
-    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; } }
+    @keyframes pageIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: translateY(0); } }
     @keyframes pageOut { from { opacity: 1; transform: translateY(0); }     to { opacity: 0; transform: translateY(-6px); } }
     @keyframes gvIn    { from { opacity: 0; }                               to { opacity: 1; } }
 
@@ -450,7 +469,10 @@
     /* ── ABOUT ── */
     .about-wrap { max-width: 680px; margin: 0 auto; padding: 72px 44px 100px; }
     body.nav-left .about-wrap { position: relative; left: calc(-1 * var(--nav-w) / 2); }
-    .about-eyebrow { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 36px; }
+    .wwd-hero { width: 100%; margin-bottom: 36px; }
+    .wwd-hero-img { width: 100%; max-height: 420px; object-fit: cover; object-position: center 40%; display: block; }
+    .wwd-copy { margin-top: 0; }
+    .about-eyebrow { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--fg-mid); margin-bottom: 36px; }
     .about-layout { display: flex; flex-direction: column; gap: 28px; align-items: flex-start; }
     .about-layout.placement-left  { flex-direction: row; align-items: flex-start; }
     .about-layout.placement-right { flex-direction: row-reverse; align-items: flex-start; }
@@ -476,7 +498,7 @@
     .about-col-list { list-style: none; }
     .about-col-list li { font-family: var(--font-serif); font-size: 15px; color: var(--fg-mid); line-height: 2; }
     .about-footer { border-top: 1px solid var(--fg-dimmer); padding-top: 28px; margin-top: 28px; margin-left: -44px; margin-right: -44px; padding-left: 44px; padding-right: 44px; }
-    .about-footer p { font-size: 12px; color: var(--fg-dim); line-height: 2.4; }
+    .about-footer p { font-size: 12px; color: #7c7468; line-height: 2.4; }
     .about-team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 44px; margin-bottom: 12px; }
     .about-team-photo { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border: 1px solid var(--fg-dimmer); }
     .about-social-links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 56px; align-items: center; }
@@ -516,27 +538,33 @@
     .contact-photo-frame img { display: block; width: 100%; height: auto; }
     .contact-content { flex: 1; min-width: 0; }
     .contact-field { margin-bottom: 22px; }
-    .contact-field label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg-mid); margin-bottom: 8px; font-weight: 400; }
+    .contact-field label { display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(237,232,224,0.75); margin-bottom: 8px; font-weight: 400; }
     .contact-field input,
     .contact-field textarea { width: 100%; background: var(--bg2); border: 1px solid var(--fg-dimmer); border-radius: 3px; padding: 10px 14px; color: var(--fg); font-family: var(--font-sans); font-size: 14px; font-weight: 300; transition: border-color 0.2s; outline: none; }
     .contact-field input:focus,
     .contact-field textarea:focus { border-color: var(--fg-dim); }
     .contact-field textarea { resize: vertical; min-height: 130px; }
-    .contact-submit { background: none; border: 1px solid var(--fg-dim); color: var(--fg-mid); font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .contact-heading { font-family: 'Alfa Slab One', serif; font-size: clamp(44px, 7vw, 96px); font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg); line-height: 0.95; margin-bottom: 44px; }
+    .contact-submit { background: none; border: 1px solid var(--fg-mid); color: var(--fg); font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 12px 32px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .contact-submit-big { font-size: 16px; letter-spacing: 0.1em; padding: 12px 16px; width: 100%; margin-top: 8px; }
     .contact-submit:hover { border-color: var(--accent); color: var(--fg); }
     .contact-submit:disabled { opacity: 0.4; cursor: default; }
+    .contact-email-line { margin-top: 16px; font-size: 11px; letter-spacing: 0.08em; color: var(--fg-dim); }
+    .contact-email-line a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--fg-dimmer); }
+    .contact-email-line a:hover { color: var(--fg); border-color: var(--accent); }
     .contact-result { margin-top: 18px; font-size: 13px; color: var(--fg-mid); min-height: 20px; }
 
     /* ── HOME PAGE ── */
     #page-home { padding: 0; }
-    /* Single unified bg on body — nav + main share the same full-bleed image */
-    body[data-page="home"] {
-      background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('images/bg.jpg') center/cover no-repeat;
-    }
+    /* Home page lightens the body overlay so the bg shows through more */
+    body[data-page="home"] { background-color: rgba(0,0,0,0.42); }
     body[data-page="home"] nav { border-bottom-color: transparent; background: transparent; }
-    body[data-page="home"] .home-bg,
-    body[data-page="home"] .home-overlay { display: none; }
     body[data-page="home"] .home-wrap { align-items: center; justify-content: center; padding-top: var(--nav-h); padding-bottom: 18vh; box-sizing: border-box; }
+    /* Mobile: lock scroll on landing page — home-wrap padding can exceed viewport */
+    @media (max-width: 768px) {
+      body[data-page="home"] main { overflow: hidden !important; }
+      .home-landing-nav { display: none !important; }
+    }
     body[data-page="home"] .nav-brand { visibility: hidden; }
     /* Hamburger: fixed above everything so bg can never cover it */
     body[data-page="home"] .nav-hamburger {
@@ -549,7 +577,12 @@
       border-radius: 5px !important;
     }
     body[data-page="home"] .nav-hamburger span { background: #fff !important; height: 2px !important; width: 24px !important; }
-    body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
+    /* Nav hidden on home page — desktop only; portrait needs the hamburger */
+    @media (min-width: 769px) {
+      body.nav-left[data-page="home"] nav { display: none; }
+      body.nav-left[data-page="home"] main { padding-left: 0; }
+      body.nav-left[data-page="home"] #page-home { margin-left: 0; width: 100%; }
+    }
     body.nav-left .home-wrap { min-height: 100vh; }
     .home-wrap {
       position: relative; width: 100%;
@@ -586,9 +619,12 @@
       font-family: 'Alfa Slab One', serif;
       font-size: clamp(52px, 9vw, 120px);
       font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase;
-      color: var(--fg); line-height: 0.95; word-spacing: 9999px;
-      margin-bottom: 48px;
+      color: var(--fg); line-height: 0.95;
+      margin-bottom: 48px; text-align: center;
     }
+    .home-landing-logo .logo-top { display: block; word-spacing: 9999px; }
+    .home-landing-logo .logo-split { display: none; }
+    .home-landing-logo .logo-bottom { display: block; }
     .home-landing-nav {
       display: flex; gap: 12px; justify-content: center;
       flex-wrap: wrap; margin-bottom: 40px;
@@ -603,18 +639,32 @@
       cursor: pointer; background: none;
     }
     .home-landing-nav-btn:hover { border-color: var(--accent); color: var(--fg); }
+    /* Desktop nav-left: 2×2 grid of nav buttons under logo */
+    body.nav-left .home-landing-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      max-width: 400px;
+      width: 100%;
+      margin: 20px auto 0;
+    }
+    body.nav-left .home-landing-nav .home-landing-nav-btn {
+      text-align: center;
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 16px;
+      letter-spacing: 0.1em;
+    }
     .home-landing-tagline {
       font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--fg-dim); max-width: 440px; line-height: 1.9;
+      color: var(--fg-dim); max-width: 300px; line-height: 1.9; text-align: center;
     }
 
-    /* Full-bleed bg support for home-landing */
-    .home-wrap-bg .home-overlay { background: rgba(0,0,0,0.35); }
-    .home-wrap-bg .home-landing { position: relative; z-index: 2; }
-    .home-wrap-bg .home-landing-logo { color: rgba(237,232,224,0.95); }
-    .home-wrap-bg .home-landing-nav-btn { color: rgba(237,232,224,0.7); border-color: rgba(237,232,224,0.38); }
-    .home-wrap-bg .home-landing-nav-btn:hover { color: #ede8e0; border-color: var(--accent); }
-    .home-wrap-bg .home-landing-tagline { color: rgba(237,232,224,0.5); }
+    /* Landing text always shows over the site bg */
+    .home-landing-logo { color: rgba(237,232,224,0.95); }
+    .home-landing-nav-btn { color: rgba(237,232,224,0.7); border-color: rgba(237,232,224,0.38); }
+    .home-landing-nav-btn:hover { color: #ede8e0; border-color: var(--accent); }
+    .home-landing-tagline { color: rgba(237,232,224,0.75); }
 
     /* ── SPLASH ── */
     #splash { position: fixed; inset: 0; z-index: 800; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease); }
@@ -685,10 +735,12 @@
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
       .gallery-grid { display: none !important; }
-      .mobile-list { display: block; padding: 4px 0 32px; }
-      .about-wrap { padding: 16px 22px 40px; }
+      .mobile-list { display: block; padding: 16px 0 32px; }
+      .about-wrap { padding: 16px 22px 40px; display: flex; flex-direction: column; }
       body.nav-left .about-wrap { left: 0; }
-      .about-team-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Team photos move to top on mobile, main photo hidden */
+      .about-photo-frame { display: none; }
+      .about-team-grid { grid-template-columns: repeat(2, 1fr); order: -1; margin-top: 0; margin-bottom: 20px; }
       /* Portrait mobile reveal: each item slides up + fades in as it
          enters the viewport (managed by IntersectionObserver in JS,
          which adds .in-view). Uses a keyframe animation rather than
@@ -705,7 +757,14 @@
          the empty space above and below the image. */
       .gv-info { display: block; padding: 20px max(20px, env(safe-area-inset-left, 0px)) 16px; flex-shrink: 0; text-align: center; }
       .gv-info-client { margin-bottom: 2px; }
-      .contact-wrap { padding: 52px 22px 80px; }
+      .contact-wrap { padding: 16px 22px 24px; margin-top: 0; display: flex; flex-direction: column; }
+      #page-contact { height: auto; }
+      .contact-wrap .about-footer { margin-top: 40px; }
+      .contact-card-divider { display: none; }
+      .contact-wrap .about-eyebrow { display: none; }
+      body[data-page="contact"] main { overflow-y: auto !important; }
+      .contact-card-name { display: none; }
+      .contact-card-email { display: none; }
       .about-layout.placement-left,
       .about-layout.placement-right { flex-direction: column; }
       .about-photo-frame.shape-circle,
@@ -751,18 +810,26 @@
         padding: var(--safe-top) 20px 0; box-sizing: border-box;
         flex-direction: row; align-items: center; justify-content: space-between;
         border-bottom: none;
+        background: rgba(13,11,10,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       }
-      body.nav-left .nav-brand { flex-direction: row; align-items: baseline; gap: 14px; margin-bottom: 0; }
-      body.nav-left .nav-brand-name { font-size: 17px; }
+      body.nav-left[data-page="home"] nav { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+      body.nav-left .nav-brand { flex-direction: row; align-items: center; gap: 14px; margin-bottom: 0; margin-top: 0; }
+      body.nav-left .nav-brand-name { font-size: 22px; word-spacing: normal; white-space: nowrap; }
       body.nav-left .nav-brand-rule { display: none; }
       body.nav-left .nav-brand-title { display: none; }
       body.nav-left .nav-right { flex-direction: row; align-items: center; flex: none; width: auto; }
       body.nav-left .nav-links { display: none; }
-      body.nav-left .nav-hamburger { display: flex !important; }
+      body.nav-left .nav-hamburger {
+        display: flex !important;
+        position: fixed !important;
+        top: calc(var(--safe-top) + 12px) !important;
+        right: 16px !important;
+        z-index: 99999 !important;
+      }
       body.nav-left .nav-drawer { display: block !important; max-height: 0; }
-      body.nav-left .nav-drawer.open { max-height: 500px; padding: 16px 24px 20px; }
+      body.nav-left .nav-drawer.open { max-height: 500px; padding: 16px 24px 14px; }
       body.nav-left .theme-toggle { margin-top: 0; }
-      body.nav-left main { padding-left: 0; padding-top: calc(var(--nav-h) + var(--safe-top)); }
+      body.nav-left main { padding-left: 0; padding-top: calc(var(--nav-h) + var(--safe-top)); height: auto; }
       body.nav-left .gv { left: 0; top: calc(var(--nav-h) + var(--safe-top)); }
       body.nav-left .gv-nav-info { display: none !important; }
       /* Gallery viewer: back button top-left, prev/next spread to bottom edges */
@@ -793,14 +860,13 @@
         padding: 40px 24px 52px;
         max-width: 100%;
       }
-      /* Let the logo scale smoothly with viewport width on phones rather
-         than clamping hard at 52px; still caps at 64px so it never crowds
-         the button and tagline on a mid-size phone. */
       .home-landing-logo {
-        font-size: clamp(40px, 13vw, 64px);
-        margin-bottom: 32px;
-        letter-spacing: 0.03em;
+        font-size: clamp(52px, 18vw, 120px);
+        margin-bottom: 40px;
+        letter-spacing: 0.04em;
       }
+      /* Video player sits above all landing elements when open on mobile */
+      .gv.open { z-index: 999999 !important; }
       /* Stack nav buttons full-width — intentional, not incidental wrapping. */
       .home-landing-nav {
         flex-direction: column;
@@ -823,54 +889,43 @@
     }
 
     @media (max-height: 600px) and (orientation: landscape) {
-      /* ── LANDSCAPE: compact top nav regardless of nav-style setting ── */
-      :root { --nav-h: 40px; }
+      /* ── LANDSCAPE: left sidebar nav ── */
+      :root { --nav-h: 40px; --nav-w: calc(140px + env(safe-area-inset-left, 0px)); --safe-top: env(safe-area-inset-top, 0px); }
 
-      /* Force top-bar layout for both default and left-nav configs */
+      /* Left sidebar — same intent as desktop, tighter for short viewport */
       nav, body.nav-left nav {
-        top: 0; left: 0; right: 0; bottom: auto;
-        width: 100%; height: var(--nav-h);
-        padding: 0 10%; box-sizing: border-box;
-        flex-direction: row; align-items: center; justify-content: space-between;
+        top: 0; left: 0; bottom: 0; right: auto;
+        width: var(--nav-w); height: 100dvh;
+        flex-direction: column; align-items: flex-start; justify-content: flex-start;
+        padding: 20px 20px 24px calc(env(safe-area-inset-left, 0px) + 14px);
         border-bottom: none; border-right: none;
+        background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
       }
-      /* Drawer inset to match the 15% gallery margins (no underline) */
-      nav::after, body.nav-left nav::after { display: none; }
-      /* Content starts below the 40px nav; 15% side margins so theme color frames the gallery */
-      main, body.nav-left main { padding-top: var(--nav-h); padding-left: 10%; padding-right: 10%; }
-      /* Home page is full-bleed — override the landscape side padding */
-      #page-home { margin-left: -10%; margin-right: -10%; width: calc(100% + 20%); }
-      /* Kill any sidebar-style sub-element overrides */
-      body.nav-left .nav-brand { flex-direction: row; align-items: baseline; gap: 10px; margin-bottom: 0; }
-      body.nav-left .nav-brand-name { font-size: 17px; }
-      body.nav-left .nav-brand-rule, body.nav-left .nav-brand-title { display: none; }
-      body.nav-left .nav-right { flex-direction: row; align-items: center; flex: none; width: auto; }
-      body.nav-left .nav-links { display: none; }
-      body.nav-left .nav-hamburger { display: flex !important; }
-      body.nav-left .nav-hamburger span { width: 25px; }
-      body.nav-left .theme-toggle { margin-top: 0; }
-      body.nav-left .gv { left: 0; top: var(--nav-h); }
-
-      .nav-brand-name { font-size: 17px; }
-      .nav-hamburger span { width: 25px; }
-      /* Drawer inset to match gallery width */
-      .nav-drawer { left: 10%; right: 10%; }
-      .nav-drawer.open { padding: 6px 16px 10px; max-height: calc(100dvh - var(--nav-h) - 16px); overflow-y: auto; }
-      .nav-drawer a { padding: 8px 0 8px 10px; font-size: 10px; }
-      /* Allow drawer to open in landscape (desktop hides it with !important) */
-      body.nav-left .nav-drawer { display: block !important; max-height: 0; overflow: hidden; left: 10%; right: 10%; }
-      body.nav-left .nav-drawer.open { max-height: calc(100dvh - var(--nav-h) - 16px); padding: 6px 16px 10px; overflow-y: auto; }
+      /* Content offset for sidebar */
+      main, body.nav-left main { padding-top: 0; padding-left: var(--nav-w); padding-right: 0; }
+      /* Home page full-bleed — extend behind sidebar */
+      #page-home, body.nav-left[data-page="home"] #page-home {
+        margin-left: calc(-1 * var(--nav-w)); margin-right: 0; width: calc(100% + var(--nav-w));
+      }
+      /* Brand: hidden in landscape — space is too premium */
+      body.nav-left .nav-brand { display: none; }
+      /* Nav links: vertical, compact */
+      body.nav-left .nav-right { flex-direction: column; align-items: flex-start; width: 100%; flex: 1; }
+      body.nav-left .nav-links { display: flex; }
+      /* No hamburger or drawer needed */
+      body.nav-left .nav-hamburger { display: none !important; }
+      .nav-drawer, body.nav-left .nav-drawer { display: none !important; }
+      body.nav-left .theme-toggle { margin-top: 8px; }
+      body.nav-left .gv { left: var(--nav-w); top: 0; }
 
       /* Grid: show masonry instead of the full-width mobile list */
       .gallery-grid { display: block !important; }
       .mobile-list { display: none !important; }
 
-      /* About: cancel the desktop nav-left side-nav left-shift since
-         landscape uses a top bar, not a side nav. Tighter padding to
-         nudge content toward the top, matching portrait spacing. */
+      /* About/contact: tighter padding for short landscape viewport */
       body.nav-left .about-wrap { left: 0; }
-      .about-wrap { padding: 16px 16px 12px 0; }
-      .contact-wrap { padding: 16px 16px 24px; }
+      .about-wrap { padding: 20px 24px 24px 0; }
+      .contact-wrap { padding: 12px 24px 24px 0; }
       /* Tight eyebrow gap in landscape — was 36px which created a big
          band above the photo/text block. Pulls block up toward heading. */
       .about-eyebrow { margin-bottom: 8px; }
@@ -974,15 +1029,38 @@
       .lb-float-next { right: max(16px, env(safe-area-inset-right, 0px)); top: 0; }
 
       /* ── HOME LANDING — LANDSCAPE ── */
-      /* Re-assert the full-bleed override with matching specificity so the
-         desktop nav-left negative-margin rule can't win. */
-      body.nav-left[data-page="home"] #page-home { margin-left: -10%; width: calc(100% + 20%); }
-      /* Compact vertical padding — landscape viewports are short. */
-      .home-landing { padding: 20px 10%; }
-      .home-landing-logo { font-size: clamp(32px, 6vh, 56px); margin-bottom: 20px; }
-      .home-landing-nav { gap: 8px; margin-bottom: 18px; flex-direction: row; align-items: center; }
-      .home-landing-nav-btn { width: auto; padding: 10px 22px; }
-      .home-landing-tagline { font-size: 10px; letter-spacing: 0.14em; }
+      /* Full-bleed using exact nav-w so centering math works cleanly */
+      body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
+      /* Landing: stacked logo, horizontally centered in content area, top-aligned with first nav button */
+      body[data-page="home"] .home-wrap { justify-content: flex-start; align-items: stretch; padding-top: 0; padding-bottom: 0; }
+      .home-landing { margin-left: var(--nav-w); width: calc(100% - var(--nav-w)); padding: 20px 8% 0; flex-direction: column; align-items: stretch; gap: 8px; text-align: center; max-width: none; box-sizing: border-box; }
+      .home-landing-logo { display: flex; flex-direction: column; align-items: center; font-size: clamp(34px, 9.5vw, 64px); margin-bottom: 10px; line-height: 1.15; letter-spacing: 0.03em; text-align: center; width: 100%; }
+      .home-landing-logo .logo-top { display: block; white-space: nowrap; word-spacing: normal; }
+      .home-landing-logo .logo-bottom { display: block; text-align: center; word-spacing: normal; }
+      .home-landing-tagline { font-size: 9px; letter-spacing: 0.16em; text-align: center; width: 100%; line-height: 1.8; text-wrap: balance; }
+      .home-landing-nav { display: none !important; }
+      /* Nav links: tighten to fit sidebar width */
+      body.nav-left .nav-links a { font-size: 9px; letter-spacing: 0.06em; padding: 7px 10px; }
+
+      /* ── PORTRAIT → LANDSCAPE TRANSLATIONS ── */
+      /* Hamburger hidden — left nav links are always visible in landscape */
+      /* Team page: keep hero photo hidden, photos above text */
+      .about-photo-frame { display: none; }
+      .about-wrap { display: flex; flex-direction: column; }
+      .about-team-grid { order: -1; margin-top: 0; margin-bottom: 12px; }
+      /* Contact: hide card details (still cramped in landscape), scrollable */
+      .contact-wrap { display: flex; flex-direction: column; }
+      .contact-wrap .about-footer { margin-top: 32px; }
+      .contact-wrap .about-eyebrow { display: none; }
+      .contact-card-name { display: none; }
+      .contact-card-email { display: none; }
+      .contact-card-divider { display: none; }
+      body[data-page="contact"] main { overflow-y: auto !important; }
+      /* Landing hero buttons: hidden in landscape — nav sidebar has the links */
+      .home-landing-nav { display: none !important; }
+      body[data-page="home"] main { overflow: hidden !important; }
+      /* Video viewer: full viewport above everything */
+      .gv.open { z-index: 999999 !important; }
     }
 
     /* ── SAFE AREA TOP COVER ── */
@@ -1126,6 +1204,7 @@
     let gvItems  = [];
     let _currentThemeSetting = 'auto';
     let _aboutRendered = false;
+    let _wwdRendered   = false;
 
     /* ── XSS HELPER ── */
     function x(str) {
@@ -1298,10 +1377,10 @@
       if (cfg.fontSansScale)  document.documentElement.style.setProperty('--font-sans-scale',  cfg.fontSansScale);
 
       if (cfg.siteBg) {
-        document.documentElement.style.backgroundImage = `url('${cfg.siteBg}')`;
-        document.documentElement.style.backgroundSize       = 'cover';
-        document.documentElement.style.backgroundPosition   = 'center';
-        document.documentElement.style.backgroundAttachment = 'fixed';
+        document.documentElement.style.backgroundImage    = `url('${cfg.siteBg}')`;
+        document.documentElement.style.backgroundSize     = 'cover';
+        document.documentElement.style.backgroundPosition = 'center';
+        document.documentElement.style.backgroundAttachment = '';
       } else {
         document.documentElement.style.backgroundImage = '';
       }
@@ -1378,9 +1457,16 @@
         a.onclick = e => { e.preventDefault(); showPage('home'); };
         li.appendChild(a); linksEl.appendChild(li);
       }
+      addLink('whatwedo', 'What We Do');
       if (siteConfig.about?.show !== false) addLink('about', 'The Team');
       cats.forEach(cat => addLink(cat.id, cat.label));
       const _ctMode = siteConfig.contact?.mode;
+      // TEMP: GitHub Actions deploy link
+      { const ga = document.createElement('a');
+        ga.href = 'https://github.com/crummo/slowdustpost.com/actions';
+        ga.target = '_blank'; ga.rel = 'noopener'; ga.textContent = 'GitHub Actions';
+        ga.style.cssText = 'font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#5a5248;padding:10px 0 10px 10px;border-bottom:1px solid #2a2623;border-left:none;';
+        drawerEl.appendChild(ga); }
       // 'card-only' and 'form' put a Contact link in BOTH desktop nav and drawer
       if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav') {
         addLink('contact', 'Contact');
@@ -1454,6 +1540,13 @@
         main.appendChild(sec);
       });
 
+      // What We Do
+      const wwd = document.createElement('section');
+      wwd.id = 'page-whatwedo';
+      wwd.className = 'page';
+      wwd.innerHTML = '<div class="about-wrap" id="whatwedo-container"></div>';
+      main.appendChild(wwd);
+
       // About
       const abt = document.createElement('section');
       abt.id = 'page-about';
@@ -1470,31 +1563,23 @@
       ctc.className = 'page';
       const isCardOnly = cc.mode === 'card-only';
       const showCard = isCardOnly || cc.showCard;
-      const cardHtml = showCard && siteConfig.about ? (() => {
-        const name  = siteConfig.ownerName || '';
-        // Prefer contact-card override email; fall back to About page email
-        const email = (siteConfig.contact?.email || siteConfig.about.contactEmail || '');
-        return `<div class="contact-card">
-          ${name  ? `<div class="contact-card-name">${x(name)}</div>` : ''}
-          ${email ? `<a class="contact-card-email" href="mailto:${x(email)}">${x(email)}</a>` : ''}
-        </div>
-        ${!isCardOnly ? `<div class="contact-card-divider"></div>` : ''}`;
-      })() : '';
-      // Optional contact photo — renders side-by-side with the card on desktop
-      const photoHtml = cc.photo
-        ? `<div class="contact-photo-frame"><img src="${x(cc.photo)}" alt="${x(cc.photoAlt || '')}"></div>`
-        : '';
-      const cardWithFormHtml = `${cardHtml}${!isCardOnly ? `<form id="contact-form" onsubmit="handleContact(event)">
+      // Prefer contact-card override email; fall back to About page email
+      const _ctEmail = (siteConfig.contact?.email || (siteConfig.about || {}).contactEmail || '');
+      const cardWithFormHtml = !isCardOnly ? `<form id="contact-form" onsubmit="handleContact(event)">
             <div class="contact-field"><label>Name</label><input type="text" name="name" required placeholder="Your name"></div>
             <div class="contact-field"><label>Email</label><input type="email" name="email" required placeholder="your@email.com"></div>
             <div class="contact-field"><label>Message</label><textarea name="message" required placeholder="Tell me about your project..."></textarea></div>
-            <button type="submit" id="contact-submit" class="contact-submit">Send Message</button>
+            <button type="submit" id="contact-submit" class="contact-submit contact-submit-big">Send Message</button>
+            ${_ctEmail ? `<div class="contact-email-line"><a href="mailto:${x(_ctEmail)}">${x(_ctEmail)}</a></div>` : ''}
             <div id="contact-result" class="contact-result"></div>
-          </form>` : ''}`;
+          </form>` : '';
       ctc.innerHTML = `
         <div class="contact-wrap">
-          <h2 class="about-eyebrow">Get in Touch</h2>
-          ${photoHtml ? `<div class="contact-layout">${photoHtml}<div class="contact-content">${cardWithFormHtml}</div></div>` : cardWithFormHtml}
+          <h1 class="contact-heading">Get In Touch</h1>
+          ${cardWithFormHtml}
+          <footer class="about-footer">
+            <p>&copy; ${new Date().getFullYear()} ${x(siteConfig.ownerName || '')}. All rights reserved.</p>
+          </footer>
         </div>`;
       main.appendChild(ctc);
     }
@@ -1537,15 +1622,17 @@
         : siteConfig.categories.filter(c => c.published !== false);
       if (cats.some(c => c.id === id)) { buildCat(id); reanimateMobileList(id); }
 
-      if (id === 'home')  renderHome();
-      if (id === 'about') renderAbout();
+      if (id === 'home')     renderHome();
+      if (id === 'whatwedo') renderWhatWeDo();
+      if (id === 'about')    renderAbout();
     }
 
     function showFirst() {
       const hash = location.hash.slice(1);
-      if (hash === 'about')   { showPage('about');   return; }
-      if (hash === 'contact') { showPage('contact'); return; }
-      if (hash === 'home')    { showPage('home');    return; }
+      if (hash === 'whatwedo') { showPage('whatwedo'); return; }
+      if (hash === 'about')    { showPage('about');    return; }
+      if (hash === 'contact')  { showPage('contact');  return; }
+      if (hash === 'home')     { showPage('home');     return; }
       const visible = isPreview
         ? siteConfig.categories
         : siteConfig.categories.filter(c => c.published !== false);
@@ -1745,50 +1832,16 @@
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
-
-      // Escape the animated .page containing block.
-      // .page.visible has animation-fill-mode:both; even after pageIn ends the
-      // element can retain a non-none transform (translateY(0)) which makes it
-      // the containing block for position:fixed descendants — so the grid ends
-      // up pinned to the content area instead of the viewport.
-      // Fix: reparent the grid to document.body once so it sits outside any
-      // animated ancestor. A MutationObserver keeps its visibility in sync.
-      if (!grid._reparented && document.body.classList.contains('nav-left')) {
-        const parentPage = grid.closest('.page');
-        grid._parentPage = parentPage;
-        document.body.appendChild(grid);
-        grid._reparented = true;
-        if (parentPage) {
-          new MutationObserver(() => {
-            const vis = parentPage.classList.contains('visible');
-            const out = parentPage.classList.contains('leaving');
-            if (vis) {
-              grid.style.display    = '';
-              grid.style.opacity    = '';
-              grid.style.transition = '';
-            } else if (out) {
-              grid.style.opacity    = '0';
-              grid.style.transition = 'opacity 0.2s';
-            } else {
-              grid.style.display    = 'none';
-              grid.style.opacity    = '';
-              grid.style.transition = '';
-            }
-          }).observe(parentPage, { attributes: true, attributeFilter: ['class'] });
-        }
+      // Force full-viewport in JS — CSS specificity is unreliable here
+      if (document.body.classList.contains('nav-left')) {
+        grid.style.position     = 'fixed';
+        grid.style.inset        = '0';
+        grid.style.width        = '100vw';
+        grid.style.height       = '100vh';
+        grid.style.overflow     = 'visible';
+        grid.style.zIndex       = '201';
+        grid.style.pointerEvents = 'none';
       }
-
-      // Force full-viewport positioning (explicit sides — avoids inset: 0 compat issues)
-      grid.style.position      = 'fixed';
-      grid.style.top           = '0';
-      grid.style.left          = '0';
-      grid.style.right         = '0';
-      grid.style.bottom        = '0';
-      grid.style.width         = '100vw';
-      grid.style.height        = '100vh';
-      grid.style.overflow      = 'visible';
-      grid.style.zIndex        = '201';
-      grid.style.pointerEvents = 'none';
 
       const W = window.innerWidth;
       const H = window.innerHeight;
@@ -1797,11 +1850,16 @@
         return;
       }
 
+      // Left boundary: respect nav sidebar width so cards don't drift behind it
+      const _navEl = document.querySelector('nav');
+      const NAV_W = (document.body.classList.contains('nav-left') && _navEl && _navEl.offsetWidth > 0)
+        ? _navEl.offsetWidth : 0;
+
       const maxOvlap   = catDef.scatteredOverlap ?? 0.20;
       const topZonePct = catDef.scatteredTopZone ?? 0.30;
       const rng = mulberry32(catDef.scatteredSeed ?? (Math.random() * 0xFFFFFFFF | 0));
 
-      const CARD_W = Math.round(W * 0.30);
+      const CARD_W = Math.round((W - NAV_W) * 0.32);
       const CARD_H = Math.round(CARD_W * 9 / 16);
       const topZoneH = H * topZonePct;
 
@@ -1823,7 +1881,7 @@
 
         let best = null, bestOvlap = Infinity;
         for (let t = 0; t < MAX_TRIES; t++) {
-          const cx = rng() * xMax;
+          const cx = NAV_W + rng() * Math.max(1, xMax - NAV_W);
           const cy = rng() * Math.max(1, yMax);
           const candidate = { x: cx, y: cy, w: CARD_W, h: CARD_H };
           const maxO = placed.reduce((m, p) => Math.max(m, overlapPct(candidate, p)), 0);
@@ -1862,15 +1920,18 @@
       function tick() {
         const gW = window.innerWidth;
         const gH = window.innerHeight;
+        const _nav = document.querySelector('nav');
+        const gLeft = (document.body.classList.contains('nav-left') && _nav && _nav.offsetWidth > 0)
+          ? _nav.offsetWidth : 0;
         items.forEach(item => {
           if (item._dragging) return;
           item._px += item._vx;
           item._py += item._vy;
-          // Bounce off viewport edges
-          if (item._px <= 0)           { item._px = 0;           item._vx =  Math.abs(item._vx); }
-          if (item._px + cardW >= gW)  { item._px = gW - cardW;  item._vx = -Math.abs(item._vx); }
-          if (item._py <= 0)           { item._py = 0;           item._vy =  Math.abs(item._vy); }
-          if (item._py + cardH >= gH)  { item._py = gH - cardH;  item._vy = -Math.abs(item._vy); }
+          // Bounce off viewport edges — respect left nav sidebar
+          if (item._px <= gLeft)           { item._px = gLeft;        item._vx =  Math.abs(item._vx); }
+          if (item._px + cardW >= gW - 2)  { item._px = gW - cardW - 2; item._vx = -Math.abs(item._vx); }
+          if (item._py <= 0)               { item._py = 0;             item._vy =  Math.abs(item._vy); }
+          if (item._py + cardH >= gH - 2)  { item._py = gH - cardH - 2; item._vy = -Math.abs(item._vy); }
           item.style.left = item._px + 'px';
           item.style.top  = item._py + 'px';
         });
@@ -2223,26 +2284,64 @@
       const ownerName = siteConfig.ownerName || '';
       const tagline   = siteConfig.ownerTitle || (siteConfig.homePage || {}).subhead || '';
 
-      // Build nav buttons from published categories
+      // Build landing nav buttons — mirror the full sidebar: Team + categories + Contact
+      // (excludes "Our Work" / motion category since the landing IS the entry to that)
       const publishedCats = isPreview
         ? siteConfig.categories
         : siteConfig.categories.filter(c => c.published !== false);
-      const navBtnsHtml = publishedCats.map(cat =>
-        `<a class="home-landing-nav-btn" href="#${x(cat.id)}"
-            onclick="event.preventDefault();showPage('${x(cat.id)}');closeDrawer&&closeDrawer()"
-          >${x(cat.label)}</a>`
+      const _landingLinks = [];
+      _landingLinks.push({ id: 'whatwedo', label: 'What We Do' });
+      if (siteConfig.about?.show !== false)
+        _landingLinks.push({ id: 'about', label: 'The Team' });
+      publishedCats
+        .forEach(c => _landingLinks.push({ id: c.id, label: c.label }));
+      const _ctMode = siteConfig.contact?.mode;
+      if ((siteConfig.contact?.enabled || _ctMode === 'card-only') && _ctMode !== 'email-nav')
+        _landingLinks.push({ id: 'contact', label: 'Contact' });
+      const navBtnsHtml = _landingLinks.map(lnk =>
+        `<a class="home-landing-nav-btn" href="#${x(lnk.id)}"
+            onclick="event.preventDefault();showPage('${x(lnk.id)}');closeDrawer&&closeDrawer()"
+          >${x(lnk.label)}</a>`
       ).join('');
 
-      const bgUrl = (siteConfig.homePage || {}).bg || siteConfig.siteBg || '';
+      const _lw = ownerName ? ownerName.trim().split(/\s+/) : [];
+      const logoHtml = _lw.length > 1
+        ? `<div class="home-landing-logo"><span class="logo-top">${x(_lw.slice(0,-1).join(' '))}</span><span class="logo-split"> </span><span class="logo-bottom">${x(_lw[_lw.length-1])}</span></div>`
+        : (ownerName ? `<div class="home-landing-logo">${x(ownerName)}</div>` : '');
+      // The html element carries the bg image site-wide — no duplicate img needed here.
       pg.innerHTML = `
-        <div class="home-wrap${bgUrl ? ' home-wrap-bg' : ''}">
-          ${bgUrl ? `<div class="home-bg"><img class="home-bg-img" src="${x(bgUrl)}" alt="" aria-hidden="true" loading="eager"></div><div class="home-overlay"></div>` : ''}
+        <div class="home-wrap">
           <div class="home-landing">
-            ${ownerName   ? `<div class="home-landing-logo">${x(ownerName)}</div>`     : ''}
-            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>`       : ''}
-            ${tagline     ? `<div class="home-landing-tagline">${x(tagline)}</div>`    : ''}
+            ${logoHtml}
+            ${tagline   ? `<div class="home-landing-tagline">${x(tagline)}</div>` : ''}
+            ${navBtnsHtml ? `<div class="home-landing-nav">${navBtnsHtml}</div>` : ''}
           </div>
         </div>`;
+    }
+
+    /* ── WHAT WE DO ── */
+    function renderWhatWeDo() {
+      if (_wwdRendered) return;
+      _wwdRendered = true;
+      const container = document.getElementById('whatwedo-container');
+      if (!container) return;
+      const heroImg = (siteConfig.about || {}).photo || '';
+      container.innerHTML = `
+        <h2 class="about-eyebrow">What We Do</h2>
+        ${heroImg ? `<div class="wwd-hero"><img src="${x(heroImg)}" class="wwd-hero-img" alt="Slow Dust Post"></div>` : ''}
+        <div class="about-content wwd-copy">
+          <div class="about-bio">
+            <p>We cut picture. We grade it. We mix the sound. Then we hand it back and it looks and sounds like something real.</p>
+            <p>Slow Dust Post is a small editorial and finishing shop in Los Angeles. One roof, no handoffs. The editor is the colorist is the mixer — or they're sitting next to each other. Either way, your project doesn't get lost in translation between departments.</p>
+          </div>
+          <div class="about-bio2">
+            <p>We work on long-form docs, short films, branded content, and anything that needs a careful hand in post. Fast turnarounds when you need them. Unhurried work when you don't. Rates that make sense for the size of the project.</p>
+            <p>Come in with footage. Leave with a finish.</p>
+          </div>
+        </div>
+        <footer class="about-footer">
+          <p>&copy; ${new Date().getFullYear()} ${x(siteConfig.ownerName || '')}. All rights reserved.</p>
+        </footer>`;
     }
 
     function renderAbout() {
@@ -2307,22 +2406,22 @@
         }
       }
 
+      // Team photos above copy — desert hero photo moved to What We Do page
       container.innerHTML = `
         <h2 class="about-eyebrow">The Team</h2>
-        <div class="about-layout placement-${x(a.photoPlacement || 'above')}">
-          ${photoHtml}
+        <div class="about-team-grid">
+          <img src="images/portrait.jpg"       class="about-team-photo" alt="Team member">
+          <img src="images/gallery-editor.jpg"  class="about-team-photo" alt="Team member">
+          <img src="images/gallery-mixing.jpg"  class="about-team-photo" alt="Team member">
+          <img src="images/gallery-cowboy.jpg"  class="about-team-photo" alt="Team member">
+        </div>
+        <div class="about-layout">
           <div class="about-content">
             ${a.bio  ? `<div class="about-bio">${a.bio}</div>`   : ''}
             ${a.bio2 ? `<div class="about-bio2">${a.bio2}</div>` : ''}
             ${a.contactEmail && a.showEmail !== false ? `<div class="about-contact-line">Reach me at <a href="mailto:${x(a.contactEmail)}">${x(a.contactEmail)}</a></div>` : ''}
             ${resumeLink}
           </div>
-        </div>
-        <div class="about-team-grid">
-          <img src="images/portrait.jpg"       class="about-team-photo" alt="Team member">
-          <img src="images/gallery-editor.jpg"  class="about-team-photo" alt="Team member">
-          <img src="images/gallery-mixing.jpg"  class="about-team-photo" alt="Team member">
-          <img src="images/gallery-cowboy.jpg"  class="about-team-photo" alt="Team member">
         </div>
         ${clientsSection}
         ${socialHtml ? `<div class="about-social-links">${socialHtml}</div>` : ''}
@@ -2695,8 +2794,14 @@
     }
 
     /* ── NAV DRAWER ── */
-    function toggleDrawer() { document.getElementById('nav-drawer').classList.toggle('open'); }
-    function closeDrawer()  { document.getElementById('nav-drawer').classList.remove('open'); }
+    function toggleDrawer() {
+      const open = document.getElementById('nav-drawer').classList.toggle('open');
+      document.querySelector('nav').classList.toggle('drawer-open', open);
+    }
+    function closeDrawer() {
+      document.getElementById('nav-drawer').classList.remove('open');
+      document.querySelector('nav').classList.remove('drawer-open');
+    }
 
     // Close drawer instantly (no animation) to prevent size-jump glitches on rotation
     function closeDrawerInstant() {
