@@ -734,8 +734,14 @@
       .nav-brand-rule, .nav-brand-title { display: none; }
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
+      /* html overflow:hidden is redundant on portrait (body is position:fixed) and
+         can prevent iOS from routing touch events into the main scroll container. */
+      html { overflow: visible; }
+      /* No page-in animation on portrait — prevents opacity:0 fill-backwards
+         from ever leaving content invisible if animation is skipped or delayed. */
+      .page.visible { animation: none !important; }
       .gallery-grid { display: none !important; }
-      .mobile-list { display: block; padding: 16px 0 32px; }
+      .mobile-list { display: block !important; padding: 16px 0 32px; }
       .about-wrap { padding: 16px 22px 40px; display: flex; flex-direction: column; }
       body.nav-left .about-wrap { left: 0; }
       /* Team photos move to top on mobile, main photo hidden */
@@ -1836,6 +1842,13 @@
     function layoutScattered(grid, catDef, _retry) {
       const items = Array.from(grid.querySelectorAll(':scope > .grid-item'));
       if (!items.length) return;
+      // Portrait mobile: grid is display:none, mobile list is shown instead.
+      // Skip layout + physics loop entirely to avoid unnecessary work and
+      // to prevent any potential interference with the mobile list rendering.
+      if (window.matchMedia('(max-width: 768px)').matches &&
+          !window.matchMedia('(max-height: 600px) and (orientation: landscape)').matches) {
+        return;
+      }
       // Force full-viewport in JS — CSS specificity is unreliable here
       if (document.body.classList.contains('nav-left')) {
         grid.style.position     = 'fixed';
