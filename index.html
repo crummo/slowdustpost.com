@@ -899,177 +899,274 @@
     }
 
     @media (max-height: 600px) and (orientation: landscape) {
-      /* ── LANDSCAPE: left sidebar nav ── */
-      :root { --nav-h: 40px; --nav-w: calc(140px + env(safe-area-inset-left, 0px)); --safe-top: env(safe-area-inset-top, 0px); }
+      /* ── LANDSCAPE: collapsible icon rail ──
+         Default: 48px-wide rail with single-letter nav buttons (e.g. "W" "S" "A" "C"),
+         brand hidden, theme toggle at bottom. Tapping the rail (anywhere outside a
+         link) toggles body.rail-open which expands the rail to 220px to reveal the
+         full brand wordmark and full nav-link labels. Tapping a link or outside the
+         rail collapses it. Cinema mode (gallery viewer / lightbox open) hides the
+         rail entirely so media owns the canvas. */
+      :root {
+        --nav-h: 40px;
+        --nav-w: calc(48px + env(safe-area-inset-left, 0px));
+        --nav-w-expanded: calc(220px + env(safe-area-inset-left, 0px));
+        --safe-top: env(safe-area-inset-top, 0px);
+      }
 
-      /* Left sidebar — same intent as desktop, tighter for short viewport */
+      /* Rail container — same shape regardless of nav-left class on body */
       nav, body.nav-left nav {
         top: 0; left: 0; bottom: 0; right: auto;
         width: var(--nav-w); height: 100dvh;
-        flex-direction: column; align-items: flex-start; justify-content: flex-start;
-        padding: 20px 20px 24px calc(env(safe-area-inset-left, 0px) + 14px);
-        border-bottom: none; border-right: none;
-        background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
+        flex-direction: column; align-items: stretch; justify-content: flex-start;
+        padding: 14px 6px 14px calc(env(safe-area-inset-left, 0px) + 6px);
+        border-bottom: none; border-right: 1px solid var(--fg-dimmer);
+        background: var(--bg);
+        backdrop-filter: none; -webkit-backdrop-filter: none;
+        transition: width 0.28s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease);
+        cursor: pointer;
+        overflow: hidden;
       }
-      /* Content offset for sidebar */
+      /* Home rail is translucent so the bg media reads through */
+      body[data-page="home"] nav, body.nav-left[data-page="home"] nav {
+        background: rgba(13,11,10,0.18);
+        border-right-color: rgba(237,232,224,0.12);
+      }
+
+      /* Expanded state — wider, opaque, padded for full text */
+      body.rail-open nav, body.nav-left.rail-open nav {
+        width: var(--nav-w-expanded);
+        padding: 18px 18px 18px calc(env(safe-area-inset-left, 0px) + 18px);
+        background: var(--bg);
+        border-right-color: var(--fg-dimmer);
+        cursor: default;
+      }
+
+      /* Content offset uses the *collapsed* width so layout doesn't reflow when
+         the rail expands — the expanded rail floats over content instead. */
       main, body.nav-left main { padding-top: 0; padding-left: var(--nav-w); padding-right: 0; }
-      /* Home page full-bleed — extend behind sidebar */
+      /* Home page full-bleed — bg art extends behind the rail */
       #page-home, body.nav-left[data-page="home"] #page-home {
         margin-left: calc(-1 * var(--nav-w)); margin-right: 0; width: calc(100% + var(--nav-w));
       }
-      /* Brand: hidden in landscape — space is too premium */
-      body.nav-left .nav-brand { display: none; }
-      /* Nav links: vertical, compact */
-      body.nav-left .nav-right { flex-direction: column; align-items: flex-start; width: 100%; flex: 1; }
-      body.nav-left .nav-links { display: flex; }
-      /* No hamburger or drawer needed */
+
+      /* ── BRAND ──
+         Hidden when collapsed; full wordmark when expanded (incl. on home, where
+         the page-content logo and rail-brand don't compete because brand is chrome). */
+      body.nav-left .nav-brand {
+        display: flex; flex-direction: column; align-items: flex-start;
+        gap: 6px; margin: 0 0 16px;
+        opacity: 0; pointer-events: none;
+        transform: translateX(-4px);
+        transition: opacity 0.2s var(--ease), transform 0.25s var(--ease);
+        white-space: nowrap; overflow: hidden;
+      }
+      body.rail-open .nav-brand {
+        opacity: 1; pointer-events: auto; transform: translateX(0);
+        transition-delay: 0.08s;
+      }
+      body.nav-left .nav-brand-name { font-size: 18px; line-height: 1; letter-spacing: 0.04em; word-spacing: normal; white-space: nowrap; }
+      body.nav-left .nav-brand-rule  { display: none; }
+      body.nav-left .nav-brand-title { font-size: 9px; letter-spacing: 0.22em; color: var(--fg-mid); }
+
+      /* ── NAV LINKS ──
+         Collapsed: each link shows only its first letter via the font-size: 0 +
+         ::first-letter trick. Expanded: full text. Buttons keep their bordered
+         look so they remain tappable targets. */
+      body.nav-left .nav-right { flex-direction: column; align-items: stretch; width: 100%; flex: 1; gap: 0; }
+      body.nav-left .nav-links { display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%; margin: 0; }
+      body.nav-left .nav-links a {
+        font-weight: 700; letter-spacing: 0; padding: 9px 0;
+        border: 1px solid var(--fg-dimmer); color: var(--fg-mid);
+        display: block; text-align: center; box-sizing: border-box;
+        transition: color 0.2s var(--ease), border-color 0.2s var(--ease), font-size 0.18s var(--ease), letter-spacing 0.2s var(--ease), padding 0.2s var(--ease);
+        font-size: 0; line-height: 1.2; white-space: nowrap; overflow: hidden;
+      }
+      body.nav-left .nav-links a::first-letter {
+        font-size: 13px; letter-spacing: 0;
+      }
+      body.nav-left .nav-links a::after { display: none; }
+      body.nav-left .nav-links a:hover { color: var(--fg); border-color: var(--accent); }
+      body.nav-left .nav-links a.active { color: var(--accent); border-color: var(--accent); }
+
+      /* Expanded: full text */
+      body.rail-open .nav-links a {
+        font-size: 11px; letter-spacing: 0.14em; padding: 11px 14px; text-align: left;
+      }
+      body.rail-open .nav-links a::first-letter { font-size: 11px; }
+
+      /* Hamburger / drawer not used in landscape */
       body.nav-left .nav-hamburger { display: none !important; }
       .nav-drawer, body.nav-left .nav-drawer { display: none !important; }
-      body.nav-left .theme-toggle { margin-top: 8px; }
-      body.nav-left .gv { left: var(--nav-w); top: 0; }
+
+      /* Theme toggle pinned to bottom of rail */
+      body.nav-left .theme-toggle {
+        margin-top: auto; align-self: center;
+        font-size: 14px; padding: 8px 6px;
+      }
+      body.rail-open .theme-toggle { align-self: flex-start; }
+
+      /* ── CINEMA MODE ──
+         When gallery viewer or lightbox is open, the rail visually disappears so
+         media owns the full viewport. Pointer-events killed too so nothing leaks. */
+      body.gv-open nav,
+      body.lb-open nav {
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.2s var(--ease);
+      }
+      body.gv-open.rail-open nav,
+      body.lb-open.rail-open nav { opacity: 0; pointer-events: none; }
+
+      /* Gallery viewer covers the full viewport (rail is hidden anyway) */
+      body.nav-left .gv { left: 0; top: 0; }
 
       /* Grid: show masonry instead of the full-width mobile list */
       .gallery-grid { display: block !important; }
       .mobile-list { display: none !important; }
 
-      /* About/contact: tighter padding for short landscape viewport */
+      /* About / contact base padding — content sits to the right of the 48px rail */
       body.nav-left .about-wrap { left: 0; }
       .about-wrap { padding: 20px 24px 24px 0; }
-      .contact-wrap { padding: 12px 24px 24px 0; }
-      /* Tight eyebrow gap in landscape — was 36px which created a big
-         band above the photo/text block. Pulls block up toward heading. */
+      .contact-wrap { padding: 16px 24px 24px 0; max-width: none; margin: 0; }
+
+      /* Tight eyebrow gap in landscape so the heading hugs the content beneath */
       .about-eyebrow { margin-bottom: 8px; }
-      /* Force side-by-side layout in landscape regardless of the explicit
-         placement choice — a tall portrait photo set to "above" otherwise
-         dominates the viewport and pushes all text below the fold. Photo
-         on the left, text to the right of it, no big white space. */
+
+      /* About: force side-by-side layout. Photo on the left at ~32vw with the
+         freed-up rail width; bio runs to the right at a comfortable measure. */
       .about-layout {
         flex-direction: row !important;
         align-items: flex-start;
-        gap: 16px;
+        gap: 22px;
       }
-      /* Offset the half-leading above the first line of bio text so the
-         text visually aligns with the top of the photo. */
       .about-content { margin-top: -7px; }
       .about-bio  { font-size: 15px; line-height: 1.6; }
       .about-bio2 { font-size: 13px; line-height: 1.65; }
-      .about-photo-frame.shape-natural.photo-full-width {
-        width: auto !important;
-      }
+      .about-photo-frame.shape-natural.photo-full-width { width: auto !important; }
       .about-photo-frame.shape-natural .about-photo-img,
       .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
         width: auto !important;
-        max-width: 28vw;
-        /* Use svh (smallest viewport height) instead of dvh so the photo
-           stays the same size when iOS Safari's URL bar collapses on
-           scroll — sized once for URL-bar-visible state and stays put. */
+        max-width: 32vw;
+        /* svh (smallest viewport height) avoids resizing when iOS URL bar collapses */
         max-height: calc(100svh - 120px);
         height: auto;
       }
       /* The desktop placement-above full-width rule sets max-width/max-height: none
-         with higher specificity than the rule above, overriding the landscape
-         constraints. Re-assert them here at matching specificity. */
+         with higher specificity; re-assert at matching specificity. */
       .about-layout.placement-above .about-photo-frame.shape-natural.photo-full-width .about-photo-img {
         width: auto !important;
-        max-width: 28vw !important;
+        max-width: 32vw !important;
         max-height: calc(100svh - 120px) !important;
       }
 
-      /* Viewer covers the full viewport — sits above the nav (z-index 200) */
+      /* ── GALLERY VIEWER (cinema mode UI) ── */
       .gv.open {
         z-index: 300 !important;
         top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
       }
 
-      /* Gallery viewer: position:fixed pins gv-media directly to the viewport.
-         Top/bottom padding gives the BACK button and counter pill their
-         own clear space — image is shrunk to fit, AR preserved by object-fit
-         contain on .gv-img. Reads as a deliberate matte frame. */
-      .gv-media { position: fixed; inset: 0; z-index: 301; flex: none; box-sizing: border-box;
-                  /* horizontal padding clears BACK button (top-left) and prev/next
-                     arrows (both edges); 12px bottom matches earlier spacing */
-                  padding: 0 max(80px, env(safe-area-inset-left, 0px) + 70px) 12px max(80px, env(safe-area-inset-right, 0px) + 70px); }
+      .gv-media {
+        position: fixed; inset: 0; z-index: 301; flex: none; box-sizing: border-box;
+        /* Horizontal padding clears BACK button (top-left) and prev/next arrows;
+           12px bottom matches the existing spacing convention. */
+        padding: 0 max(80px, env(safe-area-inset-left, 0px) + 70px) 12px max(80px, env(safe-area-inset-right, 0px) + 70px);
+      }
       .gv-img { width: 100%; height: 100%; }
-      /* iframe: constrain by height in landscape (56.25vw overshoots short viewport) */
+      /* iframe: constrain by height; 56.25vw overshoots a short viewport */
       .gv-iframe { height: 100%; width: auto; aspect-ratio: 16 / 9; max-width: 100%; }
-      /* Pull back button out of bottom controls, pin to upper-left.
-         z-index 302 keeps it above gv-media (301). */
       .gv-back-btn {
         display: block; position: fixed; top: 8px; left: max(18px, env(safe-area-inset-left, 0px));
         width: auto; text-align: left; padding: 2px 0;
         font-size: 10px; z-index: 302;
       }
-      /* Move lb-close from upper-right to upper-left in landscape; match gallery back button */
       .lb-close { top: 8px; right: auto; left: max(18px, env(safe-area-inset-left, 0px)); font-size: 10px; }
 
-      /* Side arrows: show at left/right edges instead of bottom Prev/Next buttons */
+      /* Side arrows replace bottom Prev/Next buttons */
       .gv-arrow { display: flex !important; opacity: 1; }
       .gv-arrow::before { opacity: 0.45; }
-      /* Inset arrows to clear camera cutout and rounded corners */
       .gv-arrow-prev { left: max(16px, env(safe-area-inset-left, 0px)); }
       .gv-arrow-next { right: max(16px, env(safe-area-inset-right, 0px)); }
       #gv-ctrl-prev, #gv-ctrl-next { display: none !important; }
 
-      /* Controls: pull out of flex flow so gv-media fills the full viewport height.
-         Counter floats bottom-left, aligned with the back button above it. */
       .gv-controls {
         position: fixed;
         bottom: max(8px, env(safe-area-inset-bottom, 0px));
         left: max(18px, env(safe-area-inset-left, 0px));
         right: auto;
-        padding: 0;
-        border: none;
-        background: none;
+        padding: 0; border: none; background: none;
         z-index: 302;
       }
 
-      /* Lightbox: cover full visual viewport; close button floats independently */
+      /* Lightbox: cover full visual viewport */
       .lightbox { padding-top: 0; box-sizing: border-box; }
-      /* Video sized to visual viewport height via JS-set --vv-h; 100dvh as fallback */
       .lb-image-wrap { aspect-ratio: auto; height: calc(var(--vv-h, 100dvh) - 44px); width: min(100%, calc((var(--vv-h, 100dvh) - 44px) * 1.7778)); }
-      /* Hide title/buttons; float counter bottom-left to match gallery counter */
       .lb-info { display: none; }
       #lb-prev, #lb-next { display: none; }
       .lb-meta { margin: 0; min-height: 0; }
       .lb-counter { position: fixed; bottom: max(8px, env(safe-area-inset-bottom, 0px)); left: max(18px, env(safe-area-inset-left, 0px)); }
       .lb-inner { position: relative; }
       .lb-float-prev, .lb-float-next { display: flex; -webkit-tap-highlight-color: transparent; }
-      /* Full-height tap zones so arrows are centred on the image */
       .lb-float-prev { left: max(16px, env(safe-area-inset-left, 0px)); top: 0; }
       .lb-float-next { right: max(16px, env(safe-area-inset-right, 0px)); top: 0; }
 
-      /* ── HOME LANDING — LANDSCAPE ── */
-      /* Full-bleed using exact nav-w so centering math works cleanly */
+      /* ── HOME LANDING — LANDSCAPE ──
+         Rail collapses to 48px so the landing logo can re-center against the
+         (near-)true viewport. Tagline gets horizontal room for absurdist letter-spacing. */
       body.nav-left[data-page="home"] #page-home { margin-left: calc(-1 * var(--nav-w)); width: calc(100% + var(--nav-w)); }
-      /* Landing: stacked logo, horizontally centered in content area, top-aligned with first nav button */
-      body[data-page="home"] .home-wrap { justify-content: flex-start; align-items: stretch; padding-top: 0; padding-bottom: 0; }
-      .home-landing { margin-left: var(--nav-w); width: calc(100% - var(--nav-w)); padding: 20px 8% 0; flex-direction: column; align-items: stretch; gap: 8px; text-align: center; max-width: none; box-sizing: border-box; }
-      .home-landing-logo { display: flex; flex-direction: column; align-items: center; font-size: clamp(34px, 9.5vw, 64px); margin-bottom: 10px; line-height: 1.15; letter-spacing: 0.03em; text-align: center; width: 100%; }
-      .home-landing-logo .logo-top { display: block; white-space: nowrap; word-spacing: normal; }
+      body[data-page="home"] .home-wrap { justify-content: center; align-items: center; padding-top: 0; padding-bottom: 0; }
+      .home-landing {
+        margin-left: 0; width: 100%;
+        padding: 0 6%;
+        flex-direction: column; align-items: center; gap: 12px;
+        text-align: center; max-width: none; box-sizing: border-box;
+      }
+      .home-landing-logo {
+        display: flex; flex-direction: column; align-items: center;
+        font-size: clamp(40px, 11vw, 78px);
+        margin-bottom: 14px; line-height: 1.05; letter-spacing: 0.04em;
+        text-align: center; width: 100%;
+      }
+      .home-landing-logo .logo-top    { display: block; white-space: nowrap; word-spacing: normal; }
       .home-landing-logo .logo-bottom { display: block; text-align: center; word-spacing: normal; }
-      .home-landing-tagline { font-size: 9px; letter-spacing: 0.16em; text-align: center; width: 100%; line-height: 1.8; text-wrap: balance; }
+      .home-landing-tagline {
+        font-size: 9px; letter-spacing: 0.28em;
+        text-align: center; width: 100%; line-height: 1.8; text-wrap: balance;
+      }
       .home-landing-nav { display: none !important; }
-      /* Nav links: tighten to fit sidebar width */
-      body.nav-left .nav-links a { font-size: 9px; letter-spacing: 0.06em; padding: 7px 10px; }
 
       /* ── PORTRAIT → LANDSCAPE TRANSLATIONS ── */
-      /* Hamburger hidden — left nav links are always visible in landscape */
-      /* Team page: keep hero photo hidden, photos above text */
+      /* About team page: hero photo hidden, team grid at top */
       .about-photo-frame { display: none; }
       .about-wrap { display: flex; flex-direction: column; }
       .about-team-grid { order: -1; margin-top: 0; margin-bottom: 12px; }
-      /* Contact: hide card details (still cramped in landscape), scrollable */
-      .contact-wrap { display: flex; flex-direction: column; }
-      .contact-wrap .about-footer { margin-top: 32px; }
-      .contact-wrap .about-eyebrow { display: none; }
-      .contact-card-name { display: none; }
-      .contact-card-email { display: none; }
-      .contact-card-divider { display: none; }
+
+      /* ── CONTACT — TEXT-FIRST REFLOW ──
+         No active photo on contact (per portrait), so drop the photo column
+         entirely and let the contact card breathe. Name, email, divider all
+         visible — the page is the contact info. */
+      .contact-wrap { display: flex; flex-direction: column; align-items: flex-start; }
+      .contact-wrap .about-footer { margin-top: 24px; font-size: 10px; }
+      .contact-wrap .about-eyebrow { display: block; margin-bottom: 6px; }
+      .contact-photo-frame { display: none !important; }
+      .contact-layout { flex-direction: column; gap: 0; align-items: flex-start; }
+      .contact-card-name {
+        display: block !important;
+        font-size: 22px; line-height: 1.1; margin-bottom: 8px;
+      }
+      .contact-card-email {
+        display: inline-block !important;
+        font-size: 14px; letter-spacing: 0.04em;
+      }
+      .contact-card-divider {
+        display: block !important;
+        height: 1px; background: var(--fg-dimmer);
+        margin: 18px 0; width: min(280px, 60%);
+      }
       body[data-page="contact"] main { overflow-y: auto !important; }
-      /* Landing hero buttons: hidden in landscape — nav sidebar has the links */
+
+      /* Landing hero buttons hidden — rail handles nav */
       .home-landing-nav { display: none !important; }
       body[data-page="home"] main { overflow: hidden !important; }
-      /* Video viewer: full viewport above everything */
+      /* Video viewer: full viewport above everything (incl. preview banner) */
       .gv.open { z-index: 999999 !important; }
     }
 
@@ -2859,6 +2956,46 @@
     document.addEventListener('scroll', function() {
       closeDrawer();
     }, { passive: true });
+
+    /* ── RAIL (mobile landscape) ──
+       Tapping the rail anywhere outside a link toggles body.rail-open, which
+       expands the rail to reveal full nav text + brand wordmark. Tapping a link
+       or anywhere outside the rail collapses it. Orientation change always
+       collapses to avoid stuck state when rotating back to portrait. */
+    const _railMQ = window.matchMedia('(max-height: 600px) and (orientation: landscape)');
+    function _railActive() { return _railMQ.matches; }
+    function closeRail() { document.body.classList.remove('rail-open'); }
+    function toggleRail() {
+      if (!_railActive()) return;
+      document.body.classList.toggle('rail-open');
+    }
+    // Tap on rail (but not on a link or button) toggles expand state
+    document.addEventListener('click', function(e) {
+      if (!_railActive()) return;
+      const navEl = e.target.closest('nav');
+      const isInteractive = e.target.closest('a, button');
+      if (navEl && !isInteractive) {
+        e.stopPropagation();
+        toggleRail();
+        return;
+      }
+      // Tap on a nav link inside an open rail: let the navigation happen, then collapse
+      if (navEl && isInteractive && document.body.classList.contains('rail-open')) {
+        // Defer so the link click fires first
+        setTimeout(closeRail, 0);
+        return;
+      }
+      // Tap outside the rail collapses it
+      if (!navEl && document.body.classList.contains('rail-open')) {
+        closeRail();
+      }
+    });
+    // Always collapse on rotation/resize so rotating back to portrait doesn't
+    // leave the body in rail-open state with no rail to match it
+    window.addEventListener('orientationchange', closeRail);
+    window.addEventListener('resize', closeRail);
+    // Collapse when scrolling content (matches drawer behaviour)
+    document.addEventListener('scroll', closeRail, { passive: true, capture: true });
 
     /* ── TOUCH SWIPE — gallery viewer ──
        Horizontal swipe → galleryNav(prev/next).
