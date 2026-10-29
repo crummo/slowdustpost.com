@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slowdust Post — Reel (mockup)</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Unbounded:wght@800&display=swap" rel="stylesheet">
+  <style>
+    /* The cinematic title card over a slow, muted reel of the work: each project holds for a few
+       seconds with a gentle push-in, dissolving into the next, credited in the bottom bar.
+       Stills for now (the Bunny player can't be sampled); short muted .mp4 loops drop in the
+       same way. ?font=unbounded swaps the title back to the current wordmark font. */
+    :root {
+      --ink: #efe6d2;
+      --dim: rgba(239, 230, 210, 0.5);
+      --title-font: "Cormorant Garamond", Georgia, serif;
+      --title-weight: 500;
+      --title-track: 0.32em;
+      --bar: 12vh;
+      --hold: 7s;
+    }
+
+    :root.alt-font {
+      --title-font: "Unbounded", sans-serif;
+      --title-weight: 800;
+      --title-track: 0.04em;
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: var(--ink);
+    }
+
+    body {
+      font: italic 400 15px/1.4 "Cormorant Garamond", Georgia, serif;
+      letter-spacing: 0.04em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .frame {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: min(100vw, 239vh);
+      aspect-ratio: 2.39 / 1;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      container-type: size;
+      background: #070605;
+    }
+
+    @media (max-aspect-ratio: 1 / 1) {
+      .frame {
+        width: 100vw;
+        aspect-ratio: 4 / 5;
+      }
+    }
+
+    /* Footage: pulled down and warmed so it sits under the title like a graded background plate. */
+    .shot {
+      position: absolute;
+      inset: -2%;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(0.55) sepia(0.25) brightness(0.42) contrast(1.08) blur(0.6px);
+      opacity: 0;
+      transform: scale(1.02);
+      transition: opacity 2.2s ease;
+    }
+
+    .shot.in {
+      opacity: 1;
+      animation: push calc(var(--hold) + 2.4s) linear forwards;
+    }
+
+    @keyframes push {
+      to { transform: scale(1.1); }
+    }
+
+    .weave {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      will-change: transform;
+    }
+
+    .card { text-align: center; }
+
+    h1 {
+      font-family: var(--title-font);
+      font-weight: var(--title-weight);
+      font-style: normal;
+      font-size: 6.4cqw;
+      line-height: 1;
+      letter-spacing: var(--title-track);
+      margin-right: calc(var(--title-track) * -1);
+      text-transform: uppercase;
+      color: var(--ink);
+      text-shadow:
+        0 0 0.06em rgba(255, 140, 80, 0.45),
+        0 0 0.3em rgba(255, 96, 48, 0.18),
+        0 0 1.2em rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      animation: pull 3.6s cubic-bezier(0.3, 0, 0.15, 1) 1.4s forwards;
+    }
+
+    @media (max-aspect-ratio: 1 / 1) {
+      h1 { font-size: 10cqw; }
+      h1 .word { display: block; }
+      h1 .word + .word { margin-top: 0.2em; }
+    }
+
+    .sub {
+      margin-top: 2.4cqw;
+      font-size: max(14px, 1.5cqw);
+      color: var(--dim);
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 0.6em #000, 0 0 1.4em #000;
+      opacity: 0;
+      animation: fade 2.4s ease 4.8s forwards;
+    }
+
+    @media (max-aspect-ratio: 1 / 1) {
+      .sub { margin-top: 6cqw; font-size: 15px; }
+    }
+
+    @keyframes pull {
+      0%   { opacity: 0; filter: blur(14px); transform: scale(1.04); }
+      35%  { opacity: 1; }
+      100% { opacity: 1; filter: blur(0.25px); transform: scale(1); }
+    }
+
+    @keyframes fade {
+      to { opacity: 1; }
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #grain { mix-blend-mode: overlay; opacity: 0.6; }
+
+    .flicker {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: #fff6e4;
+      opacity: 0;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.15) 30%, rgba(0, 0, 0, 0.8) 100%);
+    }
+
+    .bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: var(--bar);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 clamp(16px, 4vw, 56px);
+      color: var(--dim);
+      opacity: 0;
+      animation: fade 2s ease 6s forwards;
+    }
+
+    .bar.top { top: 0; }
+    .bar.bottom { bottom: 0; }
+    .bar > :last-child { text-align: right; }
+
+    /* "Now showing" credit, bottom left: names the project under the title. */
+    .showing {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .showing small {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-style: normal;
+      opacity: 0.7;
+    }
+
+    #credit {
+      color: var(--dim);
+      border-bottom-color: transparent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.9s ease, color 0.4s, border-color 0.4s;
+    }
+
+    #credit.out { opacity: 0; }
+    #credit:hover, #credit:focus-visible { color: var(--ink); border-bottom-color: rgba(239, 230, 210, 0.3); }
+
+    .contact {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(239, 230, 210, 0.25);
+      transition: border-color 0.4s;
+    }
+
+    a:hover, a:focus-visible { border-color: var(--ink); outline: none; }
+
+    @media (max-aspect-ratio: 1 / 1) {
+      .bar.bottom { align-items: flex-end; padding-bottom: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      h1, .sub, .bar { animation: none; opacity: 1; filter: none; }
+      .shot.in { animation: none; }
+    }
+  </style>
+  <script src="../v2/work-data.js"></script>
+</head>
+<body>
+  <div class="frame" id="frame">
+    <div id="shots"></div>
+    <div class="weave" id="weave">
+      <div class="card">
+        <h1><span class="word">Slowdust</span> <span class="word">Post</span></h1>
+        <p class="sub">Edit &nbsp;·&nbsp; Grade &nbsp;·&nbsp; Finish</p>
+      </div>
+    </div>
+    <div class="flicker" id="flicker"></div>
+    <canvas id="grain" aria-hidden="true"></canvas>
+    <div class="vignette"></div>
+  </div>
+
+  <div class="bar top"><span>Post production</span><span>Los Angeles</span></div>
+  <div class="bar bottom">
+    <span class="showing"><small>Now showing</small><a id="credit" href="../v2/"></a></span>
+    <span class="contact"><small style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-style:normal;opacity:.7">New projects</small><a href="mailto:cameron@slowdustpost.com">cameron@slowdustpost.com</a></span>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      if (new URLSearchParams(location.search).get('font') === 'unbounded') root.classList.add('alt-font');
+
+      const frame = document.getElementById('frame');
+      const weave = document.getElementById('weave');
+      const flicker = document.getElementById('flicker');
+      const grain = document.getElementById('grain');
+      const shotsEl = document.getElementById('shots');
+      const credit = document.getElementById('credit');
+      const g = grain.getContext('2d');
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const HOLD = 7000;
+
+      // Same reel order as v2's slate.
+      const reel = SLOWDUST_WORK.filter((w) => w.reel).sort((a, b) => a.reel - b.reel);
+
+      // Two plates, alternating, so each dissolve is a true cross-fade.
+      const plates = [0, 1].map(() => {
+        const el = document.createElement('div');
+        el.className = 'shot';
+        shotsEl.appendChild(el);
+        return el;
+      });
+      reel.forEach((w) => { new Image().src = w.thumb; });
+
+      let i = 0;
+      let p = 0;
+
+      function show() {
+        const w = reel[i % reel.length];
+        const plate = plates[p];
+        const other = plates[1 - p];
+        plate.style.backgroundImage = `url("${w.thumb}")`;
+        plate.classList.remove('in');
+        void plate.offsetWidth; // restart the push-in
+        plate.classList.add('in');
+        other.classList.remove('in');
+        credit.classList.add('out');
+        setTimeout(() => {
+          credit.textContent = `${w.client} — ${w.title}`;
+          credit.href = `../v2/work/${w.slug}/`;
+          credit.classList.remove('out');
+        }, 900);
+        i++;
+        p = 1 - p;
+      }
+
+      let W = 0;
+      let H = 0;
+      const TILE = 220;
+      const tiles = Array.from({ length: 6 }, () => {
+        const c = document.createElement('canvas');
+        c.width = c.height = TILE;
+        const x = c.getContext('2d');
+        const img = x.createImageData(TILE, TILE);
+        for (let k = 0; k < img.data.length; k += 4) {
+          const v = 128 + (Math.random() + Math.random() + Math.random() - 1.5) * 150;
+          img.data[k] = img.data[k + 1] = img.data[k + 2] = v;
+          img.data[k + 3] = 255;
+        }
+        x.putImageData(img, 0, 0);
+        return c;
+      });
+
+      function size() {
+        const r = frame.getBoundingClientRect();
+        W = grain.width = Math.round(r.width);
+        H = grain.height = Math.round(r.height);
+        const bar = Math.max(0, (innerHeight - r.height) / 2);
+        root.style.setProperty('--bar', `${Math.max(bar, 72)}px`);
+      }
+
+      function drawGrain() {
+        const t = tiles[(Math.random() * tiles.length) | 0];
+        const ox = -Math.random() * TILE;
+        const oy = -Math.random() * TILE;
+        for (let y = oy; y < H; y += TILE) {
+          for (let x = ox; x < W; x += TILE) g.drawImage(t, x, y);
+        }
+      }
+
+      size();
+      window.addEventListener('resize', size);
+      show();
+
+      if (still) {
+        drawGrain();
+        return;
+      }
+
+      setInterval(show, HOLD);
+
+      let wx = 0;
+      let wy = 0;
+      let last = 0;
+      function loop(now) {
+        if (now - last >= 1000 / 24) {
+          last = now;
+          wx = wx * 0.7 + (Math.random() - 0.5) * 0.9;
+          wy = wy * 0.7 + (Math.random() - 0.5) * 1.2;
+          weave.style.transform = `translate(${wx.toFixed(2)}px, ${wy.toFixed(2)}px)`;
+          flicker.style.opacity = (Math.random() * 0.025).toFixed(3);
+          drawGrain();
+        }
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

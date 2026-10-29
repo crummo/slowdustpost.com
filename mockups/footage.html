@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slowdust Post — Footage (mockup)</title>
+  <meta name="theme-color" content="#0b0a08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Unbounded:wght@800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../player.css">
+  <style>
+    #reel {
+      color: var(--dim);
+      border-bottom-color: transparent;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    #reel:hover,
+    #reel:focus-visible {
+      color: var(--ink);
+      border-bottom-color: rgba(236, 227, 207, 0.3);
+    }
+  </style>
+  <script>
+    // Stills from cameronrumford.com, one per gather. A short hosted .mp4 works here too.
+    const THUMBS = 'https://cameronrumford.com/thumbs/';
+    const PLAY = 'https://player.mediadelivery.net/play/650059/';
+    window.SLOWDUST_FOOTAGE = [
+      { src: `${THUMBS}GV_WRAIR_sml.jpeg`, label: 'Gates Ventures', href: `${PLAY}82f7ce2b-81b1-40fd-ab2b-6be4d9d3ddb7` },
+      { src: `${THUMBS}Rage2_Update2Highlights01.jpeg`, label: 'Rage 2', href: `${PLAY}d628212c-296a-4eaf-b06a-0fbb4843b511` },
+      { src: `${THUMBS}loreal_glossy01.jpeg`, label: 'L’Oréal', href: `${PLAY}7902c344-e04d-497e-a546-d5cc97f40813` },
+      { src: `${THUMBS}AWS_Flikshop_sml.jpeg`, label: 'AWS — Flikshop', href: `${PLAY}48f1a2c0-a49b-41ea-82b7-74d10b3cb6d2` },
+      { src: `${THUMBS}Minecraft_hero_sml.jpeg`, label: 'Minecraft', href: `${PLAY}11602b63-f18d-4d76-b6d4-7111f2c9d573` },
+      { src: `${THUMBS}OPI_Starlight_sml.jpeg`, label: 'OPI', href: `${PLAY}4cf9058e-8c7d-47a7-bd47-9ddc4d122738` },
+      { src: `${THUMBS}BigBoys02_sml.jpg`, label: 'Light In The Attic', href: `${PLAY}37cb4570-6a6e-421c-8b4b-af5aa02e0ec0` },
+    ];
+  </script>
+</head>
+<body>
+  <canvas id="dust" aria-hidden="true"></canvas>
+  <h1 class="sr-only">Slowdust Post</h1>
+
+  <div class="corner tl">Slowdust Post<br><span class="dim">Los Angeles, CA</span></div>
+  <div class="corner tr"><span class="dim">TC</span> <span id="tc">01:00:00:00</span><br><a id="reel" href="#" target="_blank" rel="noopener" data-embed></a></div>
+  <div class="corner bl">Post production —<br>Edit / Grade / Finish</div>
+  <div class="corner br">— New projects<br><a href="mailto:cameron@slowdustpost.com">cameron@slowdustpost.com</a></div>
+
+  <p class="hint" id="hint">Move to disturb · Click to clear</p>
+
+  <script src="../main.js" defer></script>
+  <script src="../player.js"></script>
+</body>
+</html>

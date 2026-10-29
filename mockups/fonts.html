@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wordmark Fonts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0a08;
+      --ink: #ece3cf;
+      --dim: rgba(236, 227, 207, 0.5);
+      --amber: #deaa62;
+      --pad: clamp(16px, 2.4vw, 32px);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 500 11px/1.55 "IBM Plex Mono", ui-monospace, monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: var(--pad);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: var(--pad);
+    }
+
+    .dim { color: var(--dim); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr));
+      gap: var(--pad);
+    }
+
+    figure { margin: 0; }
+
+    figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 8px;
+    }
+
+    figcaption b { font-weight: 500; }
+    figcaption .num { color: var(--amber); margin-right: 1ch; }
+
+    iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border: 1px solid rgba(236, 227, 207, 0.14);
+      background: var(--bg);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(236, 227, 207, 0.3);
+    }
+
+    a:hover { border-color: var(--ink); }
+  </style>
+</head>
+<body>
+  <header>
+    <span>Slowdust Post — Wordmark candidates</span>
+    <span class="dim">Hover to stir · click to clear</span>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const FONTS = [
+      ['anton', 'Anton', 'Condensed, cinematic poster'],
+      ['syne', 'Syne ExtraBold', 'Wide, slightly odd, art-world'],
+      ['bricolage', 'Bricolage Grotesque', 'Warm grotesk with character'],
+      ['fraunces', 'Fraunces Black', 'Soft, old-style serif'],
+      ['gloock', 'Gloock', 'High-contrast display serif'],
+      ['tiltwarp', 'Tilt Warp', 'Chunky, retro, closest to the reference'],
+      ['unbounded', 'Unbounded (current)', 'Wide geometric'],
+    ];
+
+    const grid = document.getElementById('grid');
+    FONTS.forEach(([key, name, note], i) => {
+      const fig = document.createElement('figure');
+      fig.innerHTML = `
+        <figcaption>
+          <span><span class="num">${String(i + 1).padStart(2, '0')}</span><b>${name}</b> <span class="dim">— ${note}</span></span>
+          <a href="../index.html?font=${key}" target="_blank">Full screen ↗</a>
+        </figcaption>
+        <iframe src="../index.html?font=${key}" title="${name}" loading="lazy"></iframe>`;
+      grid.append(fig);
+    });
+  </script>
+</body>
+</html>

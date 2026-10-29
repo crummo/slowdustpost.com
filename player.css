@@ -1,0 +1,86 @@
+/* In-page video player: any a[data-embed] opens here instead of leaving the site. */
+
+/* The dust draws the frame and caption first (player.js hands main.js the shape), so the scrim
+   stays clear and the real player is held back until the 1.6 s handover, then fades up. */
+.player {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: var(--pad);
+  background: rgba(11, 10, 8, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, background 0.5s ease;
+}
+
+.player.open {
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(11, 10, 8, 0.8);
+  transition: opacity 0.5s ease, background 1.2s ease 1.6s;
+}
+
+.player-inner {
+  width: min(1120px, 100%, calc((100vh - 140px) * 16 / 9));
+}
+
+.player-head,
+.player-frame {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.player.open .player-head,
+.player.open .player-frame {
+  opacity: 1;
+  transition: opacity 1.2s ease 1.6s;
+}
+
+.player-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+
+.player-caption { color: var(--dim); }
+
+.player-close {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--dim);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+.player-close:hover,
+.player-close:focus-visible { color: var(--ink); outline: none; }
+
+.player-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid rgba(236, 227, 207, 0.12);
+}
+
+.player-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player, .player.open, .player-head, .player-frame,
+  .player.open .player-head, .player.open .player-frame { transition: none; }
+  .player.open { background: rgba(11, 10, 8, 0.92); }
+}

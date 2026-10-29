@@ -17,3 +17,6 @@ memory/
 # System
 .DS_Store
 Thumbs.db
+
+# Local tooling
+.claude/

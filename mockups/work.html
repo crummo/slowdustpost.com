@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slowdust Post — Work (mockup)</title>
+  <meta name="theme-color" content="#0b0a08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Unbounded:wght@800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../player.css">
+  <style>
+    :root { --amber: #deaa62; }
+
+    .corner { z-index: 4; }
+
+    #work-toggle[aria-expanded="true"] {
+      color: var(--amber);
+      border-bottom-color: var(--amber);
+    }
+
+    .work {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      padding: calc(var(--pad) * 4) var(--pad);
+      background: rgba(11, 10, 8, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .work.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .work-inner {
+      width: min(760px, 100%);
+      max-height: 100%;
+      overflow-y: auto;
+    }
+
+    .work-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 14px;
+      color: var(--dim);
+    }
+
+    .work-head button {
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      color: inherit;
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .work-head button:hover,
+    .work-head button:focus-visible { color: var(--ink); outline: none; }
+
+    .work-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .work-list a {
+      display: grid;
+      grid-template-columns: 3ch 19ch 1fr 11ch 2ch;
+      gap: 16px;
+      align-items: baseline;
+      padding: 14px 0;
+      border: 0;
+      border-bottom: 1px solid rgba(236, 227, 207, 0.12);
+      transition: color 0.25s, padding 0.35s ease;
+    }
+
+    .work-list li:first-child a { border-top: 1px solid rgba(236, 227, 207, 0.12); }
+
+    .work-list .num,
+    .work-list .client,
+    .work-list .kind { color: var(--dim); transition: color 0.25s; }
+
+    .work-list .kind { text-align: right; white-space: nowrap; }
+    .work-list .arrow { text-align: right; opacity: 0; transition: opacity 0.25s, transform 0.35s ease; transform: translateX(-6px); }
+
+    .work-list a:hover,
+    .work-list a:focus-visible {
+      color: var(--amber);
+      padding-left: 10px;
+      outline: none;
+    }
+
+    .work-list a:hover .num,
+    .work-list a:hover .client,
+    .work-list a:hover .kind { color: var(--amber); }
+    .work-list a:hover .arrow,
+    .work-list a:focus-visible .arrow { opacity: 1; transform: none; }
+
+    /* Rows drift in one after another once the dust has cleared. */
+    .work-list li {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .work.open .work-list li {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      transition-delay: calc(0.35s + var(--i) * 0.06s);
+    }
+
+    .work.open ~ .hint { opacity: 0; }
+
+    @media (max-width: 640px) {
+      .work-list a {
+        grid-template-columns: 3ch 1fr;
+        row-gap: 2px;
+      }
+
+      .work-list .client { grid-column: 2; grid-row: 2; }
+      .work-list .kind,
+      .work-list .arrow { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .work, .work-list li, .work.open .work-list li { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="dust" aria-hidden="true"></canvas>
+  <h1 class="sr-only">Slowdust Post</h1>
+
+  <div class="corner tl">Slowdust Post<br><span class="dim">Los Angeles, CA</span></div>
+  <div class="corner tr"><span class="dim">TC</span> <span id="tc">01:00:00:00</span></div>
+  <div class="corner bl">Post production —<br><a href="#work" id="work-toggle" aria-expanded="false" aria-controls="work">Edit / Grade / Finish</a></div>
+  <div class="corner br">— New projects<br><a href="mailto:cameron@slowdustpost.com">cameron@slowdustpost.com</a></div>
+
+  <section class="work" id="work" aria-hidden="true" aria-label="Selected work" data-ui>
+    <div class="work-inner">
+      <div class="work-head">
+        <span>Selected work</span>
+        <button type="button" id="work-close">Close ✕</button>
+      </div>
+      <ol class="work-list" id="work-list"></ol>
+    </div>
+  </section>
+
+  <p class="hint" id="hint">Move to disturb · Click to clear</p>
+
+  <script src="../main.js" defer></script>
+  <script src="../player.js"></script>
+  <script>
+    // A short, mixed list pulled from cameronrumford.com/projects.json. [client, title, kind, link]
+    const PLAY = 'https://player.mediadelivery.net/play/650059/';
+    const WORK = [
+      ['Gates Ventures', 'The U.S. Military Versus the Mosquito', 'Documentary', `${PLAY}82f7ce2b-81b1-40fd-ab2b-6be4d9d3ddb7`],
+      ['Bethesda', 'Rage 2: Insanity Never Ends', 'Gaming', `${PLAY}d628212c-296a-4eaf-b06a-0fbb4843b511`],
+      ['Short film', 'I Was There', 'Documentary', `${PLAY}916b705a-b951-4e25-ae63-db8bff50ecc2`],
+      ['AWS', 'Flikshop: The Power of a Postcard', 'Documentary', `${PLAY}48f1a2c0-a49b-41ea-82b7-74d10b3cb6d2`],
+      ['L’Oréal', 'Gloss', 'Commercial', `${PLAY}7902c344-e04d-497e-a546-d5cc97f40813`],
+      ['Mojang', 'Minecraft: The Hero’s Path', 'Gaming', `${PLAY}11602b63-f18d-4d76-b6d4-7111f2c9d573`],
+      ['Light In The Attic', 'Big Boys: Looking Back', 'Documentary', `${PLAY}37cb4570-6a6e-421c-8b4b-af5aa02e0ec0`],
+      ['Xbox', 'Game Pass: V.A.T.S.', 'Commercial', `${PLAY}c40a5892-a84b-4c3e-aace-dd8571b1466a`],
+      ['Microsoft', 'Azure Quantum + NASA’s JPL', 'Documentary', `${PLAY}5812159b-4d7c-4084-bf11-4c16abeb7a5a`],
+    ];
+
+    const work = document.getElementById('work');
+    const toggle = document.getElementById('work-toggle');
+    let isOpen = false;
+
+    document.getElementById('work-list').innerHTML = WORK.map(([client, title, kind, href], i) => `
+      <li style="--i:${i}">
+        <a href="${href}" target="_blank" rel="noopener" data-embed data-caption="${client} — ${title}">
+          <span class="num">${String(i + 1).padStart(2, '0')}</span>
+          <span class="client">${client}</span>
+          <span class="title">${title}</span>
+          <span class="kind">${kind}</span>
+          <span class="arrow">↗</span>
+        </a>
+      </li>`).join('');
+
+    function open() {
+      if (isOpen) return;
+      isOpen = true;
+      work.classList.add('open');
+      work.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      if (location.hash !== '#work') history.replaceState(null, '', '#work');
+      window.slowdust?.clear();
+      document.getElementById('hint').classList.add('gone');
+    }
+
+    function close() {
+      if (!isOpen) return;
+      isOpen = false;
+      work.classList.remove('open');
+      work.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      window.slowdust?.restore();
+    }
+
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      isOpen ? close() : open();
+    });
+    document.getElementById('work-close').addEventListener('click', close);
+    work.addEventListener('click', (e) => {
+      if (!e.target.closest('.work-inner')) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+    window.addEventListener('hashchange', () => (location.hash === '#work' ? open() : close()));
+
+    // /#work opens straight to the list.
+    if (location.hash === '#work') {
+      window.addEventListener('load', () => setTimeout(open, 600));
+    }
+  </script>
+</body>
+</html>
