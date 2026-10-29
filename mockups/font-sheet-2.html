@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — font sheet 2</title>
+  <!-- Round two: the shortlist, Unbounded with lighter DUST/POST, serifs in caps and lowercase,
+       and 60s/70s and film-title faces. Single-weight display faces are also shown with
+       DUST/POST in Archivo 400, which the site can do per word. Not part of the site. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;400;800;900&family=Archivo:wght@300;400;800&family=Monoton&family=Fraunces:opsz,wght@144,300;144,400;144,900&family=Gloock&family=Instrument+Serif&family=Abril+Fatface&family=Rozha+One&family=Cinzel:wght@400;900&family=Bowlby+One&family=Ultra&family=Fugaz+One&family=Big+Shoulders+Display:wght@400;900&family=Londrina+Solid:wght@300;900&family=Chango&family=Shrikhand&family=Limelight&family=Six+Caps&family=Bebas+Neue&family=Passion+One:wght@400;900&family=Alfa+Slab+One&family=Yeseva+One&family=Rubik+Mono+One&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font: inherit; color: #deaa62; margin: 0; padding: 18px 14px 6px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: none; letter-spacing: 0; }
+    .mark.upper { text-transform: uppercase; }
+    .mark .slow { font-weight: var(--w); font-family: var(--f); }
+    .mark .dust, .mark .post { font-weight: var(--w2, 400); font-family: var(--f2, var(--f)); }
+    .mark .post { grid-column: 2; }
+  </style>
+</head>
+<body>
+  <div id="out"></div>
+  <script>
+    // [label, family, weight, upper, size, light weight, light family]
+    const SECTIONS = [
+      ['Shortlist', [
+        ['archivo 800 / 400', 'Archivo', 800, true, 52, 400],
+        ['monoton (single weight)', 'Monoton', 400, true, 44, 400],
+        ['monoton + archivo 300 for dust / post', 'Monoton', 400, true, 44, 300, 'Archivo'],
+      ]],
+      ['Unbounded, lighter DUST / POST', [
+        ['unbounded 800 / 400 (as the table has it)', 'Unbounded', 800, true, 42, 400],
+        ['unbounded 800 / 300', 'Unbounded', 800, true, 42, 300],
+        ['unbounded 800 / 200', 'Unbounded', 800, true, 42, 200],
+        ['unbounded 900 / 300', 'Unbounded', 900, true, 42, 300],
+      ]],
+      ['Serifs: caps vs lowercase', [
+        ['fraunces 900 / 300 lowercase', 'Fraunces', 900, false, 54, 300],
+        ['fraunces 900 / 300 caps', 'Fraunces', 900, true, 48, 300],
+        ['gloock lowercase (single weight)', 'Gloock', 400, false, 56, 400],
+        ['gloock caps', 'Gloock', 400, true, 48, 400],
+        ['gloock caps + fraunces 300 for dust / post', 'Gloock', 400, true, 48, 300, 'Fraunces'],
+        ['instrument serif caps', 'Instrument Serif', 400, true, 54, 400],
+        ['abril fatface caps + fraunces 300', 'Abril Fatface', 400, true, 50, 300, 'Fraunces'],
+        ['rozha one caps + fraunces 300', 'Rozha One', 400, true, 48, 300, 'Fraunces'],
+        ['yeseva one lowercase + fraunces 300', 'Yeseva One', 400, false, 52, 300, 'Fraunces'],
+        ['cinzel 900 / 400 (film epic)', 'Cinzel', 900, true, 42, 400],
+      ]],
+      ['60s / 70s and film titles', [
+        ['bowlby one + archivo 300 (70s poster)', 'Bowlby One', 400, true, 46, 300, 'Archivo'],
+        ['ultra + archivo 300 (cooper black cousin)', 'Ultra', 400, true, 46, 300, 'Archivo'],
+        ['fugaz one + archivo 300 (70s italic)', 'Fugaz One', 400, true, 48, 300, 'Archivo'],
+        ['big shoulders display 900 / 400 (70s condensed)', 'Big Shoulders Display', 900, true, 58, 400],
+        ['londrina solid 900 / 300 (hand poster)', 'Londrina Solid', 900, true, 54, 300],
+        ['passion one 900 / 400', 'Passion One', 900, true, 50, 400],
+        ['chango + archivo 300 (70s soft)', 'Chango', 400, true, 44, 300, 'Archivo'],
+        ['shrikhand + archivo 300 (70s swash)', 'Shrikhand', 400, true, 48, 300, 'Archivo'],
+        ['alfa slab one + archivo 300', 'Alfa Slab One', 400, true, 46, 300, 'Archivo'],
+        ['limelight + archivo 300 (30s marquee)', 'Limelight', 400, true, 46, 300, 'Archivo'],
+        ['six caps + archivo 300 (title card condensed)', 'Six Caps', 400, true, 78, 300, 'Archivo'],
+        ['bebas neue + archivo 300 (trailer)', 'Bebas Neue', 400, true, 60, 300, 'Archivo'],
+        ['rubik mono one + archivo 300', 'Rubik Mono One', 400, true, 40, 300, 'Archivo'],
+      ]],
+    ];
+    document.getElementById('out').innerHTML = SECTIONS.map(([title, rows]) => `
+      <h2>${title}</h2>
+      <div class="grid">${rows.map(([label, f, w, upper, size, w2, f2]) => `
+        <div class="tile">
+          <div class="key">${label}</div>
+          <div class="mark ${upper ? 'upper' : ''}" style="--f:'${f}';--w:${w};--s:${size}px;--w2:${w2};${f2 ? `--f2:'${f2}'` : ''}">
+            <span class="slow">Slow</span><span class="dust">dust</span><span class="post">Post</span>
+          </div>
+        </div>`).join('')}
+      </div>`).join('');
+  </script>
+</body>
+</html>

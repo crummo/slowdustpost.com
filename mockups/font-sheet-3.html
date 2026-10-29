@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — font sheet 3</title>
+  <!-- Archivo with ever lighter DUST / POST, and Monoton single weight for reference. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100;200;300;400;800;900&family=Monoton&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: uppercase; letter-spacing: 0; }
+    .mark .slow { font-weight: var(--w); font-family: var(--f); }
+    .mark .dust, .mark .post { font-weight: var(--w2, 400); font-family: var(--f2, var(--f)); }
+    .mark .post { grid-column: 2; }
+  </style>
+</head>
+<body>
+  <div class="grid" id="out"></div>
+  <script>
+    const ROWS = [
+      ['archivo 800 / 400 (current)', 'Archivo', 800, 400],
+      ['archivo 800 / 300', 'Archivo', 800, 300],
+      ['archivo 800 / 200', 'Archivo', 800, 200],
+      ['archivo 800 / 100', 'Archivo', 800, 100],
+      ['archivo 900 / 200', 'Archivo', 900, 200],
+      ['monoton single weight (reference)', 'Monoton', 400, 400],
+    ];
+    document.getElementById('out').innerHTML = ROWS.map(([label, f, w, w2]) => `
+      <div class="tile">
+        <div class="key">${label}</div>
+        <div class="mark" style="--f:'${f}';--w:${w};--w2:${w2};--s:${f === 'Monoton' ? 44 : 54}px">
+          <span class="slow">Slow</span><span class="dust">dust</span><span class="post">Post</span>
+        </div>
+      </div>`).join('');
+  </script>
+</body>
+</html>

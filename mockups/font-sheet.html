@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — font sheet</title>
+  <!-- Every face in main.js's FONTS table, set in the site's lockup: SLOW heavy, DUST and POST
+       light, POST aligned under DUST. Open in a browser and compare; not part of the site. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;800&family=Anton&family=Syne:wght@400;800&family=Bricolage+Grotesque:opsz,wght@96,400;96,800&family=Fraunces:opsz,wght@144,400;144,900&family=Gloock&family=Tilt+Warp&family=IBM+Plex+Mono:wght@400;700&family=JetBrains+Mono:wght@400;800&family=Space+Mono:wght@400;700&family=Martian+Mono:wght@400;800&family=Azeret+Mono:wght@400;900&family=Geist+Mono:wght@400;900&family=Archivo:wght@400;800&family=Schibsted+Grotesk:wght@400;800&family=Familjen+Grotesk:wght@400;700&family=Hanken+Grotesk:wght@400;800&family=Inter+Tight:wght@400;800&family=Orbitron:wght@400;900&family=Audiowide&family=Righteous&family=Bungee&family=Monoton&family=Michroma&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .tile .key b { color: #deaa62; font-weight: 500; }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: none; letter-spacing: 0; }
+    .mark.upper { text-transform: uppercase; }
+    .mark .slow { font-weight: var(--w); }
+    .mark .dust, .mark .post { font-weight: 400; }
+    .mark .post { grid-column: 2; }
+    .mark.flat .dust, .mark.flat .post { font-weight: var(--w); }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <script>
+    // Faces with a second, lighter weight on Google Fonts get the light DUST/POST; single-weight
+    // display faces (Anton, Gloock, Bungee…) show flat, as the site renders them.
+    const FONTS = [
+      ['unbounded', 'Unbounded', 800, true, 44], ['anton', 'Anton', 400, true, 60], ['syne', 'Syne', 800, true, 52],
+      ['bricolage', 'Bricolage Grotesque', 800, false, 54], ['fraunces', 'Fraunces', 900, false, 54], ['gloock', 'Gloock', 400, false, 56],
+      ['tiltwarp', 'Tilt Warp', 400, true, 52],
+      ['plexmono', 'IBM Plex Mono', 700, true, 46], ['jetbrains', 'JetBrains Mono', 800, true, 46], ['spacemono', 'Space Mono', 700, true, 44],
+      ['martian', 'Martian Mono', 800, true, 40], ['azeret', 'Azeret Mono', 900, true, 42], ['geistmono', 'Geist Mono', 900, true, 46],
+      ['archivo', 'Archivo', 800, true, 52], ['schibsted', 'Schibsted Grotesk', 800, true, 52], ['familjen', 'Familjen Grotesk', 700, true, 52],
+      ['hanken', 'Hanken Grotesk', 800, true, 52], ['intertight', 'Inter Tight', 800, true, 54],
+      ['orbitron', 'Orbitron', 900, true, 40], ['audiowide', 'Audiowide', 400, true, 44], ['righteous', 'Righteous', 400, true, 52],
+      ['bungee', 'Bungee', 400, true, 42], ['monoton', 'Monoton', 400, true, 44], ['michroma', 'Michroma', 400, true, 38],
+    ];
+    const flat = new Set(['anton', 'gloock', 'tiltwarp', 'audiowide', 'righteous', 'bungee', 'monoton', 'michroma']);
+    const live = new Set(['schibsted', 'martian', 'archivo', 'monoton', 'familjen']);
+    document.getElementById('grid').innerHTML = FONTS.map(([key, family, w, upper, size]) => `
+      <div class="tile">
+        <div class="key">${key}${live.has(key) ? ' <b>· in the cycle</b>' : ''} <span style="opacity:.6">— ${family} ${w}</span></div>
+        <div class="mark ${upper ? 'upper' : ''} ${flat.has(key) ? 'flat' : ''}" style="--w:${w};--s:${size}px;font-family:'${family}'">
+          <span class="slow">Slow</span><span class="dust">dust</span><span class="post">Post</span>
+        </div>
+      </div>`).join('');
+  </script>
+</body>
+</html>

@@ -14,7 +14,8 @@
   // Wordmark candidates, previewed with ?font=<key> (see mockups/fonts.html).
   // `css` is the Google Fonts family spec; null means index.html already loads it.
   const FONTS = {
-    unbounded: { family: 'Unbounded', weight: 800, css: 'Unbounded:wght@800', upper: true },
+    // `light` is the weight DUST and POST take in this face (400 when unset).
+    unbounded: { family: 'Unbounded', weight: 800, light: 200, css: 'Unbounded:wght@200;800', upper: true },
     anton: { family: 'Anton', weight: 400, css: 'Anton', upper: true },
     syne: { family: 'Syne', weight: 800, css: 'Syne:wght@800', upper: true },
     bricolage: { family: 'Bricolage Grotesque', weight: 800, css: 'Bricolage+Grotesque:opsz,wght@96,800', upper: false },
@@ -46,7 +47,7 @@
   const params = new URLSearchParams(location.search);
   // The wordmark changes face on each gather, through CYCLE (?cycle=a,b,c to choose; ?font=x
   // pins one). Every face in the cycle is loaded up front so a swap never waits on the network.
-  const CYCLE = (params.get('cycle') || 'schibsted,martian,archivo,monoton,familjen')
+  const CYCLE = (params.get('cycle') || 'archivo,unbounded,monoton')
     .split(',')
     .map((k) => FONTS[k])
     .filter(Boolean);
@@ -60,16 +61,16 @@
   // `scale` is its size relative to the main word; the words share a baseline. A style with
   // no family of its own uses the current wordmark face at a lighter weight.
   const WORD_STYLES = {
-    light: { weight: 400, scale: 1 },
+    light: { light: true, scale: 1 },
     regular: { weight: 500, scale: 1 },
     small: { scale: 0.55 },
-    smalllight: { weight: 400, scale: 0.6 },
+    smalllight: { light: true, scale: 0.6 },
     mono: { family: 'IBM Plex Mono', weight: 500, css: null, scale: 0.42 },
     serif: { family: 'Fraunces', weight: 400, italic: true, css: 'Fraunces:ital,opsz,wght@1,144,400', scale: 1.05 },
   };
   for (const s of Object.values(WORD_STYLES)) {
     s.fontAt = (size) =>
-      `${s.italic ? 'italic ' : ''}${s.weight || WORD_FONT.weight} ${size * s.scale}px "${s.family || WORD_FONT.family}", sans-serif`;
+      `${s.italic ? 'italic ' : ''}${s.weight || (s.light ? WORD_FONT.light || 400 : WORD_FONT.weight)} ${size * s.scale}px "${s.family || WORD_FONT.family}", sans-serif`;
   }
   // The lockup: SLOW heavy, DUST and POST light. ?dust=heavy (any unknown key) resets a word.
   const WORD_STYLE = {};
@@ -1164,11 +1165,11 @@
   if (params.has('tune')) toggleTunePanel();
 
   async function loadWordFont() {
-    // Every face the cycle can show, in its heavy weight and the 400 the light words use.
+    // Every face the cycle can show, in its heavy weight and the one the light words use.
     const faces = pinned ? [pinned] : CYCLE;
     const faceCss = faces
       .filter((f) => f.css !== null)
-      .map((f) => `${f.family.replace(/ /g, '+')}:wght@${[...new Set([400, f.weight])].sort().join(';')}`);
+      .map((f) => `${f.family.replace(/ /g, '+')}:wght@${[...new Set([f.light || 400, f.weight])].sort((a, b) => a - b).join(';')}`);
     const css = [...new Set([...faceCss, ...STYLES_USED.map((s) => s.css)].filter(Boolean))];
     if (css.length) {
       const link = document.createElement('link');
