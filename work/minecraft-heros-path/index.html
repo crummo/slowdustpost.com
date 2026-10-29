@@ -32,6 +32,10 @@
 
     .corner { z-index: 4; }
 
+    /* The name is the way home: no underline, and it stays above the player so it always works. */
+    .corner.tl { z-index: 7; }
+    #home { border: 0; color: var(--ink); }
+
     /* Slate: names the project currently lighting the dust. */
     #reel {
       color: var(--dim);
@@ -191,7 +195,7 @@
   <canvas id="dust" aria-hidden="true"></canvas>
   <h1 class="sr-only">Slowdust Post</h1>
 
-  <div class="corner tl">Slowdust Post<br><span class="dim">Los Angeles, CA</span></div>
+  <div class="corner tl"><a href="./" id="home">Slowdust Post</a><br><span class="dim">Los Angeles, CA</span></div>
   <div class="corner tr"><span class="dim">TC</span> <span id="tc">01:00:00:00</span><br><a id="reel" href="./" data-embed></a></div>
   <div class="corner bl">Post production —<br><a href="#work" id="work-toggle" aria-expanded="false" aria-controls="work">Edit / Grade / Finish</a></div>
   <div class="corner br">— Contact<br><a href="mailto:cameron@slowdustpost.com">cameron@slowdustpost.com</a></div>
@@ -251,6 +255,18 @@
     toggle.addEventListener('click', (e) => {
       e.preventDefault();
       isOpen ? close() : open();
+    });
+
+    // Home: close the player and the list and let the dust return to the wordmark. On a
+    // project page nothing is open underneath, so the link simply navigates to the splash.
+    document.getElementById('home').addEventListener('click', (e) => {
+      const playerOpen = document.querySelector('.player.open');
+      if (!playerOpen && !isOpen) return;
+      e.preventDefault();
+      if (playerOpen) window.slowdustPlayer?.close();
+      close();
+      history.replaceState(null, '', new URL('./', document.baseURI));
+      document.title = 'Slowdust Post';
     });
     document.getElementById('work-close').addEventListener('click', close);
     work.addEventListener('click', (e) => {
