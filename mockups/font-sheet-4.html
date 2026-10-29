@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — remaining candidates</title>
+  <!-- Everything not yet approved (Archivo, Unbounded, Monoton) or rejected (Martian, Schibsted,
+       Familjen, and the Archivo lookalikes Hanken and Inter Tight). Single-weight faces are paired
+       with Archivo 300 for DUST / POST. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300&family=Anton&family=Syne:wght@400;800&family=Bricolage+Grotesque:opsz,wght@96,300;96,800&family=Fraunces:opsz,wght@144,300;144,900&family=Gloock&family=Instrument+Serif&family=Abril+Fatface&family=Rozha+One&family=Yeseva+One&family=Cinzel:wght@400;900&family=Tilt+Warp&family=IBM+Plex+Mono:wght@300;500;700&family=JetBrains+Mono:wght@300;800&family=Space+Mono:wght@400;700&family=Azeret+Mono:wght@300;900&family=Geist+Mono:wght@300;900&family=Orbitron:wght@400;900&family=Audiowide&family=Righteous&family=Bungee&family=Michroma&family=Bowlby+One&family=Ultra&family=Fugaz+One&family=Big+Shoulders+Display:wght@400;900&family=Londrina+Solid:wght@300;900&family=Passion+One:wght@400;900&family=Chango&family=Shrikhand&family=Alfa+Slab+One&family=Limelight&family=Six+Caps&family=Bebas+Neue&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font: inherit; color: #deaa62; margin: 0; padding: 18px 14px 6px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: none; letter-spacing: 0; }
+    .mark.upper { text-transform: uppercase; }
+    .mark .slow { font-weight: var(--w); font-family: var(--f); }
+    .mark .dust, .mark .post { font-weight: var(--w2, 400); font-family: var(--f2, var(--f)); }
+    .mark .post { grid-column: 2; }
+  </style>
+</head>
+<body>
+  <div id="out"></div>
+  <script>
+    // [label, family, weight, upper, size, light weight, light family]
+    const A = 'Archivo';
+    const SECTIONS = [
+      ['Serif', [
+        ['fraunces 900 / 300 caps', 'Fraunces', 900, true, 48, 300],
+        ['fraunces 900 / 300 lowercase', 'Fraunces', 900, false, 54, 300],
+        ['gloock caps + fraunces 300', 'Gloock', 400, true, 48, 300, 'Fraunces'],
+        ['gloock lowercase', 'Gloock', 400, false, 56, 400],
+        ['instrument serif caps', 'Instrument Serif', 400, true, 54, 400],
+        ['abril fatface caps + fraunces 300', 'Abril Fatface', 400, true, 50, 300, 'Fraunces'],
+        ['rozha one caps + fraunces 300', 'Rozha One', 400, true, 48, 300, 'Fraunces'],
+        ['yeseva one + fraunces 300', 'Yeseva One', 400, false, 52, 300, 'Fraunces'],
+        ['cinzel 900 / 400', 'Cinzel', 900, true, 42, 400],
+      ]],
+      ['Grotesque / geometric', [
+        ['syne 800 / 400', 'Syne', 800, true, 52, 400],
+        ['bricolage grotesque 800 / 300', 'Bricolage Grotesque', 800, false, 54, 300],
+        ['anton + archivo 300', 'Anton', 400, true, 60, 300, A],
+        ['tilt warp + archivo 300', 'Tilt Warp', 400, true, 52, 300, A],
+      ]],
+      ['Mono', [
+        ['ibm plex mono 700 / 300', 'IBM Plex Mono', 700, true, 46, 300],
+        ['jetbrains mono 800 / 300', 'JetBrains Mono', 800, true, 46, 300],
+        ['space mono 700 / 400', 'Space Mono', 700, true, 44, 400],
+        ['azeret mono 900 / 300', 'Azeret Mono', 900, true, 42, 300],
+        ['geist mono 900 / 300', 'Geist Mono', 900, true, 46, 300],
+        ['rubik mono one + archivo 300', 'Rubik Mono One', 400, true, 40, 300, A],
+      ]],
+      ['80s / tech', [
+        ['orbitron 900 / 400', 'Orbitron', 900, true, 40, 400],
+        ['audiowide + archivo 300', 'Audiowide', 400, true, 44, 300, A],
+        ['michroma + archivo 300', 'Michroma', 400, true, 38, 300, A],
+        ['bungee + archivo 300', 'Bungee', 400, true, 42, 300, A],
+      ]],
+      ['60s / 70s and film titles', [
+        ['bowlby one + archivo 300', 'Bowlby One', 400, true, 46, 300, A],
+        ['ultra + archivo 300', 'Ultra', 400, true, 46, 300, A],
+        ['fugaz one + archivo 300', 'Fugaz One', 400, true, 48, 300, A],
+        ['righteous + archivo 300', 'Righteous', 400, true, 52, 300, A],
+        ['big shoulders display 900 / 400', 'Big Shoulders Display', 900, true, 58, 400],
+        ['londrina solid 900 / 300', 'Londrina Solid', 900, true, 54, 300],
+        ['passion one 900 / 400', 'Passion One', 900, true, 50, 400],
+        ['chango + archivo 300', 'Chango', 400, true, 44, 300, A],
+        ['shrikhand + archivo 300', 'Shrikhand', 400, true, 48, 300, A],
+        ['alfa slab one + archivo 300', 'Alfa Slab One', 400, true, 46, 300, A],
+        ['limelight + archivo 300', 'Limelight', 400, true, 46, 300, A],
+        ['six caps + archivo 300', 'Six Caps', 400, true, 78, 300, A],
+        ['bebas neue + archivo 300', 'Bebas Neue', 400, true, 60, 300, A],
+      ]],
+    ];
+    document.getElementById('out').innerHTML = SECTIONS.map(([title, rows]) => `
+      <h2>${title}</h2>
+      <div class="grid">${rows.map(([label, f, w, upper, size, w2, f2]) => `
+        <div class="tile">
+          <div class="key">${label}</div>
+          <div class="mark ${upper ? 'upper' : ''}" style="--f:'${f}';--w:${w};--s:${size}px;--w2:${w2};${f2 ? `--f2:'${f2}'` : ''}">
+            <span class="slow">Slow</span><span class="dust">Dust</span><span class="post">Post</span>
+          </div>
+        </div>`).join('')}
+      </div>`).join('');
+  </script>
+</body>
+</html>

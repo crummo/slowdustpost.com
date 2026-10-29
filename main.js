@@ -20,7 +20,9 @@
     syne: { family: 'Syne', weight: 800, css: 'Syne:wght@800', upper: true },
     bricolage: { family: 'Bricolage Grotesque', weight: 800, css: 'Bricolage+Grotesque:opsz,wght@96,800', upper: false },
     fraunces: { family: 'Fraunces', weight: 900, css: 'Fraunces:opsz,wght@144,900', upper: false },
-    gloock: { family: 'Gloock', weight: 400, css: 'Gloock', upper: false },
+    // `words` overrides the lockup per word: a WORD_STYLES key, or null for the face's own weight.
+    gloock: { family: 'Gloock', weight: 400, css: 'Gloock', upper: true, words: { dust: 'frauncesLight', post: 'frauncesItalic' } },
+    bowlby: { family: 'Bowlby One', weight: 400, css: 'Bowlby+One', upper: false, words: { dust: null, post: null } },
     tiltwarp: { family: 'Tilt Warp', weight: 400, css: 'Tilt+Warp', upper: true },
     // Monospaced: the corner credits' voice, at wordmark size.
     plexmono: { family: 'IBM Plex Mono', weight: 700, css: 'IBM+Plex+Mono:wght@700', upper: true },
@@ -47,7 +49,7 @@
   const params = new URLSearchParams(location.search);
   // The wordmark changes face on each gather, through CYCLE (?cycle=a,b,c to choose; ?font=x
   // pins one). Every face in the cycle is loaded up front so a swap never waits on the network.
-  const CYCLE = (params.get('cycle') || 'archivo,unbounded,monoton')
+  const CYCLE = (params.get('cycle') || 'archivo,gloock,unbounded,bowlby,monoton')
     .split(',')
     .map((k) => FONTS[k])
     .filter(Boolean);
@@ -67,6 +69,9 @@
     smalllight: { light: true, scale: 0.6 },
     mono: { family: 'IBM Plex Mono', weight: 500, css: null, scale: 0.42 },
     serif: { family: 'Fraunces', weight: 400, italic: true, css: 'Fraunces:ital,opsz,wght@1,144,400', scale: 1.05 },
+    // Gloock's companions.
+    frauncesLight: { family: 'Fraunces', weight: 300, css: 'Fraunces:opsz,wght@144,300', scale: 1 },
+    frauncesItalic: { family: 'Fraunces', weight: 300, italic: true, css: 'Fraunces:ital,opsz,wght@1,144,300', scale: 1 },
   };
   for (const s of Object.values(WORD_STYLES)) {
     s.fontAt = (size) =>
@@ -77,14 +82,24 @@
   for (const [w, def] of [['slow', null], ['dust', WORD_STYLES.light], ['post', WORD_STYLES.light]]) {
     WORD_STYLE[w] = params.has(w) ? WORD_STYLES[params.get(w)] || null : def;
   }
-  const STYLES_USED = [...new Set(Object.values(WORD_STYLE).filter(Boolean))];
+  // Every style any face in play can ask for, so the loader fetches them up front.
+  const faceStyles = (pinned ? [pinned] : CYCLE).flatMap((f) =>
+    Object.values(f.words || {}).filter(Boolean).map((k) => WORD_STYLES[k]));
+  const STYLES_USED = [...new Set([...Object.values(WORD_STYLE), ...faceStyles].filter(Boolean))];
+
+  // The style a word takes in the current face: the face's own say first, then the lockup.
+  function styleFor(word) {
+    const words = WORD_FONT.words;
+    if (words && word in words) return words[word] ? WORD_STYLES[words[word]] : null;
+    return WORD_STYLE[word];
+  }
 
   // Split a line into runs of one font: each styled word on its own, everything else (and the
   // spaces) in the main font.
   function runsFor(line) {
     const runs = [];
     for (const m of line.matchAll(/slow|dust|post|[^a-z]+/gi)) {
-      const style = WORD_STYLE[m[0].toLowerCase()];
+      const style = styleFor(m[0].toLowerCase());
       const font = style ? style.fontAt : fontAt;
       const last = runs[runs.length - 1];
       if (last && last.font === font) last.text += m[0];
@@ -306,7 +321,7 @@
     // wide screens (two spaces: the font's own space is too tight at this size).
     const aspect = W / H;
     let lines =
-      aspect >= 1.7 && params.get('lines') === '1' ? ['Slowdust  Post'] : aspect >= 1 ? ['Slowdust', 'Post'] : ['Slow', 'dust', 'Post'];
+      aspect >= 1.7 && params.get('lines') === '1' ? ['SlowDust  Post'] : aspect >= 1 ? ['SlowDust', 'Post'] : ['Slow', 'Dust', 'Post'];
     if (WORD_FONT.upper) lines = lines.map((l) => l.toUpperCase());
 
     const lineWidth = (line, size) =>

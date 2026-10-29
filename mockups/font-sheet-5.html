@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — sheet 5</title>
+  <!-- Gloock + Fraunces with POST italic; Bowlby One alone; NASA-worm lookalikes on Google Fonts. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Fraunces:ital,opsz,wght@0,144,300;1,144,300;1,144,400&family=Bowlby+One&family=Bruno+Ace&family=Syncopate:wght@400;700&family=Comfortaa:wght@300;700&family=Russo+One&family=Jura:wght@300;700&family=Audiowide&family=Exo+2:wght@200;800&family=Michroma&family=Archivo:wght@300&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font: inherit; color: #deaa62; margin: 0; padding: 18px 14px 6px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: none; letter-spacing: 0; }
+    .mark.upper { text-transform: uppercase; }
+    .mark .slow { font-weight: var(--w); font-family: var(--f); }
+    .mark .dust, .mark .post { font-weight: var(--w2, 400); font-family: var(--f2, var(--f)); }
+    .mark .post { grid-column: 2; }
+    .mark.ital .post { font-style: italic; }
+  </style>
+</head>
+<body>
+  <div id="out"></div>
+  <script>
+    // [label, family, weight, upper, size, light weight, light family, italic post]
+    const SECTIONS = [
+      ['Gloock + Fraunces, POST italic', [
+        ['gloock caps + fraunces 300, post italic', 'Gloock', 400, true, 48, 300, 'Fraunces', true],
+        ['gloock + fraunces 300 mixed case, post italic', 'Gloock', 400, false, 54, 300, 'Fraunces', true],
+        ['gloock caps + fraunces 400, post italic', 'Gloock', 400, true, 48, 400, 'Fraunces', true],
+        ['for reference: post upright', 'Gloock', 400, true, 48, 300, 'Fraunces', false],
+      ]],
+      ['Bowlby One alone', [
+        ['bowlby one caps, single weight', 'Bowlby One', 400, true, 46, 400],
+        ['bowlby one mixed case, single weight', 'Bowlby One', 400, false, 50, 400],
+      ]],
+      ['NASA worm lookalikes', [
+        ['bruno ace (closest tube feel)', 'Bruno Ace', 400, true, 40, 400],
+        ['bruno ace + archivo 300', 'Bruno Ace', 400, true, 40, 300, 'Archivo'],
+        ['syncopate 700 / 400', 'Syncopate', 700, true, 36, 400],
+        ['comfortaa 700 / 300 (rounded)', 'Comfortaa', 700, true, 46, 300],
+        ['russo one + archivo 300', 'Russo One', 400, true, 46, 300, 'Archivo'],
+        ['jura 700 / 300', 'Jura', 700, true, 48, 300],
+        ['exo 2 800 / 200', 'Exo 2', 800, true, 50, 200],
+        ['audiowide (from before)', 'Audiowide', 400, true, 44, 400],
+      ]],
+    ];
+    document.getElementById('out').innerHTML = SECTIONS.map(([title, rows]) => `
+      <h2>${title}</h2>
+      <div class="grid">${rows.map(([label, f, w, upper, size, w2, f2, ital]) => `
+        <div class="tile">
+          <div class="key">${label}</div>
+          <div class="mark ${upper ? 'upper' : ''} ${ital ? 'ital' : ''}" style="--f:'${f}';--w:${w};--s:${size}px;--w2:${w2};${f2 ? `--f2:'${f2}'` : ''}">
+            <span class="slow">Slow</span><span class="dust">Dust</span><span class="post">Post</span>
+          </div>
+        </div>`).join('')}
+      </div>`).join('');
+  </script>
+</body>
+</html>
