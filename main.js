@@ -999,8 +999,9 @@
     setPhase(phase === 'scatter' ? 'gather' : 'scatter', clock);
   }
 
-  // The opening hint fades on first interaction; a small "Controls" link takes its place so the
-  // panel can be found without a keyboard.
+  // The opening hint fades on first interaction, then lives on as an easter egg: invisible at the
+  // bottom of the screen until the pointer wanders over it, when it shows the hint again with a
+  // "Controls" link (so the panel can be found without a keyboard).
   let hintDone = false;
   function dismissHint() {
     if (hintDone) return;
@@ -1012,10 +1013,12 @@
       b.textContent = 'Controls';
       b.dataset.ui = '';
       b.style.cssText =
-        'font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;' +
+        'font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--ink);' +
         'background:none;border:0;padding:0;cursor:pointer;';
       b.addEventListener('click', toggleTunePanel);
-      hintEl.replaceChildren(b);
+      hintEl.replaceChildren(`${hintEl.textContent.replace(/\s*·\s*T for controls$/, '')} · `, b);
+      hintEl.dataset.ui = '';
+      hintEl.classList.add('secret');
       hintEl.classList.remove('gone');
     }, 1700);
   }

@@ -110,6 +110,17 @@ a:focus-visible {
 
 .hint.gone { opacity: 0; }
 
+/* After its first showing the hint hides, with a generous hover target: wander over the bottom
+   of the screen and it comes back, Controls link included. */
+.hint.secret {
+  opacity: 0;
+  padding: 40px 120px 0;
+  transition: opacity 0.5s ease;
+}
+
+.hint.secret:hover,
+.hint.secret:focus-within { opacity: 1; }
+
 .sr-only {
   position: absolute;
   width: 1px;
