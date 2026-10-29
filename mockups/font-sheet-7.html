@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — Goldman</title>
+  <!-- Goldman exists only at 400 and 700, upright. Lighter DUST / POST come from Archivo, whose
+       italic is real; the Goldman "italic" tiles are the browser slanting the upright. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&family=Archivo:ital,wght@0,200;0,300;1,200;1,300&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: 40px; text-transform: uppercase; letter-spacing: 0; }
+    .mark .slow { font-weight: 700; font-family: 'Goldman'; }
+    .mark .dust, .mark .post { font-weight: var(--w2); font-family: var(--f2, 'Goldman'); }
+    .mark .post { grid-column: 2; }
+    .mark.ital .post { font-style: italic; }
+    .mark.synth .post { display: inline-block; transform: skewX(-12deg); transform-origin: left bottom; }
+  </style>
+</head>
+<body>
+  <div class="grid" id="out"></div>
+  <script>
+    const ROWS = [
+      ['goldman 700 + archivo 300, post italic', 300, 'Archivo', 'ital'],
+      ['goldman 700 + archivo 200, post italic', 200, 'Archivo', 'ital'],
+      ['goldman 700 + archivo 300, post upright', 300, 'Archivo', ''],
+      ['goldman 700 + archivo 200, post upright', 200, 'Archivo', ''],
+      ['goldman 700 / 400, post slanted (synthetic)', 400, null, 'synth'],
+      ['goldman 700 + archivo 300, post slanted goldman 400', 300, 'Archivo', 'synthgold'],
+    ];
+    document.getElementById('out').innerHTML = ROWS.map(([label, w2, f2, mode]) => `
+      <div class="tile">
+        <div class="key">${label}</div>
+        <div class="mark ${mode === 'synthgold' ? 'synth' : mode}" style="--w2:${w2};${f2 ? `--f2:'${f2}'` : ''}">
+          <span class="slow">Slow</span><span class="dust">Dust</span><span class="post" ${mode === 'synthgold' ? "style=\"font-family:'Goldman';font-weight:400\"" : ''}>Post</span>
+        </div>
+      </div>`).join('');
+  </script>
+</body>
+</html>

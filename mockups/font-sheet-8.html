@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — Rubik</title>
+  <!-- Rubik 80s Fade and Rubik Glitch carrying every word, then the rest of the Rubik novelty family. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&family=Rubik+Glitch&family=Rubik+Glitch+Pop&family=Rubik+Iso&family=Rubik+Spray+Paint&family=Rubik+Burned&family=Rubik+Wet+Paint&family=Rubik+Vinyl&family=Rubik+Beastly&family=Rubik+Puddles&family=Rubik+Maze&family=Rubik+Microbe&family=Rubik+Moonrocks&family=Rubik+Doodle+Shadow&family=Rubik+Scribble&family=Rubik+Storm&family=Rubik+Dirt&family=Rubik+Distressed&family=Rubik+Gemstones&family=Rubik+Bubbles&family=Rubik+Pixels&family=Rubik+Broken+Fax&family=Rubik+Lines&family=Rubik+Marker+Hatch&family=Rubik+Mono+One&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font: inherit; color: #deaa62; margin: 0; padding: 18px 14px 6px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .grid.one { grid-template-columns: 1fr; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 46px); text-transform: none; letter-spacing: 0; font-family: var(--f); font-weight: 400; }
+    .mark.upper { text-transform: uppercase; }
+    .mark .post { grid-column: 2; }
+  </style>
+</head>
+<body>
+  <div id="out"></div>
+  <script>
+    const SECTIONS = [
+      ['Rubik 80s Fade and Rubik Glitch, full lockup', true, [
+        ['rubik 80s fade caps', 'Rubik 80s Fade', true, 96],
+        ['rubik 80s fade mixed case', 'Rubik 80s Fade', false, 96],
+        ['rubik glitch caps', 'Rubik Glitch', true, 96],
+        ['rubik glitch mixed case', 'Rubik Glitch', false, 96],
+      ]],
+      ['The rest of the Rubik family, full', false, [
+        ['rubik glitch pop', 'Rubik Glitch Pop', true, 44],
+        ['rubik iso', 'Rubik Iso', true, 44],
+        ['rubik spray paint', 'Rubik Spray Paint', true, 44],
+        ['rubik burned', 'Rubik Burned', true, 44],
+        ['rubik wet paint', 'Rubik Wet Paint', true, 44],
+        ['rubik vinyl', 'Rubik Vinyl', true, 44],
+        ['rubik beastly', 'Rubik Beastly', true, 44],
+        ['rubik puddles', 'Rubik Puddles', true, 44],
+        ['rubik maze', 'Rubik Maze', true, 44],
+        ['rubik microbe', 'Rubik Microbe', true, 44],
+        ['rubik moonrocks', 'Rubik Moonrocks', true, 44],
+        ['rubik doodle shadow', 'Rubik Doodle Shadow', true, 44],
+        ['rubik scribble', 'Rubik Scribble', true, 44],
+        ['rubik storm', 'Rubik Storm', true, 44],
+        ['rubik dirt', 'Rubik Dirt', true, 44],
+        ['rubik distressed', 'Rubik Distressed', true, 44],
+        ['rubik gemstones', 'Rubik Gemstones', true, 44],
+        ['rubik bubbles', 'Rubik Bubbles', true, 44],
+        ['rubik pixels', 'Rubik Pixels', true, 44],
+        ['rubik broken fax', 'Rubik Broken Fax', true, 44],
+        ['rubik lines', 'Rubik Lines', true, 44],
+        ['rubik marker hatch', 'Rubik Marker Hatch', true, 44],
+        ['rubik mono one', 'Rubik Mono One', true, 40],
+      ]],
+    ];
+    document.getElementById('out').innerHTML = SECTIONS.map(([title, one, rows]) => `
+      <h2>${title}</h2>
+      <div class="grid ${one ? 'one' : ''}">${rows.map(([label, f, upper, size]) => `
+        <div class="tile">
+          <div class="key">${label}</div>
+          <div class="mark ${upper ? 'upper' : ''}" style="--f:'${f}';--s:${size}px">
+            <span class="slow">Slow</span><span class="dust">Dust</span><span class="post">Post</span>
+          </div>
+        </div>`).join('')}
+      </div>`).join('');
+  </script>
+</body>
+</html>

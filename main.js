@@ -45,11 +45,15 @@
     bungee: { family: 'Bungee', weight: 400, css: 'Bungee', upper: true },
     monoton: { family: 'Monoton', weight: 400, css: 'Monoton', upper: true },
     michroma: { family: 'Michroma', weight: 400, css: 'Michroma', upper: true },
+    // Kitsch: the dither inside the letters samples as thinner dust toward the fade.
+    fade: { family: 'Rubik 80s Fade', weight: 400, css: 'Rubik+80s+Fade', upper: false, words: { dust: null, post: null } },
+    glitch: { family: 'Rubik Glitch', weight: 400, css: 'Rubik+Glitch', upper: true, words: { dust: null, post: null } },
+    vinyl: { family: 'Rubik Vinyl', weight: 400, css: 'Rubik+Vinyl', upper: true, words: { dust: null, post: null } },
   };
   const params = new URLSearchParams(location.search);
   // The wordmark changes face on each gather, through CYCLE (?cycle=a,b,c to choose; ?font=x
   // pins one). Every face in the cycle is loaded up front so a swap never waits on the network.
-  const CYCLE = (params.get('cycle') || 'archivo,gloock,unbounded,bowlby,monoton')
+  const CYCLE = (params.get('cycle') || 'archivo,gloock,vinyl,unbounded,bowlby,monoton')
     .split(',')
     .map((k) => FONTS[k])
     .filter(Boolean);

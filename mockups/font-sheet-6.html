@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slowdust Post — 80s kitsch</title>
+  <!-- One more for the cycle: unashamedly 80s. Terminator-style chrome, arcade, VHS and neon. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&family=Turret+Road:wght@300;800&family=Zen+Dots&family=Sarpanch:wght@400;900&family=Chakra+Petch:wght@300;700&family=Nova+Square&family=Orbitron:wght@400;900&family=Faster+One&family=Rubik+80s+Fade&family=Bungee+Shade&family=Tilt+Prism&family=Press+Start+2P&family=Black+Ops+One&family=Wallpoet&family=Rubik+Glitch&family=Rubik+Iso&family=Monofett&family=Geostar+Fill&family=Silkscreen:wght@400;700&family=Archivo:wght@300&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0b0a08; color: #ece3cf; font: 500 11px/1.5 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { font: inherit; color: #deaa62; margin: 0; padding: 18px 14px 6px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; padding: 2px; }
+    .tile { background: #0e0d0a; padding: 22px 24px 14px; min-height: 128px; position: relative; }
+    .tile .key { position: absolute; top: 10px; left: 14px; color: rgba(236,227,207,.45); }
+    .mark { display: grid; grid-template-columns: auto auto; justify-content: start; margin-top: 18px; line-height: .98; font-size: var(--s, 52px); text-transform: uppercase; letter-spacing: 0; }
+    .mark .slow { font-weight: var(--w); font-family: var(--f); }
+    .mark .dust, .mark .post { font-weight: var(--w2, 400); font-family: var(--f2, var(--f)); }
+    .mark .post { grid-column: 2; }
+  </style>
+</head>
+<body>
+  <div id="out"></div>
+  <script>
+    const A = 'Archivo';
+    const SECTIONS = [
+      ['Terminator-style chrome and techno', [
+        ['goldman 700 / 400 (closest to the terminator title)', 'Goldman', 700, 40, 400],
+        ['goldman 700 + archivo 300', 'Goldman', 700, 40, 300, A],
+        ['turret road 800 / 300', 'Turret Road', 800, 42, 300],
+        ['zen dots + archivo 300', 'Zen Dots', 400, 38, 300, A],
+        ['sarpanch 900 / 400', 'Sarpanch', 900, 46, 400],
+        ['chakra petch 700 / 300', 'Chakra Petch', 700, 48, 300],
+        ['nova square + archivo 300', 'Nova Square', 400, 42, 300, A],
+        ['orbitron 900 / 400 (from before)', 'Orbitron', 900, 40, 400],
+      ]],
+      ['Full kitsch: VHS, arcade, neon', [
+        ['rubik 80s fade + archivo 300 (vhs)', 'Rubik 80s Fade', 400, 46, 300, A],
+        ['faster one + archivo 300 (speed lines)', 'Faster One', 400, 40, 300, A],
+        ['bungee shade + archivo 300 (3d)', 'Bungee Shade', 400, 40, 300, A],
+        ['tilt prism + archivo 300 (chrome 3d)', 'Tilt Prism', 400, 44, 300, A],
+        ['rubik iso + archivo 300', 'Rubik Iso', 400, 44, 300, A],
+        ['rubik glitch + archivo 300', 'Rubik Glitch', 400, 44, 300, A],
+        ['monofett + archivo 300 (gridded)', 'Monofett', 400, 44, 300, A],
+        ['geostar fill + archivo 300 (laser grid)', 'Geostar Fill', 400, 36, 300, A],
+        ['press start 2p + archivo 300 (arcade)', 'Press Start 2P', 400, 26, 300, A],
+        ['silkscreen 700 / 400 (pixel)', 'Silkscreen', 700, 30, 400],
+        ['black ops one + archivo 300 (stencil)', 'Black Ops One', 400, 42, 300, A],
+        ['wallpoet + archivo 300', 'Wallpoet', 400, 42, 300, A],
+      ]],
+    ];
+    document.getElementById('out').innerHTML = SECTIONS.map(([title, rows]) => `
+      <h2>${title}</h2>
+      <div class="grid">${rows.map(([label, f, w, size, w2, f2]) => `
+        <div class="tile">
+          <div class="key">${label}</div>
+          <div class="mark" style="--f:'${f}';--w:${w};--s:${size}px;--w2:${w2};${f2 ? `--f2:'${f2}'` : ''}">
+            <span class="slow">Slow</span><span class="dust">Dust</span><span class="post">Post</span>
+          </div>
+        </div>`).join('')}
+      </div>`).join('');
+  </script>
+</body>
+</html>
