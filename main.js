@@ -21,7 +21,8 @@
     bricolage: { family: 'Bricolage Grotesque', weight: 800, css: 'Bricolage+Grotesque:opsz,wght@96,800', upper: false },
     fraunces: { family: 'Fraunces', weight: 900, css: 'Fraunces:opsz,wght@144,900', upper: false },
     // `words` overrides the lockup per word: a WORD_STYLES key, or null for the face's own weight.
-    gloock: { family: 'Gloock', weight: 400, css: 'Gloock', upper: true, words: { dust: 'frauncesLight', post: 'frauncesItalic' } },
+    // `caps` lists the words set in capitals within a mixed-case lockup.
+    gloock: { family: 'Gloock', weight: 400, css: 'Gloock', upper: false, caps: ['post'], words: { dust: 'frauncesLight', post: 'frauncesItalic' } },
     bowlby: { family: 'Bowlby One', weight: 400, css: 'Bowlby+One', upper: false, words: { dust: null, post: null } },
     tiltwarp: { family: 'Tilt Warp', weight: 400, css: 'Tilt+Warp', upper: true },
     // Monospaced: the corner credits' voice, at wordmark size.
@@ -326,7 +327,12 @@
     const aspect = W / H;
     let lines =
       aspect >= 1.7 && params.get('lines') === '1' ? ['SlowDust  Post'] : aspect >= 1 ? ['SlowDust', 'Post'] : ['Slow', 'Dust', 'Post'];
-    if (WORD_FONT.upper) lines = lines.map((l) => l.toUpperCase());
+    // ?case=mixed|upper previews a face the other way round.
+    const upper = params.has('case') ? params.get('case') === 'upper' : WORD_FONT.upper;
+    if (upper) lines = lines.map((l) => l.toUpperCase());
+    // ?caps=post (comma list) sets just those words in caps within a mixed-case lockup.
+    const caps = new Set((params.get('caps') ?? (WORD_FONT.caps || []).join(',')).toLowerCase().split(',').filter(Boolean));
+    if (caps.size) lines = lines.map((l) => l.replace(/slow|dust|post/gi, (m) => (caps.has(m.toLowerCase()) ? m.toUpperCase() : m)));
 
     const lineWidth = (line, size) =>
       runsFor(line).reduce((w, r) => ((o.font = r.font(size)), w + o.measureText(r.text).width), 0);
