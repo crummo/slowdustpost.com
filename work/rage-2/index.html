@@ -144,6 +144,11 @@
 
     .work-list a:hover .client,
     .work-list a:hover .kind { color: var(--amber); }
+
+    /* The project a shared link pointed at. */
+    .work-list a.linked,
+    .work-list a.linked .client,
+    .work-list a.linked .kind { color: var(--amber); }
     .work-list a:hover .arrow,
     .work-list a:focus-visible .arrow { opacity: 1; transform: none; }
 
@@ -277,8 +282,11 @@
     });
     window.addEventListener('hashchange', () => (location.hash === '#work' ? open() : close()));
 
-    // /#work opens straight to the list.
-    if (location.hash === '#work') {
+    // /#work opens straight to the list. So does a project's own page (work/<slug>/), with that
+    // row marked: the video itself waits to be chosen.
+    const linked = window.SLOWDUST_OPEN && document.querySelector(`.work-list a[data-slug="${CSS.escape(window.SLOWDUST_OPEN)}"]`);
+    if (linked) linked.classList.add('linked');
+    if (location.hash === '#work' || linked) {
       window.addEventListener('load', () => setTimeout(open, 600));
     }
   </script>

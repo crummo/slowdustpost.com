@@ -117,12 +117,8 @@
     }
   }, true);
 
-  // Landing on a project's own page opens straight into its video; closing it leaves you home.
-  window.addEventListener('load', () => {
-    const slug = window.SLOWDUST_OPEN;
-    const link = slug && document.querySelector(`a[data-slug="${CSS.escape(slug)}"]`);
-    if (link && open(link, { autoplay: false })) prevUrl = home.href;
-  });
+  // Landing on a project's own page (window.SLOWDUST_OPEN) does not open the player: nothing
+  // plays unless the visitor picks it. The page's own script opens the list with that row marked.
 
   window.slowdustPlayer = { open, close };
 })();
