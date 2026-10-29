@@ -2,14 +2,14 @@
 // shared link unfurls with that project's title and thumbnail. Each page is the site's index.html
 // with its meta block swapped and a <base> back to the site root; player.js opens the video on load.
 //
-//   node scripts/build-work-pages.mjs        # builds v2/work/*
+//   node scripts/build-work-pages.mjs        # builds work/*
 //   node scripts/build-work-pages.mjs .      # once v2 is the live site at the root
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import vm from 'node:vm';
 
 const SITE_URL = 'https://slowdustpost.com';
-const siteDir = resolve(process.argv[2] ?? 'v2');
+const siteDir = resolve(process.argv[2] ?? '.');
 
 const sandbox = { window: {} };
 vm.runInNewContext(readFileSync(join(siteDir, 'work-data.js'), 'utf8'), sandbox);
