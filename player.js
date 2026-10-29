@@ -6,11 +6,13 @@
 // landing on that page (window.SLOWDUST_OPEN) opens straight into it.
 (() => {
   // Same conversions as cameronrumford.com: Bunny watch links and YouTube links to embeds.
-  function toEmbed(url) {
+  // `autoplay` only when the visitor chose the project themselves (clicked a row); a page
+  // reached by link opens the player with the video waiting for a press.
+  function toEmbed(url, autoplay) {
     const bunny = url.match(/(?:video\.bunnycdn\.com|player\.mediadelivery\.net)\/play\/(\d+)\/([a-zA-Z0-9-]+)/);
-    if (bunny) return `https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=true&preload=true`;
+    if (bunny) return `https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=${autoplay}&preload=true`;
     const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&modestbranding=1`;
+    if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=${autoplay ? 1 : 0}&rel=0&modestbranding=1`;
     return null;
   }
 
@@ -49,9 +51,9 @@
     return [...document.querySelectorAll('a[data-slug]')].find((a) => a.href === link.href) || link;
   }
 
-  function open(link) {
+  function open(link, { autoplay = true } = {}) {
     const source = canonical(link);
-    const src = toEmbed(source.dataset.video || source.href);
+    const src = toEmbed(source.dataset.video || source.href, autoplay);
     if (!src) return false;
     const label = source.dataset.caption || link.textContent.trim();
     caption.textContent = label;
@@ -119,7 +121,7 @@
   window.addEventListener('load', () => {
     const slug = window.SLOWDUST_OPEN;
     const link = slug && document.querySelector(`a[data-slug="${CSS.escape(slug)}"]`);
-    if (link && open(link)) prevUrl = home.href;
+    if (link && open(link, { autoplay: false })) prevUrl = home.href;
   });
 
   window.slowdustPlayer = { open, close };
