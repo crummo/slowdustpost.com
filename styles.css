@@ -148,6 +148,18 @@ a:focus-visible {
 
   .tl, .tr { top: var(--top); }
 
+  /* Three corners, not four: the timecode and slate step aside so the work link can take the
+     top right, leaving the bottom to the email alone. */
+  .tr { display: none; }
+
+  .bl {
+    top: var(--top);
+    right: var(--pad);
+    left: auto;
+    bottom: auto;
+    text-align: right;
+  }
+
   .br {
     left: var(--pad);
     right: var(--pad);
@@ -164,11 +176,9 @@ a:focus-visible {
     letter-spacing: 0.06em;
   }
 
-  .bl { bottom: calc(var(--bottom) + 72px); }
-
   .hint {
     display: block;
-    bottom: calc(var(--bottom) + 150px);
+    bottom: calc(var(--bottom) + 78px);
     font-size: 10px;
   }
 }
