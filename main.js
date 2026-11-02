@@ -349,8 +349,9 @@
     o.font = fontAt(size);
     const capRise = o.measureText('H').actualBoundingBoxAscent / 2;
     // How the shorter lines sit under the widest: centred, flush left or right, or stepped
-    // in from the left (?align=center|left|right|stagger).
-    const align = params.get('align') || 'dust';
+    // in from the left (?align=center|left|right|stagger). 'dust' is for the two-line lockup;
+    // the three-line phone stack is centred, since Post flush with Dust reads as a slip there.
+    const align = params.get('align') || (lines.length > 2 ? 'center' : 'dust');
     const widestAt = widest * (size / 100);
     // 'dust': later lines start exactly under the word "dust" on the first line.
     let dustX = null;

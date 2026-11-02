@@ -167,6 +167,9 @@ a:focus-visible {
     text-align: left;
   }
 
+  /* An email address needs no label. */
+  .br .label { display: none; }
+
   /* The email is the one thing to tap: larger, with a full-height target. */
   .br a {
     display: inline-block;
