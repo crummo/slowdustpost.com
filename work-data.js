@@ -25,13 +25,13 @@
   // image for each project page; `thumb` is the small legacy image the slate rotation still uses.
   const FOCUS = {
     'game-pass-vats': '60% 45%',
-    'azure-quantum': '50% 50%',
+    'azure-quantum': '50% 45%',
     'rage-2': '50% 45%',
     'minecraft-heros-path': '55% 55%',
     flikshop: '45% 35%',
     'gates-notes': '50% 50%',
     'loreal-gloss': '62% 40%',
-    'big-boys': '50% 50%',
+    'big-boys': '45% 55%',
   };
   for (const w of window.SLOWDUST_WORK) {
     w.still = `images/stills/${w.slug}.jpg`;
