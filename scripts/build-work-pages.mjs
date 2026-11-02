@@ -40,11 +40,11 @@ for (const w of work) {
   <meta property="og:title" content="${esc(name)}">
   <meta property="og:description" content="${esc(`${w.kind} · Slowdust Post, Los Angeles`)}">
   <meta property="og:url" content="${url}">
-  <meta property="og:image" content="${esc(w.thumb)}">
+  <meta property="og:image" content="${esc(`${SITE_URL}/${w.still}`)}">
   <meta property="og:image:alt" content="${esc(w.title)}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(name)}">
-  <meta name="twitter:image" content="${esc(w.thumb)}">
+  <meta name="twitter:image" content="${esc(`${SITE_URL}/${w.still}`)}">
   <script>window.SLOWDUST_OPEN = ${JSON.stringify(w.slug)};</script>`;
 
   const html = template

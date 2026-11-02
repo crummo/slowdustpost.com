@@ -13,11 +13,11 @@
   <meta property="og:title" content="Mojang — Minecraft: The Hero’s Path">
   <meta property="og:description" content="Gaming · Slowdust Post, Los Angeles">
   <meta property="og:url" content="https://slowdustpost.com/work/minecraft-heros-path/">
-  <meta property="og:image" content="https://cameronrumford.com/thumbs/Minecraft_hero_sml.jpeg">
+  <meta property="og:image" content="https://slowdustpost.com/images/stills/minecraft-heros-path.jpg">
   <meta property="og:image:alt" content="Minecraft: The Hero’s Path">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Mojang — Minecraft: The Hero’s Path">
-  <meta name="twitter:image" content="https://cameronrumford.com/thumbs/Minecraft_hero_sml.jpeg">
+  <meta name="twitter:image" content="https://slowdustpost.com/images/stills/minecraft-heros-path.jpg">
   <script>window.SLOWDUST_OPEN = "minecraft-heros-path";</script>
   <meta name="theme-color" content="#0b0a08">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230b0a08'/%3E%3Ccircle cx='5' cy='6' r='1.4' fill='%23ece3cf'/%3E%3Ccircle cx='10.5' cy='9.5' r='2' fill='%23deaa62'/%3E%3Ccircle cx='6' cy='11.5' r='.9' fill='%23ece3cf'/%3E%3C/svg%3E">
@@ -282,11 +282,12 @@
     const peekImgs = new Map();
     function peekLoad() {
       if (peekImgs.size) return;
-      for (const { slug, thumb } of SLOWDUST_WORK) {
+      for (const { slug, still, focus } of SLOWDUST_WORK) {
         const img = new Image();
         img.alt = '';
         img.decoding = 'async';
-        img.src = thumb;
+        img.style.objectPosition = focus;
+        img.src = still;
         peek.append(img);
         peekImgs.set(slug, img);
       }
@@ -327,8 +328,9 @@
       if (isOpen) return;
       isOpen = true;
       peekLoad();
-      if (TOUCH) reelStart();
-      else if (linked) peekShow(linked.dataset.slug);
+      // A project's own page holds on that project; the home list runs the reel on touch.
+      if (linked) peekShow(linked.dataset.slug);
+      else if (TOUCH) reelStart();
       work.classList.add('open');
       work.setAttribute('aria-hidden', 'false');
       toggle.setAttribute('aria-expanded', 'true');

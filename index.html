@@ -276,11 +276,12 @@
     const peekImgs = new Map();
     function peekLoad() {
       if (peekImgs.size) return;
-      for (const { slug, thumb } of SLOWDUST_WORK) {
+      for (const { slug, still, focus } of SLOWDUST_WORK) {
         const img = new Image();
         img.alt = '';
         img.decoding = 'async';
-        img.src = thumb;
+        img.style.objectPosition = focus;
+        img.src = still;
         peek.append(img);
         peekImgs.set(slug, img);
       }
@@ -321,8 +322,9 @@
       if (isOpen) return;
       isOpen = true;
       peekLoad();
-      if (TOUCH) reelStart();
-      else if (linked) peekShow(linked.dataset.slug);
+      // A project's own page holds on that project; the home list runs the reel on touch.
+      if (linked) peekShow(linked.dataset.slug);
+      else if (TOUCH) reelStart();
       work.classList.add('open');
       work.setAttribute('aria-hidden', 'false');
       toggle.setAttribute('aria-expanded', 'true');

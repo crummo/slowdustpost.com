@@ -19,4 +19,22 @@
     { slug: 'loreal-gloss', client: 'L’Oréal', title: 'Gloss', kind: 'Commercial', video: `${PLAY}7902c344-e04d-497e-a546-d5cc97f40813`, thumb: `${THUMBS}loreal_glossy01.jpeg`, short: 'L’Oréal', reel: 3 },
     { slug: 'big-boys', client: 'Light In The Attic', title: 'Big Boys: Looking Back, It’s Just Reflections', kind: 'Documentary', video: `${PLAY}37cb4570-6a6e-421c-8b4b-af5aa02e0ec0`, thumb: `${THUMBS}BigBoys02_sml.jpg`, short: 'Light In The Attic', reel: 7 },
   ];
+
+  // Full-frame stills pulled from each film, in images/stills/<slug>.jpg, with the point a tall
+  // crop should keep (CSS object-position). These back the preview behind the list and the share
+  // image for each project page; `thumb` is the small legacy image the slate rotation still uses.
+  const FOCUS = {
+    'game-pass-vats': '60% 45%',
+    'azure-quantum': '50% 50%',
+    'rage-2': '50% 45%',
+    'minecraft-heros-path': '55% 55%',
+    flikshop: '45% 35%',
+    'gates-notes': '50% 50%',
+    'loreal-gloss': '62% 40%',
+    'big-boys': '50% 50%',
+  };
+  for (const w of window.SLOWDUST_WORK) {
+    w.still = `images/stills/${w.slug}.jpg`;
+    w.focus = FOCUS[w.slug] || '50% 50%';
+  }
 })();
