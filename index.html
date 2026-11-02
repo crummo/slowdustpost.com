@@ -198,9 +198,11 @@
 
     body:has(.player.open) .peek { opacity: 0; }
 
-    @media (hover: none) {
-      .peek { display: none; }
-    }
+    /* On touch screens there is no hover, so the stills run as a reel behind the list and the
+       row whose frame is up lights for as long as it shows. */
+    .work-list a.lit,
+    .work-list a.lit .client,
+    .work-list a.lit .kind { color: var(--amber); transition: color 0.9s ease; }
 
     @media (max-width: 640px) {
       .work-list a {
@@ -286,6 +288,28 @@
     function peekShow(slug) {
       for (const [s, img] of peekImgs) img.classList.toggle('on', s === slug);
     }
+
+    // The reel for touch screens: one still after another, each for REEL_MS, starting from the
+    // linked project if there is one.
+    const TOUCH = matchMedia('(hover: none)').matches;
+    const REEL_MS = 3600;
+    let reelTimer = 0;
+    function reelStart() {
+      const rows = [...document.querySelectorAll('.work-list a[data-slug]')];
+      let i = Math.max(0, rows.indexOf(linked));
+      const step = () => {
+        rows.forEach((a, j) => a.classList.toggle('lit', j === i));
+        peekShow(rows[i].dataset.slug);
+        i = (i + 1) % rows.length;
+      };
+      step();
+      reelTimer = setInterval(step, REEL_MS);
+    }
+    function reelStop() {
+      clearInterval(reelTimer);
+      reelTimer = 0;
+      document.querySelectorAll('.work-list a.lit').forEach((a) => a.classList.remove('lit'));
+    }
     const list = document.getElementById('work-list');
     list.addEventListener('mouseover', (e) => {
       const a = e.target.closest('a[data-slug]');
@@ -297,7 +321,8 @@
       if (isOpen) return;
       isOpen = true;
       peekLoad();
-      if (linked) peekShow(linked.dataset.slug);
+      if (TOUCH) reelStart();
+      else if (linked) peekShow(linked.dataset.slug);
       work.classList.add('open');
       work.setAttribute('aria-hidden', 'false');
       toggle.setAttribute('aria-expanded', 'true');
@@ -310,6 +335,7 @@
     function close() {
       if (!isOpen) return;
       isOpen = false;
+      reelStop();
       peekShow(null);
       work.classList.remove('open');
       work.setAttribute('aria-hidden', 'true');
