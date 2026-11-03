@@ -199,7 +199,8 @@
   let cornersPlaced = false;
   let last = performance.now();
   const startedAt = performance.now();
-  const pointer = { x: -1e4, y: -1e4, vx: 0, vy: 0, active: false };
+  // `flung`: a lifted finger's momentum is still carrying the pointer along (see onTouchLift).
+  const pointer = { x: -1e4, y: -1e4, vx: 0, vy: 0, active: false, flung: false };
 
   function makeParticle(x, y) {
     const r = Math.random();
@@ -844,8 +845,21 @@
       if (sample) tint(p, tintEase);
     }
 
-    pointer.vx *= 0.8;
-    pointer.vy *= 0.8;
+    if (pointer.flung) {
+      // A released swipe keeps going as an invisible finger, slowing as it travels, so the
+      // dust is flung along the swipe and carried in its wake.
+      pointer.x += pointer.vx * f;
+      pointer.y += pointer.vy * f;
+      const keep = Math.pow(0.955, f);
+      pointer.vx *= keep;
+      pointer.vy *= keep;
+      if (Math.hypot(pointer.vx, pointer.vy) < 0.6 || pointer.x < -POINTER_R || pointer.x > W + POINTER_R || pointer.y < -POINTER_R || pointer.y > H + POINTER_R) {
+        onPointerLeave();
+      }
+    } else {
+      pointer.vx *= 0.8;
+      pointer.vy *= 0.8;
+    }
 
     stepLamp(f);
     draw(now, b);
@@ -1056,19 +1070,40 @@
     }, 1700);
   }
 
+  // The last two pointer positions with their times, for the speed of a finger as it lifts.
+  const trail = [{ x: 0, y: 0, t: 0 }, { x: 0, y: 0, t: 0 }];
   function onPointerMove(e) {
-    if (pointer.active) {
+    if (pointer.active && !pointer.flung) {
       pointer.vx = e.clientX - pointer.x;
       pointer.vy = e.clientY - pointer.y;
     }
+    pointer.flung = false;
     pointer.x = e.clientX;
     pointer.y = e.clientY;
     pointer.active = true;
+    trail[0] = trail[1];
+    trail[1] = { x: e.clientX, y: e.clientY, t: e.timeStamp };
   }
 
   function onPointerLeave() {
     pointer.active = false;
+    pointer.flung = false;
     pointer.x = pointer.y = -1e4;
+  }
+
+  // A finger lifting mid-swipe: send the pointer on along the swipe (px per frame) if it was
+  // moving, else just let go.
+  function onTouchLift(e) {
+    const [a, b] = trail;
+    const dt = Math.min(120, e.timeStamp - a.t);
+    const vx = dt > 0 ? ((b.x - a.x) / dt) * 16.667 : 0;
+    const vy = dt > 0 ? ((b.y - a.y) / dt) * 16.667 : 0;
+    const sp = Math.hypot(vx, vy);
+    if (e.timeStamp - b.t > 100 || sp < 4) return onPointerLeave();
+    const cap = Math.min(sp, 28) / sp;
+    pointer.vx = vx * cap;
+    pointer.vy = vy * cap;
+    pointer.flung = true;
   }
 
   // Lets an overlay blow the dust aside and bring it back.
@@ -1081,6 +1116,9 @@
     },
     get phase() {
       return phase;
+    },
+    get pointer() {
+      return { ...pointer };
     },
     clear() {
       parked = true;
@@ -1271,6 +1309,7 @@
     let touchDown = null;
     window.addEventListener('pointerdown', (e) => {
       onPointerMove(e);
+      trail[0] = trail[1]; // a fresh touch starts its own trail: no momentum from the last one
       dismissHint();
       if (e.target.closest('a, button, [data-ui]')) return;
       if (e.pointerType === 'mouse') toggleWord();
@@ -1287,7 +1326,7 @@
     document.addEventListener('pointerleave', onPointerLeave);
     window.addEventListener('pointerup', (e) => {
       if (e.pointerType === 'mouse') return;
-      onPointerLeave();
+      onTouchLift(e);
       const down = touchDown;
       touchDown = null;
       if (down && performance.now() - down.t < 350 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 12) toggleWord();
