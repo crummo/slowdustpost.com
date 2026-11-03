@@ -117,6 +117,10 @@
   // Hold and apart lengths live in `tune` (seconds) so the panel can change them.
   const GATHER = 7500;
   const GUST = 1700;
+  // The opening gather is the slow breeze; every gather after it is this much quicker, so the
+  // wait between one word blowing away and the next standing stays close to the first.
+  const REGATHER = 0.6;
+  let gatherScale = 1;
 
   // Live-tunable values. Press T (or load with ?tune) for the on-screen panel.
   const DEFAULTS = {
@@ -129,7 +133,7 @@
     speed: 1, // pace of the gather and the scatter (1 = as designed; 2 = twice as quick)
     motes: 1, // how much dust there is, in the word and in the air (1 = as designed)
     heldS: 9, // seconds the word stays together
-    apartS: 5.5, // seconds it stays blown apart before gathering again
+    apartS: 3.5, // seconds it stays blown apart before gathering again
     // Fixed look calibration, not on the panel.
     streakMin: 2.4, // px/frame: speed at which dust starts to smear
     streakMax: 30, // px: longest streak
@@ -523,7 +527,7 @@
         p.base = 0.6 + Math.random() * 0.4;
         // Settle in a loose left-to-right sweep, as if carried in on a breeze. Page text
         // (the list) is different: everything leaves at once and rushes in.
-        p.delay = p.corner ? Math.random() * 400 : formedEls ? Math.random() * 1000 : (p.tx / W) * 1800 + Math.random() * 2600;
+        p.delay = p.corner ? Math.random() * 400 : formedEls ? Math.random() * 1000 : ((p.tx / W) * 1800 + Math.random() * 2600) * gatherScale;
       } else {
         p.tx = p.ty = null;
         p.size = 0.6 + Math.random() * Math.random() * 1.8;
@@ -554,6 +558,7 @@
     if (next === 'scatter') newGust();
     if (next === 'gather') {
       for (const p of particles) p.free = 0;
+      if (!formedEls) gatherScale = REGATHER;
       if ((cycling || cornersPlaced) && !formedEls && W && H) {
         if (cycling) {
           cycleIndex = (cycleIndex + 1) % CYCLE.length;
@@ -687,7 +692,8 @@
     const rush = speed * 2.5;
     const gspeed = formedEls ? rush : speed;
     if (!cornersShown && pt > CORNER_HANDOVER) showCorners();
-    if (phase === 'gather' && pt > GATHER / gspeed) setPhase('hold', clock);
+    const gatherLen = formedEls ? GATHER : GATHER * gatherScale;
+    if (phase === 'gather' && pt > gatherLen / gspeed) setPhase('hold', clock);
     else if (phase === 'hold' && pt > tune.heldS * 1000 && !formedEls) setPhase('scatter', clock);
     else if (phase === 'scatter' && pt > tune.apartS * 1000 && !parked) setPhase('gather', clock);
     pt = clock - phaseStart;
@@ -757,7 +763,7 @@
       }
 
       if (bound) {
-        const ramp = phase === 'gather' ? Math.min(1, ((pt - p.delay / ps) * ps) / 2600) : 1;
+        const ramp = phase === 'gather' ? Math.min(1, ((pt - p.delay / ps) * ps) / (2600 * gatherScale)) : 1;
         // Looseness: the word never quite hardens. Outline dust is held more weakly than the
         // body of a letter, and everything keeps a faint wander.
         const loose = (1 - tune.grip) * (0.3 + 0.7 * p.edge);
@@ -1073,6 +1079,9 @@
     get face() {
       return WORD_FONT.family;
     },
+    get phase() {
+      return phase;
+    },
     clear() {
       parked = true;
       if (phase !== 'scatter') setPhase('scatter', clock);
@@ -1257,11 +1266,17 @@
     });
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    // A mouse click toggles at once. A finger only toggles on a clean tap: touching down and
+    // dragging is for stirring the dust, so the word must not blow apart under it.
+    let touchDown = null;
     window.addEventListener('pointerdown', (e) => {
       onPointerMove(e);
       dismissHint();
-      if (!e.target.closest('a, button, [data-ui]')) toggleWord();
+      if (e.target.closest('a, button, [data-ui]')) return;
+      if (e.pointerType === 'mouse') toggleWord();
+      else touchDown = { x: e.clientX, y: e.clientY, t: performance.now() };
     });
+    window.addEventListener('pointercancel', () => { touchDown = null; });
     window.addEventListener('keydown', (e) => {
       if (e.key === ' ' && !e.target.closest('input, textarea, [data-ui]')) {
         e.preventDefault();
@@ -1271,7 +1286,11 @@
     });
     document.addEventListener('pointerleave', onPointerLeave);
     window.addEventListener('pointerup', (e) => {
-      if (e.pointerType !== 'mouse') onPointerLeave();
+      if (e.pointerType === 'mouse') return;
+      onPointerLeave();
+      const down = touchDown;
+      touchDown = null;
+      if (down && performance.now() - down.t < 350 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 12) toggleWord();
     });
     setTimeout(dismissHint, 9000);
 
