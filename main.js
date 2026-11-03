@@ -54,7 +54,7 @@
   const params = new URLSearchParams(location.search);
   // The wordmark changes face on each gather, through CYCLE (?cycle=a,b,c to choose; ?font=x
   // pins one). Every face in the cycle is loaded up front so a swap never waits on the network.
-  const CYCLE = (params.get('cycle') || 'archivo,gloock,vinyl,unbounded,bowlby,monoton')
+  const CYCLE = (params.get('cycle') || 'archivo,vinyl,unbounded,bowlby,monoton')
     .split(',')
     .map((k) => FONTS[k])
     .filter(Boolean);
