@@ -27,10 +27,12 @@
   // image for each project page; `thumb` is the small legacy image the slate rotation still uses.
   const FOCUS = {
     'game-pass-vats': '60% 45%',
+    'game-pass-zombie': '35% 45%',
     'azure-quantum': '50% 45%',
     'rage-2': '50% 45%',
     'minecraft-heros-path': '55% 55%',
     flikshop: '45% 35%',
+    'farm-city-fence': '40% 50%',
     'gates-notes': '50% 50%',
     'loreal-gloss': '62% 40%',
     'big-boys': '45% 55%',

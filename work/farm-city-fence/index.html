@@ -13,11 +13,11 @@
   <meta property="og:title" content="AWS — Data Centered: Farm City Fence">
   <meta property="og:description" content="Documentary · Slowdust Post, Los Angeles">
   <meta property="og:url" content="https://slowdustpost.com/work/farm-city-fence/">
-  <meta property="og:image" content="https://cameronrumford.com/thumbs/AWS_FarmCityFence01.jpeg">
+  <meta property="og:image" content="https://slowdustpost.com/images/stills/farm-city-fence.jpg">
   <meta property="og:image:alt" content="Data Centered: Farm City Fence">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AWS — Data Centered: Farm City Fence">
-  <meta name="twitter:image" content="https://cameronrumford.com/thumbs/AWS_FarmCityFence01.jpeg">
+  <meta name="twitter:image" content="https://slowdustpost.com/images/stills/farm-city-fence.jpg">
   <script>window.SLOWDUST_OPEN = "farm-city-fence";</script>
   <meta name="theme-color" content="#0b0a08">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230b0a08'/%3E%3Ccircle cx='5' cy='6' r='1.4' fill='%23ece3cf'/%3E%3Ccircle cx='10.5' cy='9.5' r='2' fill='%23deaa62'/%3E%3Ccircle cx='6' cy='11.5' r='.9' fill='%23ece3cf'/%3E%3C/svg%3E">
@@ -170,6 +170,46 @@
        (with its trace) when the player closes. */
     body:has(.player.open) .work { opacity: 0; transition: opacity 0.6s ease; }
 
+    /* Hovering a row projects that project's still behind the list: screen-blended, so only its
+       light reaches through the dust and the motes keep drifting over the frame. */
+    .peek {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .peek img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      mix-blend-mode: screen;
+      filter: saturate(0.75) contrast(1.05);
+      transition: opacity 0.9s ease;
+    }
+
+    .peek img.on { opacity: 0.5; }
+
+    /* Keep the frame from flattening the list: the centre stays dark enough to read. */
+    .peek::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(11, 10, 8, 0.6), rgba(11, 10, 8, 0) 100%);
+    }
+
+    body:has(.player.open) .peek { opacity: 0; }
+
+    /* On touch screens there is no hover, so the stills run as a reel behind the list and the
+       row whose frame is up lights for as long as it shows. */
+    .work-list a.lit,
+    .work-list a.lit .client,
+    .work-list a.lit .kind { color: var(--amber); transition: color 0.9s ease; }
+
     @media (max-width: 640px) {
       .work-list a {
         grid-template-columns: 1fr;
@@ -198,6 +238,7 @@
 </head>
 <body>
   <canvas id="dust" aria-hidden="true"></canvas>
+  <div class="peek" id="peek" aria-hidden="true"></div>
   <h1 class="sr-only">Slowdust Post</h1>
 
   <div class="corner tl"><a href="./" id="home">Slowdust Post</a><br><span class="dim">Los Angeles, CA</span></div>
@@ -235,9 +276,61 @@
         </a>
       </li>`).join('');
 
+    // Project stills, projected behind the list while a row is under the pointer. They load the
+    // first time the list opens; a linked project shows its still from the start.
+    const peek = document.getElementById('peek');
+    const peekImgs = new Map();
+    function peekLoad() {
+      if (peekImgs.size) return;
+      for (const { slug, still, focus } of SLOWDUST_WORK) {
+        const img = new Image();
+        img.alt = '';
+        img.decoding = 'async';
+        img.style.objectPosition = focus;
+        img.src = still;
+        peek.append(img);
+        peekImgs.set(slug, img);
+      }
+    }
+    function peekShow(slug) {
+      for (const [s, img] of peekImgs) img.classList.toggle('on', s === slug);
+    }
+
+    // The reel for touch screens: one still after another, each for REEL_MS, starting from the
+    // linked project if there is one.
+    const TOUCH = matchMedia('(hover: none)').matches;
+    const REEL_MS = 3600;
+    let reelTimer = 0;
+    function reelStart() {
+      const rows = [...document.querySelectorAll('.work-list a[data-slug]')];
+      let i = Math.max(0, rows.indexOf(linked));
+      const step = () => {
+        rows.forEach((a, j) => a.classList.toggle('lit', j === i));
+        peekShow(rows[i].dataset.slug);
+        i = (i + 1) % rows.length;
+      };
+      step();
+      reelTimer = setInterval(step, REEL_MS);
+    }
+    function reelStop() {
+      clearInterval(reelTimer);
+      reelTimer = 0;
+      document.querySelectorAll('.work-list a.lit').forEach((a) => a.classList.remove('lit'));
+    }
+    const list = document.getElementById('work-list');
+    list.addEventListener('mouseover', (e) => {
+      const a = e.target.closest('a[data-slug]');
+      if (a) peekShow(a.dataset.slug);
+    });
+    list.addEventListener('mouseleave', () => peekShow(linked ? linked.dataset.slug : null));
+
     function open() {
       if (isOpen) return;
       isOpen = true;
+      peekLoad();
+      // A project's own page holds on that project; the home list runs the reel on touch.
+      if (linked) peekShow(linked.dataset.slug);
+      else if (TOUCH) reelStart();
       work.classList.add('open');
       work.setAttribute('aria-hidden', 'false');
       toggle.setAttribute('aria-expanded', 'true');
@@ -250,6 +343,8 @@
     function close() {
       if (!isOpen) return;
       isOpen = false;
+      reelStop();
+      peekShow(null);
       work.classList.remove('open');
       work.setAttribute('aria-hidden', 'true');
       toggle.setAttribute('aria-expanded', 'false');
